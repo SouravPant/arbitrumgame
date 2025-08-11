@@ -73,8 +73,27 @@
         <div id="log" class="log"></div>
     </div>
 
-    <!-- Farcaster SDK -->
+    <!-- Farcaster SDK - Multiple import options -->
     <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
+    <script>
+        // Fallback if first import fails
+        if (typeof window.farcaster === 'undefined') {
+            console.log('First SDK import failed, trying alternative...');
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/@farcaster-js/sdk@latest/dist/index.js';
+            document.head.appendChild(script);
+        }
+    </script>
+    
+    <!-- Try official Farcaster package -->
+    <script src="https://unpkg.com/@farcaster/hub-web@latest/dist/index.js"></script>
+    <script>
+        // Check if official package loaded
+        if (typeof window.farcaster === 'undefined' && typeof window.FarcasterHub !== 'undefined') {
+            console.log('Official Farcaster package loaded, setting up compatibility...');
+            window.farcaster = window.FarcasterHub;
+        }
+    </script>
     
     <script>
         // Logging function
@@ -153,6 +172,24 @@
             // Also check after a short delay in case SDK loads late
             setTimeout(checkSDK, 1000);
             setTimeout(checkSDK, 3000);
+            setTimeout(checkSDK, 5000);
+            
+            // Try to manually load SDK if still not available
+            setTimeout(function() {
+                if (typeof window.farcaster === 'undefined') {
+                    log('🔄 Attempting manual SDK load...', 'info');
+                    const script = document.createElement('script');
+                    script.src = 'https://unpkg.com/@farcaster-js/sdk@0.0.1/dist/index.js';
+                    script.onload = function() {
+                        log('✅ Manual SDK load completed', 'success');
+                        checkSDK();
+                    };
+                    script.onerror = function() {
+                        log('❌ Manual SDK load failed', 'error');
+                    };
+                    document.head.appendChild(script);
+                }
+            }, 7000);
         });
         
         // Log SDK loading events
