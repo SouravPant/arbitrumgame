@@ -251,6 +251,100 @@
                 }
             });
             
+            // Check for ANY new objects that were created
+            log(`🔍 Checking for any new objects created by ${packageName}...`);
+            const beforeKeys = Object.keys(window);
+            
+            // Wait a bit and check again
+            setTimeout(() => {
+                const afterKeys = Object.keys(window);
+                const newKeys = afterKeys.filter(key => !beforeKeys.includes(key));
+                
+                if (newKeys.length > 0) {
+                    log(`🎯 ${packageName} created new objects: ${newKeys.join(', ')}`);
+                    
+                    newKeys.forEach(key => {
+                        try {
+                            const obj = window[key];
+                            if (obj && typeof obj === 'object') {
+                                log(`   Object: window.${key}`);
+                                log(`   Type: ${typeof obj}`);
+                                const props = Object.getOwnPropertyNames(obj);
+                                log(`   Properties: ${props.join(', ')}`);
+                                
+                                // Check if this looks like our SDK
+                                if (obj.ready || obj.actions || obj.connect || obj.signMessage) {
+                                    log(`   ✅ This looks like a Farcaster SDK object!`);
+                                    window.farcaster = obj;
+                                }
+                            }
+                        } catch (e) {
+                            log(`   Error inspecting ${key}: ${e.message}`);
+                        }
+                    });
+                } else {
+                    log(`⚠️ ${packageName} didn't create any new global objects`);
+                }
+            }, 1000);
+            
+            return false;
+        }
+        
+        // Try to manually create SDK object from loaded packages
+        function tryManualSDKCreation() {
+            log('🔧 Attempting manual SDK object creation...');
+            
+            // Check if we have any Farcaster-related packages loaded
+            const scripts = document.querySelectorAll('script[src*="farcaster"]');
+            log(`Found ${scripts.length} Farcaster-related scripts`);
+            
+            scripts.forEach((script, index) => {
+                log(`Script ${index + 1}: ${script.src}`);
+            });
+            
+            // Try to access the package directly
+            try {
+                // Check if the package is available as a module
+                if (typeof require !== 'undefined') {
+                    log('✅ require() is available, trying to require Farcaster packages...');
+                    try {
+                        const farcaster = require('@farcaster/hub-web');
+                        log('✅ Successfully required @farcaster/hub-web');
+                        window.farcaster = farcaster;
+                        return true;
+                    } catch (e) {
+                        log(`❌ Failed to require @farcaster/hub-web: ${e.message}`);
+                    }
+                }
+            } catch (e) {
+                log(`❌ require() not available: ${e.message}`);
+            }
+            
+            // Try to check if packages are available in different ways
+            log('🔍 Checking for package availability in different contexts...');
+            
+            // Check for any objects that might contain our SDK
+            Object.keys(window).forEach(key => {
+                try {
+                    const obj = window[key];
+                    if (obj && typeof obj === 'object') {
+                        // Look deep into objects for Farcaster functionality
+                        if (obj.farcaster || obj.Farcaster || obj.hub || obj.Hub) {
+                            log(`🎯 Found potential container: window.${key}`);
+                            log(`   Contains: ${Object.keys(obj).join(', ')}`);
+                            
+                            if (obj.farcaster) {
+                                log(`   ✅ Found farcaster property in ${key}`);
+                                window.farcaster = obj.farcaster;
+                                return true;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    // Ignore errors
+                }
+            });
+            
             return false;
         }
         
@@ -270,6 +364,13 @@
                 } else {
                     log('❌ No Farcaster SDK found after imports');
                     updateStatus('❌ No Farcaster SDK found', 'error');
+                    
+                    // Try manual SDK creation
+                    log('🔧 Trying manual SDK creation...');
+                    if (tryManualSDKCreation()) {
+                        log('✅ Manual SDK creation successful!');
+                        initializeFarcaster();
+                    }
                 }
             }, 2000);
             
@@ -278,8 +379,27 @@
                 if (checkSDKAvailability()) {
                     log('✅ Farcaster SDK found on delayed check...');
                     initializeFarcaster();
+                } else {
+                    // Try manual creation again
+                    log('🔧 Trying manual SDK creation again...');
+                    if (tryManualSDKCreation()) {
+                        log('✅ Manual SDK creation successful on retry!');
+                        initializeFarcaster();
+                    }
                 }
             }, 5000);
+            
+            // Final attempt
+            setTimeout(() => {
+                log('🔧 Final attempt at SDK creation...');
+                if (tryManualSDKCreation()) {
+                    log('✅ Final manual SDK creation successful!');
+                    initializeFarcaster();
+                } else {
+                    log('❌ All SDK creation attempts failed');
+                    updateStatus('❌ Failed to create Farcaster SDK', 'error');
+                }
+            }, 8000);
         });
         
         // Log initial state
