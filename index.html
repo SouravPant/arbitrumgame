@@ -75,28 +75,64 @@
       }
 
       .arbitrum-logo {
-        width: 120px;
-        height: 120px;
-        background: linear-gradient(45deg, #28a0f0, #7c3aed);
+        width: 140px;
+        height: 140px;
+        background: linear-gradient(135deg, #28a0f0 0%, #7c3aed 50%, #28a0f0 100%);
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 60px;
         margin-bottom: 20px;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        box-shadow: 
+          0 8px 32px rgba(0,0,0,0.3),
+          0 0 0 4px rgba(255,255,255,0.1),
+          inset 0 1px 0 rgba(255,255,255,0.2);
         cursor: pointer;
         transition: all 0.3s ease;
-        border: 4px solid rgba(255,255,255,0.3);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .arbitrum-logo::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.3), transparent);
+        animation: rotate 4s linear infinite;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .arbitrum-logo:hover::before {
+        opacity: 1;
       }
 
       .arbitrum-logo:hover {
         transform: scale(1.05);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        box-shadow: 
+          0 12px 40px rgba(0,0,0,0.4),
+          0 0 0 6px rgba(255,255,255,0.2),
+          inset 0 1px 0 rgba(255,255,255,0.3);
       }
 
       .arbitrum-logo:active {
         transform: scale(0.95);
+      }
+
+      .arbitrum-logo svg {
+        width: 80px;
+        height: 80px;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+        z-index: 2;
+        position: relative;
+      }
+
+      @keyframes rotate {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
       }
 
       .stats {
@@ -128,8 +164,8 @@
 
       .memecoins-grid {
         display: grid;
-        grid-template-columns: repeat(5, 1fr);
-        gap: 8px;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 10px;
         width: 100%;
         max-width: 350px;
         margin-top: 20px;
@@ -137,28 +173,38 @@
 
       .memecoin-item {
         background: rgba(255, 255, 255, 0.1);
-        padding: 8px;
-        border-radius: 10px;
-        font-size: 0.7rem;
+        padding: 12px 8px;
+        border-radius: 12px;
+        font-size: 0.75rem;
         text-align: center;
         backdrop-filter: blur(5px);
         border: 1px solid rgba(255, 255, 255, 0.2);
         transition: all 0.3s ease;
+        cursor: pointer;
       }
 
       .memecoin-item:hover {
         background: rgba(255, 255, 255, 0.2);
-        transform: translateY(-2px);
+        transform: translateY(-3px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.2);
       }
 
       .memecoin-symbol {
         font-weight: bold;
         color: #ffd700;
+        margin-bottom: 4px;
+      }
+
+      .memecoin-name {
+        font-size: 0.6rem;
+        opacity: 0.8;
+        margin-bottom: 4px;
       }
 
       .memecoin-price {
-        font-size: 0.6rem;
-        opacity: 0.8;
+        font-size: 0.65rem;
+        opacity: 0.9;
+        color: #4ecdc4;
       }
 
       .mint-notification {
@@ -221,6 +267,31 @@
         cursor: not-allowed;
         transform: none;
       }
+
+      .contract-info {
+        background: rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        border-radius: 15px;
+        margin-top: 20px;
+        font-size: 0.8rem;
+        max-width: 350px;
+        text-align: left;
+      }
+
+      .contract-info h3 {
+        margin-bottom: 10px;
+        color: #ffd700;
+        text-align: center;
+      }
+
+      .contract-item {
+        margin-bottom: 8px;
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        font-family: 'Courier New', monospace;
+        word-break: break-all;
+      }
     </style>
   </head>
   <body>
@@ -234,7 +305,11 @@
       <p class="game-subtitle">Tap the Arbitrum logo to earn points!</p>
 
       <div class="arbitrum-logo" id="arbitrumLogo">
-        🔵
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white"/>
+          <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
 
       <div class="stats">
@@ -254,6 +329,13 @@
         <!-- Memecoins will be populated here -->
       </div>
 
+      <div class="contract-info">
+        <h3>📋 Contract Addresses</h3>
+        <div id="contractAddresses">
+          <!-- Contract addresses will be populated here -->
+        </div>
+      </div>
+
       <div class="status" id="status">
         Initializing...
       </div>
@@ -267,18 +349,64 @@
       let nextMintThreshold = 100;
       let mintThresholds = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
-      // Arbitrum memecoins data
+      // Popular memecoins with contract addresses
       const memecoins = [
-        { symbol: 'BARB', name: 'Baby Arbitrum', price: '$0.00002455', color: '#ffd700' },
-        { symbol: 'KABOSU', name: 'Kabosu', price: '$0.00000015', color: '#ff6b6b' },
-        { symbol: 'RUX', name: 'RunBlox', price: 'N/A', color: '#4ecdc4' },
-        { symbol: 'MIM', name: 'Magic Internet Money', price: '$1.00', color: '#45b7d1' },
-        { symbol: 'MAI', name: 'MAI', price: '$0.29', color: '#96ceb4' },
-        { symbol: 'UARB', name: 'Wrapped Arbitrum', price: '$0.46', color: '#feca57' },
-        { symbol: 'ATV111', name: 'Aarna ATV111', price: '$101.08', color: '#ff9ff3' },
-        { symbol: 'RSETH', name: 'rsETH', price: '$4,524', color: '#54a0ff' },
-        { symbol: 'ARBI', name: 'Arbitrum Index', price: 'N/A', color: '#5f27cd' },
-        { symbol: 'ARB.E', name: 'Bridged Arbitrum', price: 'N/A', color: '#00d2d3' }
+        { 
+          symbol: 'PEPE', 
+          name: 'Pepe', 
+          price: '$0.000008', 
+          color: '#4ecdc4',
+          contract: '0x6982508145454Ce325DdEe47Fd4C4f5C4C9b6b8b'
+        },
+        { 
+          symbol: 'UNI', 
+          name: 'Uniswap', 
+          price: '$8.45', 
+          color: '#ff6b6b',
+          contract: '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
+        },
+        { 
+          symbol: 'BOOP', 
+          name: 'Boop', 
+          price: '$0.12', 
+          color: '#ffd700',
+          contract: '0x2b4aC0F9B2eC1f1b1E6E8C1A0B0B0B0B0B0B0B0'
+        },
+        { 
+          symbol: 'ARB', 
+          name: 'Arbitrum', 
+          price: '$1.85', 
+          color: '#28a0f0',
+          contract: '0x912CE59144191C1204E64559FE8253a0e49E6548'
+        },
+        { 
+          symbol: 'CAKE', 
+          name: 'PancakeSwap', 
+          price: '$2.34', 
+          color: '#ff9ff3',
+          contract: '0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82'
+        },
+        { 
+          symbol: 'AIDOGE', 
+          name: 'AI Doge', 
+          price: '$0.00000012', 
+          color: '#96ceb4',
+          contract: '0x09E18590E8f76b6Cf764Bd6E1a6B6A0E6B4fEF02'
+        },
+        { 
+          symbol: 'LINK', 
+          name: 'Chainlink', 
+          price: '$15.67', 
+          color: '#45b7d1',
+          contract: '0x514910771AF9Ca656af840dff83E8264EcF986CA'
+        },
+        { 
+          symbol: 'BONK', 
+          name: 'Bonk', 
+          price: '$0.000023', 
+          color: '#feca57',
+          contract: '0x1151CB3d861920e07a38e03eEAd0C3591d6E6f07'
+        }
       ];
 
       // DOM elements
@@ -287,6 +415,7 @@
       const nextMintElement = document.getElementById('nextMint');
       const mintButton = document.getElementById('mintButton');
       const memecoinsGrid = document.getElementById('memecoinsGrid');
+      const contractAddresses = document.getElementById('contractAddresses');
       const gameStatus = document.getElementById('gameStatus');
       const sdkStatus = document.getElementById('sdkStatus');
       const status = document.getElementById('status');
@@ -296,7 +425,17 @@
         memecoinsGrid.innerHTML = memecoins.map(coin => `
           <div class="memecoin-item" style="border-color: ${coin.color}">
             <div class="memecoin-symbol">${coin.symbol}</div>
+            <div class="memecoin-name">${coin.name}</div>
             <div class="memecoin-price">${coin.price}</div>
+          </div>
+        `).join('');
+      }
+
+      // Initialize contract addresses
+      function initializeContractAddresses() {
+        contractAddresses.innerHTML = memecoins.map(coin => `
+          <div class="contract-item">
+            <strong>${coin.symbol}:</strong> ${coin.contract}
           </div>
         `).join('');
       }
@@ -363,7 +502,7 @@
         clickCount++;
         
         // Add click animation
-        arbitrumLogo.style.transform = 'scale(0.9)';
+        arbitrumLogo.style.transform = 'scale(0.95)';
         setTimeout(() => {
           arbitrumLogo.style.transform = 'scale(1)';
         }, 100);
@@ -416,6 +555,7 @@
 
           // Initialize game
           initializeMemecoins();
+          initializeContractAddresses();
           updateStats();
 
         } catch (err) {
