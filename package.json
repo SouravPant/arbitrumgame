@@ -1,0 +1,50 @@
+{
+  "name": "farcaster-runner",
+  "version": "1.0.0",
+  "description": "A Subway Surfer-style endless runner game for Farcaster mini apps",
+  "main": "index.html",
+  "scripts": {
+    "start": "vercel dev",
+    "dev": "vercel dev",
+    "build": "echo 'No build step required for static files'",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "serve": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "farcaster",
+    "mini-app",
+    "game",
+    "runner",
+    "subway-surfer",
+    "html5",
+    "canvas",
+    "javascript",
+    "mobile",
+    "touch",
+    "vercel"
+  ],
+  "author": "Farcaster Developer",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/farcaster-runner.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/farcaster-runner/issues"
+  },
+  "homepage": "https://github.com/yourusername/farcaster-runner#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^32.0.0"
+  },
+  "dependencies": {},
+  "vercel": {
+    "buildCommand": "npm run build",
+    "outputDirectory": ".",
+    "installCommand": "npm install",
+    "framework": null
+  }
+}
