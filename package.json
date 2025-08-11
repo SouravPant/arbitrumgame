@@ -1,46 +1,27 @@
 {
-  "name": "arbitrum-runner",
+  "name": "tic-tac-toe-game",
   "version": "1.0.0",
-  "description": "A Subway Surfer-style endless runner game built on Arbitrum - the leading Layer 2 scaling solution for Ethereum",
+  "description": "A modern, responsive Tic Tac Toe game built with HTML, CSS, and JavaScript",
   "main": "index.html",
   "scripts": {
-    "start": "vercel dev",
-    "dev": "vercel dev",
-    "build": "echo 'Static files - no build required'",
-    "deploy": "vercel --prod",
-    "deploy:preview": "vercel",
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000",
     "serve": "python3 -m http.server 8000"
   },
   "keywords": [
-    "arbitrum",
-    "ethereum",
-    "layer2",
-    "scaling",
+    "tic-tac-toe",
     "game",
-    "runner",
-    "subway-surfer",
     "html5",
-    "canvas",
+    "css3",
     "javascript",
-    "mobile",
-    "touch",
-    "vercel"
+    "responsive",
+    "web-game"
   ],
-  "author": "Arbitrum Developer",
+  "author": "Your Name",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SouravPant/arbitrumgame.git"
+    "url": "https://github.com/yourusername/tic-tac-toe-game.git"
   },
-  "bugs": {
-    "url": "https://github.com/SouravPant/arbitrumgame/issues"
-  },
-  "homepage": "https://github.com/SouravPant/arbitrumgame#readme",
-  "engines": {
-    "node": ">=18.0.0"
-  },
-  "devDependencies": {
-    "vercel": "^32.0.0"
-  },
-  "dependencies": {}
+  "homepage": "https://yourusername.github.io/tic-tac-toe-game"
 }
