@@ -22,6 +22,43 @@
     
     <!-- Farcaster SDK -->
     <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
+    
+    <!-- Temporary: Call ready() immediately in head -->
+    <script>
+      // Multiple attempts to call ready() as soon as possible
+      function callReady() {
+        if (typeof window.farcaster !== 'undefined') {
+          console.log('Calling farcaster.actions.ready() immediately...');
+          try {
+            window.farcaster.actions.ready();
+            console.log('ready() called successfully!');
+            return true;
+          } catch (error) {
+            console.error('Error calling ready():', error);
+            return false;
+          }
+        }
+        return false;
+      }
+      
+      // Try immediately
+      if (!callReady()) {
+        // Try on DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', function() {
+          if (!callReady()) {
+            // Try on load
+            window.addEventListener('load', function() {
+              if (!callReady()) {
+                // Multiple retries with increasing delays
+                [100, 500, 1000, 2000, 5000].forEach(delay => {
+                  setTimeout(callReady, delay);
+                });
+              }
+            });
+          }
+        });
+      }
+    </script>
   </head>
   <body>
     <nav>
