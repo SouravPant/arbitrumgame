@@ -1,61 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe Game</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Tic Tac Toe</h1>
-            <div class="status" id="status">Player X's turn</div>
-        </header>
-        
-        <main>
-            <div class="game-board" id="gameBoard">
-                <div class="cell" data-cell-index="0"></div>
-                <div class="cell" data-cell-index="1"></div>
-                <div class="cell" data-cell-index="2"></div>
-                <div class="cell" data-cell-index="3"></div>
-                <div class="cell" data-cell-index="4"></div>
-                <div class="cell" data-cell-index="5"></div>
-                <div class="cell" data-cell-index="6"></div>
-                <div class="cell" data-cell-index="7"></div>
-                <div class="cell" data-cell-index="8"></div>
-            </div>
-            
-            <div class="game-controls">
-                <button id="restartBtn" class="btn btn-primary">Restart Game</button>
-                <button id="resetScoreBtn" class="btn btn-secondary">Reset Score</button>
-            </div>
-            
-            <div class="score-board">
-                <div class="score-item">
-                    <span class="player">Player X</span>
-                    <span class="score" id="scoreX">0</span>
-                </div>
-                <div class="score-item">
-                    <span class="player">Player O</span>
-                    <span class="score" id="scoreO">0</span>
-                </div>
-                <div class="score-item">
-                    <span class="player">Ties</span>
-                    <span class="score" id="scoreTie">0</span>
-                </div>
-            </div>
-        </main>
-        
-        <div class="game-over-modal" id="gameOverModal">
-            <div class="modal-content">
-                <h2 id="modalTitle">Game Over!</h2>
-                <p id="modalMessage">Player X wins!</p>
-                <button id="playAgainBtn" class="btn btn-primary">Play Again</button>
-            </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <nav>
+      <ul>
+        <li>MyTicTacToe.com</li>
+      </ul>
+    </nav>
+
+    <div class="gameContainer">
+        <div class="container">
+          <div class="line"></div>
+        <div class="box bt-0 bl-0"><span class="boxtext"></span></div>
+        <div class="box bt-0"><span class="boxtext"></span></div>
+        <div class="box bt-0 br-0"><span class="boxtext"></span></div>
+        <div class="box bl-0"><span class="boxtext"></span></div>
+        <div class="box"><span class="boxtext"></span></div>
+        <div class="box br-0"><span class="boxtext"></span></div>
+        <div class="box bl-0 bb-0"><span class="boxtext"></span></div>
+        <div class="box bb-0"><span class="boxtext"></span></div>
+        <div class="box bb-0 br-0"><span class="boxtext"></span></div>
+      </div>
+      <div class="gameInfo">
+        <h1>Welcome to Tic Tac MyTicTacToe</h1>
+        <div>
+          <span class="info">Turn for X</span>
+          <button id="reset">Reset</button>
         </div>
+        <div class="imgbox">
+          <img src="excited.gif" alt="" />
+        </div>
+      </div>
     </div>
-    
-    <script src="game.js"></script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
