@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hero Image</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            color: white;
+            width: 1200px;
+            height: 600px;
+            overflow: hidden;
+        }
+        .hero-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        .left-section {
+            flex: 1;
+            padding: 60px;
+            z-index: 2;
+        }
+        .right-section {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+        .title {
+            font-size: 56px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+        .subtitle {
+            font-size: 24px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        .features-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .features-list li {
+            font-size: 18px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        .features-list li::before {
+            content: "✓";
+            color: #4ade80;
+            font-weight: bold;
+            margin-right: 15px;
+            font-size: 20px;
+        }
+        .game-preview {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        .game-logo {
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px;
+        }
+        .game-logo svg {
+            width: 100px;
+            height: 100px;
+        }
+        .game-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .stat {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4ade80;
+        }
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .background-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .floating-shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        .shape-1 {
+            width: 100px;
+            height: 100px;
+            top: 50px;
+            right: 100px;
+            animation: float 6s ease-in-out infinite;
+        }
+        .shape-2 {
+            width: 60px;
+            height: 60px;
+            bottom: 100px;
+            left: 200px;
+            animation: float 8s ease-in-out infinite reverse;
+        }
+        .shape-3 {
+            width: 80px;
+            height: 80px;
+            top: 200px;
+            left: 50px;
+            animation: float 7s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        .instructions {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="instructions">
+        <strong>Hero Image (1200x600px)</strong><br>
+        Screenshot this and save as:<br>
+        <code>hero.png</code>
+    </div>
+    
+    <div class="hero-container">
+        <div class="background-elements">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+        </div>
+        
+        <div class="left-section">
+            <h1 class="title">Arbitrum Tap Tap Game</h1>
+            <p class="subtitle">Experience the future of Web3 gaming! Tap the Arbitrum logo to earn points, unlock NFT minting at milestones, and explore popular memecoins on Arbitrum.</p>
+            
+            <ul class="features-list">
+                <li>Tap-to-earn mechanics</li>
+                <li>NFT minting at milestones</li>
+                <li>Real-time memecoin prices</li>
+                <li>Seamless Farcaster integration</li>
+                <li>Professional Arbitrum branding</li>
+            </ul>
+        </div>
+        
+        <div class="right-section">
+            <div class="game-preview">
+                <div class="game-logo">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white"/>
+                        <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                
+                <h3 style="margin: 0 0 20px 0; font-size: 24px;">Ready to Play!</h3>
+                
+                <div class="game-stats">
+                    <div class="stat">
+                        <div class="stat-number">0</div>
+                        <div class="stat-label">Clicks</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">100</div>
+                        <div class="stat-label">Next NFT</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">8</div>
+                        <div class="stat-label">Memecoins</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
