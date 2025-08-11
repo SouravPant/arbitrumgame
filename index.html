@@ -139,10 +139,10 @@
         </div>
     </div>
 
-    <!-- Farcaster SDK -->
-    <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
-    
-    <script>
+    <script type="module">
+        // Import Farcaster SDK using ES modules (same as boop-to-earn)
+        import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
+        
         // Logging function
         function log(message, type = 'info') {
             const logDiv = document.getElementById('logContent');
@@ -167,43 +167,28 @@
         }
         
         // Test interaction
-        function testInteraction() {
+        window.testInteraction = function() {
             log('🔘 Button clicked - interaction working!', 'success');
             alert('🎉 Interaction test successful! The Mini App is working properly.');
-        }
+        };
         
-        // Initialize Farcaster Mini App
-        async function initializeFarcaster() {
+        // Initialize Farcaster Mini App (following boop-to-earn pattern)
+        const startApp = async () => {
             try {
                 log('🚀 Starting Farcaster Mini App initialization...', 'info');
                 updateStatus('Initializing Farcaster SDK...', 'loading');
                 
-                // Check if we're in Farcaster environment
-                if (typeof window.farcaster === 'undefined') {
-                    log('⚠️ Not in Farcaster environment, showing content anyway', 'info');
-                    showContent();
-                    return;
-                }
+                log('✅ Farcaster SDK imported successfully', 'success');
                 
-                log('✅ Farcaster SDK detected', 'success');
+                // Get Ethereum provider (same as boop-to-earn)
+                log('🔗 Getting Ethereum provider...', 'info');
+                await sdk.wallet.getEthereumProvider();
+                log('✅ Ethereum provider ready', 'success');
                 
-                // Wait for SDK to be ready
-                if (typeof window.farcaster.ready === 'function') {
-                    log('⏳ Waiting for SDK to be ready...', 'info');
-                    await window.farcaster.ready();
-                    log('✅ SDK is ready', 'success');
-                }
-                
-                // Call actions.ready() to dismiss splash screen
-                if (window.farcaster.actions && typeof window.farcaster.actions.ready === 'function') {
-                    log('🚀 Calling actions.ready()...', 'info');
-                    await window.farcaster.actions.ready();
-                    log('🎉 actions.ready() called successfully!', 'success');
-                } else if (typeof window.farcaster.ready === 'function') {
-                    log('🚀 Calling ready() directly...', 'info');
-                    await window.farcaster.ready();
-                    log('🎉 ready() called successfully!', 'success');
-                }
+                // Call sdk.actions.ready() with disableNativeGestures (same as boop-to-earn)
+                log('🚀 Calling sdk.actions.ready()...', 'info');
+                sdk.actions.ready({ disableNativeGestures: true });
+                log('🎉 sdk.actions.ready() called successfully!', 'success');
                 
                 // Show content
                 showContent();
@@ -215,33 +200,17 @@
                 // Show content anyway to prevent blank page
                 showContent();
             }
-        }
+        };
         
         // Start initialization when page loads
         window.addEventListener('load', function() {
             log('📱 Page loaded, starting Farcaster initialization...', 'info');
-            
-            // Initialize immediately
-            initializeFarcaster();
-            
-            // Also try after a delay in case SDK loads late
-            setTimeout(() => {
-                if (document.getElementById('content').style.display === 'none') {
-                    log('⏰ Delayed initialization attempt...', 'info');
-                    initializeFarcaster();
-                }
-            }, 2000);
+            startApp();
         });
         
         // Log initial state
         log('🎯 Farcaster Mini App Preview Test starting...', 'info');
-        
-        // Check if we're in Farcaster environment
-        if (typeof window.farcaster !== 'undefined') {
-            log('✅ Farcaster SDK already available', 'success');
-        } else {
-            log('⏳ Waiting for Farcaster SDK...', 'info');
-        }
+        log('📦 Using @farcaster/miniapp-sdk via ES modules', 'info');
     </script>
 </body>
 </html>
