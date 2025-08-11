@@ -3,44 +3,148 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Farcaster Runner - Subway Surfer Style Game</title>
-    <meta name="description" content="An exciting runner game for Farcaster mini app">
-    <meta name="theme-color" content="#6366f1">
+    <title>Arbitrum Runner - Subway Surfer Style Game</title>
+    <meta name="description" content="An exciting runner game built on Arbitrum - the leading Layer 2 scaling solution for Ethereum">
+    <meta name="theme-color" content="#28A0F0">
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="gameContainer">
+        <!-- Arbitrum Header -->
+        <header id="arbitrumHeader">
+            <div class="header-content">
+                <div class="arbitrum-logo">
+                    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M16 0C7.163 0 0 7.163 0 16s7.163 16 16 16 16-7.163 16-16S24.837 0 16 0z" fill="#28A0F0"/>
+                        <path d="M16 4C9.373 4 4 9.373 4 16s5.373 12 12 12 12-5.373 12-12S22.627 4 16 4z" fill="white"/>
+                        <path d="M16 8C11.582 8 8 11.582 8 16s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8z" fill="#28A0F0"/>
+                    </svg>
+                    <span class="logo-text">Arbitrum</span>
+                </div>
+                <div class="header-info">
+                    <span class="network-badge">Layer 2</span>
+                    <span class="ethereum-badge">Ethereum</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Game UI -->
         <div id="gameUI">
+            <!-- Score Board with Arbitrum Theme -->
             <div id="scoreBoard">
-                <div id="score">Score: 0</div>
-                <div id="coins">Coins: 0</div>
-                <div id="distance">Distance: 0m</div>
+                <div class="score-item">
+                    <div class="score-label">Score</div>
+                    <div id="score" class="score-value">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Coins</div>
+                    <div id="coins" class="score-value">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Distance</div>
+                    <div id="distance" class="score-value">0m</div>
+                </div>
             </div>
-            
+
+            <!-- Game Over Screen -->
             <div id="gameOverScreen" class="hidden">
-                <h2>Game Over!</h2>
-                <div id="finalScore">Final Score: 0</div>
-                <div id="finalCoins">Total Coins: 0</div>
-                <div id="finalDistance">Distance: 0m</div>
-                <button id="restartBtn">Play Again</button>
+                <div class="modal-content">
+                    <div class="arbitrum-logo-large">
+                        <svg width="64" height="64" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 0C7.163 0 0 7.163 0 16s7.163 16 16 16 16-7.163 16-16S24.837 0 16 0z" fill="#28A0F0"/>
+                            <path d="M16 4C9.373 4 4 9.373 4 16s5.373 12 12 12 12-5.373 12-12S22.627 4 16 4z" fill="white"/>
+                            <path d="M16 8C11.582 8 8 11.582 8 16s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8z" fill="#28A0F0"/>
+                        </svg>
+                    </div>
+                    <h2>Game Over!</h2>
+                    <div class="final-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Final Score:</span>
+                            <span id="finalScore" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Total Coins:</span>
+                            <span id="finalCoins" class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Distance:</span>
+                            <span id="finalDistance" class="stat-value">0m</span>
+                        </div>
+                    </div>
+                    <button id="restartBtn" class="arbitrum-btn">Play Again</button>
+                </div>
             </div>
-            
+
+            <!-- Start Screen -->
             <div id="startScreen">
-                <h1>Farcaster Runner</h1>
-                <p>Dodge obstacles, collect coins, and run as far as you can!</p>
-                <button id="startBtn">Start Game</button>
-                <div id="instructions">
-                    <h3>Controls:</h3>
-                    <p>🔄 Swipe left/right to change lanes</p>
-                    <p>⬆️ Swipe up to jump</p>
-                    <p>⬇️ Swipe down to slide</p>
+                <div class="start-content">
+                    <div class="arbitrum-logo-large">
+                        <svg width="80" height="80" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 0C7.163 0 0 7.163 0 16s7.163 16 16 16 16-7.163 16-16S24.837 0 16 0z" fill="#28A0F0"/>
+                            <path d="M16 4C9.373 4 4 9.373 4 16s5.373 12 12 12 12-5.373 12-12S22.627 4 16 4z" fill="white"/>
+                            <path d="M16 8C11.582 8 8 11.582 8 16s3.582 8 8 8 8-3.582 8-8-3.582-8-8-8z" fill="#28A0F0"/>
+                        </svg>
+                    </div>
+                    <h1>Arbitrum Runner</h1>
+                    <p class="subtitle">Run on the fastest Layer 2 scaling solution</p>
+                    <p class="description">Dodge obstacles, collect coins, and run as far as you can on Arbitrum!</p>
+                    <button id="startBtn" class="arbitrum-btn primary">Start Game</button>
+                    
+                    <div id="instructions">
+                        <h3>Controls:</h3>
+                        <div class="control-grid">
+                            <div class="control-item">
+                                <div class="control-icon">🔄</div>
+                                <span>Swipe left/right to change lanes</span>
+                            </div>
+                            <div class="control-item">
+                                <div class="control-icon">⬆️</div>
+                                <span>Swipe up to jump</span>
+                            </div>
+                            <div class="control-item">
+                                <div class="control-icon">⬇️</div>
+                                <span>Swipe down to slide</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="arbitrum-features">
+                        <div class="feature">
+                            <span class="feature-icon">⚡</span>
+                            <span>Fast & Low Cost</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🔒</span>
+                            <span>Ethereum Security</span>
+                        </div>
+                        <div class="feature">
+                            <span class="feature-icon">🌐</span>
+                            <span>Layer 2 Scaling</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
-        <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+        <!-- Game Canvas -->
+        <canvas id="gameCanvas" width="1024" height="800"></canvas>
     </div>
-    
+
+    <!-- Arbitrum Footer -->
+    <footer id="arbitrumFooter">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="https://arbitrum.io" target="_blank" rel="noopener">arbitrum.io</a>
+                <a href="https://docs.arbitrum.io" target="_blank" rel="noopener">Documentation</a>
+                <a href="https://bridge.arbitrum.io" target="_blank" rel="noopener">Bridge</a>
+            </div>
+            <div class="footer-info">
+                <span>Built on Arbitrum - The leading Layer 2 scaling solution for Ethereum</span>
+            </div>
+        </div>
+    </footer>
+
     <script src="game.js"></script>
 </body>
 </html>

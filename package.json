@@ -1,7 +1,7 @@
 {
-  "name": "farcaster-runner",
+  "name": "arbitrum-runner",
   "version": "1.0.0",
-  "description": "A Subway Surfer-style endless runner game for Farcaster mini apps",
+  "description": "A Subway Surfer-style endless runner game built on Arbitrum - the leading Layer 2 scaling solution for Ethereum",
   "main": "index.html",
   "scripts": {
     "start": "vercel dev",
@@ -12,8 +12,10 @@
     "serve": "python3 -m http.server 8000"
   },
   "keywords": [
-    "farcaster",
-    "mini-app",
+    "arbitrum",
+    "ethereum",
+    "layer2",
+    "scaling",
     "game",
     "runner",
     "subway-surfer",
@@ -24,7 +26,7 @@
     "touch",
     "vercel"
   ],
-  "author": "Farcaster Developer",
+  "author": "Arbitrum Developer",
   "license": "MIT",
   "repository": {
     "type": "git",
