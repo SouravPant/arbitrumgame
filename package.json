@@ -6,7 +6,7 @@
   "scripts": {
     "start": "vercel dev",
     "dev": "vercel dev",
-    "build": "echo 'No build step required for static files'",
+    "build": "echo 'Static files - no build required'",
     "deploy": "vercel --prod",
     "deploy:preview": "vercel",
     "serve": "python3 -m http.server 8000"
@@ -28,23 +28,17 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/yourusername/farcaster-runner.git"
+    "url": "https://github.com/SouravPant/arbitrumgame.git"
   },
   "bugs": {
-    "url": "https://github.com/yourusername/farcaster-runner/issues"
+    "url": "https://github.com/SouravPant/arbitrumgame/issues"
   },
-  "homepage": "https://github.com/yourusername/farcaster-runner#readme",
+  "homepage": "https://github.com/SouravPant/arbitrumgame#readme",
   "engines": {
     "node": ">=18.0.0"
   },
   "devDependencies": {
     "vercel": "^32.0.0"
   },
-  "dependencies": {},
-  "vercel": {
-    "buildCommand": "npm run build",
-    "outputDirectory": ".",
-    "installCommand": "npm install",
-    "framework": null
-  }
+  "dependencies": {}
 }
