@@ -1,69 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tic Tac Toe</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farcaster Mini App Test</title>
     
-    <!-- Basic Farcaster Mini App Meta Tags -->
+    <!-- Farcaster Mini App Meta Tags -->
     <meta property="fc:miniapp" content="arbitrumgame.vercel.app" />
     
-    <link rel="stylesheet" href="style.css" />
-    
-    <!-- Basic Farcaster SDK -->
-    <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
-  </head>
-  <body>
-    <nav>
-      <ul>
-        <li>MyTicTacToe.com</li>
-      </ul>
-    </nav>
-
-    <div class="gameContainer">
-        <div class="container">
-          <div class="line"></div>
-        <div class="box bt-0 bl-0"><span class="boxtext"></span></div>
-        <div class="box bt-0"><span class="boxtext"></span></div>
-        <div class="box bt-0 br-0"><span class="boxtext"></span></div>
-        <div class="box bl-0"><span class="boxtext"></span></div>
-        <div class="box"><span class="boxtext"></span></div>
-        <div class="box br-0"><span class="boxtext"></span></div>
-        <div class="box bl-0 bb-0"><span class="boxtext"></span></div>
-        <div class="box bb-0"><span class="boxtext"></span></div>
-        <div class="box bb-0 br-0"><span class="boxtext"></span></div>
-      </div>
-      <div class="gameInfo">
-        <h1>Welcome to Tic Tac MyTicTacToe</h1>
-        <div>
-          <span class="info">Turn for X</span>
-          <button id="reset">Reset</button>
-        </div>
-        <div class="imgbox">
-          <img src="excited.gif" alt="" />
-        </div>
-      </div>
-    </div>
-    
-    <!-- Simple Farcaster ready() call -->
-    <script>
-      // Simple ready() call when page loads
-      window.addEventListener('load', function() {
-        if (typeof window.farcaster !== 'undefined') {
-          console.log('Farcaster SDK found, calling ready()...');
-          try {
-            window.farcaster.actions.ready();
-            console.log('ready() called successfully!');
-          } catch (error) {
-            console.error('Error calling ready():', error);
-          }
-        } else {
-          console.log('Farcaster SDK not found');
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f0f0f0;
         }
-      });
-    </script>
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .loading { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #0056b3; }
+        button:disabled { background: #6c757d; cursor: not-allowed; }
+        .log {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Farcaster Mini App Test</h1>
+        <p>This is a minimal test page to fix the Farcaster SDK loading issue.</p>
+        
+        <div id="status" class="status info">Initializing...</div>
+        
+        <div>
+            <button id="readyBtn" disabled>Call ready()</button>
+            <button id="checkBtn">Check SDK Status</button>
+            <button id="clearBtn">Clear Log</button>
+        </div>
+        
+        <h3>Console Log:</h3>
+        <div id="log" class="log"></div>
+    </div>
+
+    <!-- Farcaster SDK -->
+    <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
     
-    <script src="script.js"></script>
-  </body>
+    <script>
+        // Logging function
+        function log(message, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `[${timestamp}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(`[${type.toUpperCase()}] ${message}`);
+        }
+        
+        // Update status display
+        function updateStatus(message, className) {
+            const statusDiv = document.getElementById('status');
+            statusDiv.textContent = message;
+            statusDiv.className = `status ${className}`;
+        }
+        
+        // Check if Farcaster SDK is available
+        function checkSDK() {
+            if (typeof window.farcaster !== 'undefined') {
+                log('✅ Farcaster SDK is available', 'success');
+                updateStatus('SDK Available - Ready to call ready()', 'success');
+                document.getElementById('readyBtn').disabled = false;
+                return true;
+            } else {
+                log('❌ Farcaster SDK not found', 'error');
+                updateStatus('SDK Not Found - Check console for errors', 'error');
+                document.getElementById('readyBtn').disabled = true;
+                return false;
+            }
+        }
+        
+        // Call ready() function
+        async function callReady() {
+            try {
+                log('🔄 Attempting to call farcaster.actions.ready()...', 'info');
+                
+                if (typeof window.farcaster === 'undefined') {
+                    throw new Error('Farcaster SDK not available');
+                }
+                
+                // Wait for SDK to be ready first
+                log('⏳ Waiting for SDK to be ready...', 'info');
+                await window.farcaster.ready();
+                log('✅ SDK is ready', 'success');
+                
+                // Now call actions.ready()
+                log('🚀 Calling farcaster.actions.ready()...', 'info');
+                await window.farcaster.actions.ready();
+                log('🎉 ready() called successfully!', 'success');
+                
+                updateStatus('✅ ready() called successfully!', 'success');
+                
+            } catch (error) {
+                log(`❌ Error calling ready(): ${error.message}`, 'error');
+                updateStatus(`❌ Error: ${error.message}`, 'error');
+            }
+        }
+        
+        // Event listeners
+        document.getElementById('readyBtn').addEventListener('click', callReady);
+        document.getElementById('checkBtn').addEventListener('click', checkSDK);
+        document.getElementById('clearBtn').addEventListener('click', () => {
+            document.getElementById('log').innerHTML = '';
+        });
+        
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            log('📱 Page loaded, checking Farcaster SDK...', 'info');
+            updateStatus('Checking SDK availability...', 'loading');
+            
+            // Check immediately
+            checkSDK();
+            
+            // Also check after a short delay in case SDK loads late
+            setTimeout(checkSDK, 1000);
+            setTimeout(checkSDK, 3000);
+        });
+        
+        // Log SDK loading events
+        if (typeof window.farcaster !== 'undefined') {
+            log('🎯 SDK already available on script load', 'success');
+        } else {
+            log('⏳ SDK not yet available, waiting for load...', 'info');
+        }
+    </script>
+</body>
 </html>
