@@ -1,9 +1,9 @@
 {
   "name": "Arbitrum Tap Tap Game",
   "iconUrl": "https://arbitrumgame.vercel.app/arbitrum-logo.png",
-  "subtitle": "Tap to earn points and mint NFTs on Arbitrum",
-  "description": "Experience the future of Web3 gaming! Tap the Arbitrum logo to earn points, unlock NFT minting at milestones, and explore popular memecoins. Built as a Farcaster Mini App with seamless blockchain integration.",
-  "primaryCategory": "Gaming",
+  "subtitle": "Tap to earn points and mint NFTs",
+  "description": "Experience the future of Web3 gaming! Tap the Arbitrum logo to earn points, unlock NFT minting at milestones, and explore popular memecoins on Arbitrum.",
+  "primaryCategory": "games",
   "screenshotUrls": [
     "https://arbitrumgame.vercel.app/screenshot.png"
   ],
@@ -16,17 +16,14 @@
     "arbitrum",
     "nft",
     "memecoins",
-    "web3",
-    "blockchain",
-    "tap-to-earn",
-    "defi"
+    "web3"
   ],
-  "tagline": "Tap, Earn & Mint NFTs on Arbitrum",
+  "tagline": "Tap, Earn & Mint NFTs on Arbit",
   "buttonTitle": "Play Game",
-  "ogTitle": "Arbitrum Tap Tap Game - Web3 Gaming Experience",
-  "ogDescription": "Tap the Arbitrum logo to earn points and unlock NFT minting opportunities. Explore popular memecoins and experience the future of blockchain gaming.",
+  "ogTitle": "Arbitrum Tap Tap Game",
+  "ogDescription": "Tap the Arbitrum logo to earn points and unlock NFT minting opportunities on Arbitrum.",
   "ogImageUrl": "https://arbitrumgame.vercel.app/og-image.png",
-  "castShareUrl": "https://warpcast.com/~/compose?text=🎮+Check+out+Arbitrum+Tap+Tap+Game%21+Tap+to+earn+points+and+mint+NFTs+on+Arbitrum+%F0%9F%8E%AE%0A%0Ahttps%3A//arbitrumgame.vercel.app",
+  "castShareUrl": "https://warpcast.com/~/compose?text=Check+out+Arbitrum+Tap+Tap+Game%21+Tap+to+earn+points+and+mint+NFTs+on+Arbitrum%0A%0Ahttps%3A//arbitrumgame.vercel.app",
   "homeUrl": "https://arbitrumgame.vercel.app",
   "webhookUrl": "https://arbitrumgame.vercel.app/api/webhook"
 }
