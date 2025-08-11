@@ -5,7 +5,14 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
+    
+    <!-- Basic Farcaster Mini App Meta Tags -->
+    <meta property="fc:miniapp" content="arbitrumgame.vercel.app" />
+    
     <link rel="stylesheet" href="style.css" />
+    
+    <!-- Basic Farcaster SDK -->
+    <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
   </head>
   <body>
     <nav>
@@ -38,6 +45,24 @@
         </div>
       </div>
     </div>
+    
+    <!-- Simple Farcaster ready() call -->
+    <script>
+      // Simple ready() call when page loads
+      window.addEventListener('load', function() {
+        if (typeof window.farcaster !== 'undefined') {
+          console.log('Farcaster SDK found, calling ready()...');
+          try {
+            window.farcaster.actions.ready();
+            console.log('ready() called successfully!');
+          } catch (error) {
+            console.error('Error calling ready():', error);
+          }
+        } else {
+          console.log('Farcaster SDK not found');
+        }
+      });
+    </script>
     
     <script src="script.js"></script>
   </body>
