@@ -1,0 +1,18 @@
+{
+  "accountAssociation": {
+    "header": "eyJmaWQiOjE3NjUyLCJ0eXBlIjoiY3VzdG9keSIsImtleSI6IjB4RGM1QmU0Mjg2MEZBRDQ3MTFlQTQ5Nzk4QzE2RDRmMjgwQUMxMzZGMyJ9",
+    "payload": "eyJkb21haW4iOiJhcmJpdHJ1bWdhbWUudmVyY2VsLmFwcCJ9",
+    "signature": "MHhlZGQ2ZTBlMjhhNWE5MDI1NWU2OWJmY2E2ODU2ZGQwZjYwMDk4YWU2MDRkYmMzZjI3NjRkYTRjYzhhYmQ2NWNiNDFhNDgxYTEyMTNjMDYzYzllNGVmMzQzZTI4Nzg3OWUyMmIzNjcwNDU2Y2NkMjNhNDk4Y2I3ZDRjMTk5NDczZjFi"
+  },
+  "frame": {
+    "version": "1",
+    "name": "ArbitrumTapTap",
+    "iconUrl": "https://arbitrumgame.vercel.app/arbitrum-logo.png",
+    "homeUrl": "https://arbitrumgame.vercel.app",
+    "imageUrl": "https://arbitrumgame.vercel.app/image.png",
+    "buttonTitle": "Play Game",
+    "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
+    "splashBackgroundColor": "#667eea",
+    "webhookUrl": "https://arbitrumgame.vercel.app/api/webhook"
+  }
+}
