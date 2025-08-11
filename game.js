@@ -12,7 +12,7 @@ class ArbitrumRunner {
         this.gameSpeed = 5;
         this.maxSpeed = 15;
         this.lastTime = 0;
-        this.deltaTime = 0;
+        this.deltaTime = 16; // Default to 60fps
         
         // Visual effects
         this.screenShake = 0;
@@ -28,8 +28,8 @@ class ArbitrumRunner {
         
         // Player properties
         this.player = {
-            x: this.canvas.width / 2,
-            y: this.canvas.height - 100,
+            x: 0, // Will be set in setupGame
+            y: 0, // Will be set in setupGame
             width: 60,
             height: 80,
             lane: 1, // 0: left, 1: center, 2: right
@@ -39,8 +39,9 @@ class ArbitrumRunner {
             maxJumpHeight: 150,
             jumpVelocity: 0,
             gravity: 0.8,
-            groundY: this.canvas.height - 100,
-            slideHeight: 40
+            groundY: 0, // Will be set in setupGame
+            slideHeight: 40,
+            targetX: 0 // For smooth lane transitions
         };
         
         // Game objects
@@ -143,11 +144,24 @@ class ArbitrumRunner {
     }
     
     setupGame() {
+        console.log('Setting up game...');
+        // Set initial player position
+        this.player.groundY = this.canvas.height - 100;
+        this.player.x = this.lanes[this.player.lane];
+        this.player.y = this.player.groundY;
+        this.player.targetX = this.player.x;
+        
+        console.log('Player position:', this.player);
+        console.log('Canvas dimensions:', this.canvas.width, 'x', this.canvas.height);
+        console.log('Lanes:', this.lanes);
+        
         this.updateScore();
         this.gameLoop();
+        console.log('Game setup complete');
     }
     
     startGame() {
+        console.log('Starting game...');
         this.gameState = 'playing';
         document.getElementById('startScreen').classList.add('hidden');
         document.getElementById('scoreBoard').style.display = 'flex';
@@ -161,13 +175,27 @@ class ArbitrumRunner {
         this.obstacles = [];
         this.coins = [];
         this.particles = [];
+        this.powerUps = [];
         this.player.lane = 1;
         this.player.isJumping = false;
         this.player.isSliding = false;
         this.player.jumpHeight = 0;
         this.player.jumpVelocity = 0;
         this.player.x = this.lanes[this.player.lane];
+        this.player.targetX = this.player.x;
         this.player.y = this.player.groundY;
+        
+        // Reset game mechanics
+        this.combo = 0;
+        this.maxCombo = 0;
+        this.powerUpActive = false;
+        this.powerUpTimer = 0;
+        this.invincible = false;
+        this.invincibleTimer = 0;
+        this.screenShake = 0;
+        
+        console.log('Game started, state:', this.gameState);
+        console.log('Player position after start:', this.player);
     }
     
     restartGame() {
@@ -188,43 +216,23 @@ class ArbitrumRunner {
     }
     
     moveLeft() {
+        if (this.gameState !== 'playing') return;
         if (this.player.lane > 0) {
             this.player.lane--;
-            this.animateLaneChange();
+            this.player.targetX = this.lanes[this.player.lane];
         }
     }
     
     moveRight() {
+        if (this.gameState !== 'playing') return;
         if (this.player.lane < 2) {
             this.player.lane++;
-            this.animateLaneChange();
+            this.player.targetX = this.lanes[this.player.lane];
         }
     }
     
-    animateLaneChange() {
-        const targetX = this.lanes[this.player.lane];
-        const startX = this.player.x;
-        const distance = targetX - startX;
-        const duration = 200; // 200ms for smooth transition
-        const startTime = Date.now();
-        
-        const animate = () => {
-            const elapsed = Date.now() - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            // Easing function for smooth movement
-            const easeOut = 1 - Math.pow(1 - progress, 3);
-            this.player.x = startX + (distance * easeOut);
-            
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            }
-        };
-        
-        animate();
-    }
-    
     jump() {
+        if (this.gameState !== 'playing') return;
         if (!this.player.isJumping && !this.player.isSliding) {
             this.player.isJumping = true;
             this.player.jumpVelocity = -15;
@@ -232,6 +240,7 @@ class ArbitrumRunner {
     }
     
     slide() {
+        if (this.gameState !== 'playing') return;
         if (!this.player.isJumping && !this.player.isSliding) {
             this.player.isSliding = true;
             setTimeout(() => {
@@ -241,6 +250,14 @@ class ArbitrumRunner {
     }
     
     updatePlayer() {
+        // Smooth lane transition
+        const dx = this.player.targetX - this.player.x;
+        if (Math.abs(dx) > 1) {
+            this.player.x += dx * 0.1; // Smooth movement
+        } else {
+            this.player.x = this.player.targetX;
+        }
+        
         // Update jumping physics
         if (this.player.isJumping) {
             this.player.jumpVelocity += this.player.gravity;
@@ -491,10 +508,10 @@ class ArbitrumRunner {
         this.updatePlayer();
         this.spawnObstacles();
         this.spawnCoins();
-        this.spawnPowerUps(); // Spawn power-ups
+        this.spawnPowerUps();
         this.updateObstacles();
         this.updateCoins();
-        this.updatePowerUps(); // Update power-ups
+        this.updatePowerUps();
         this.updateParticles();
         this.checkCollisions();
         
@@ -781,7 +798,10 @@ class ArbitrumRunner {
     }
     
     gameLoop(currentTime = 0) {
-        this.deltaTime = currentTime - this.lastTime;
+        // Calculate delta time for smooth animation
+        if (this.lastTime > 0) {
+            this.deltaTime = currentTime - this.lastTime;
+        }
         this.lastTime = currentTime;
         
         // Always render, but only update game logic when playing
@@ -790,6 +810,12 @@ class ArbitrumRunner {
         }
         
         this.render();
+        
+        // Debug info every 60 frames (about once per second)
+        if (this.frameCount % 60 === 0) {
+            console.log('Game state:', this.gameState, 'Frame:', this.frameCount, 'Player pos:', this.player.x, this.player.y);
+        }
+        
         requestAnimationFrame((time) => this.gameLoop(time));
     }
 }
