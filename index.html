@@ -94,7 +94,11 @@
                 'window.Farcaster',
                 'window.fc',
                 'window.FarcasterSDK',
-                'window.farcasterSDK'
+                'window.farcasterSDK',
+                'window.FarcasterHub',
+                'window.farcasterHub',
+                'window.hub',
+                'window.Hub'
             ];
             
             let found = false;
@@ -103,11 +107,37 @@
                     const obj = eval(objName);
                     if (obj) {
                         log(`✅ Found: ${objName}`);
+                        log(`   Type: ${typeof obj}`);
+                        log(`   Methods: ${Object.getOwnPropertyNames(obj).join(', ')}`);
                         found = true;
                         window.farcaster = obj; // Set the standard reference
                     }
                 } catch (e) {
                     log(`❌ ${objName}: ${e.message}`);
+                }
+            });
+            
+            // Also check for any objects that might contain 'farcaster' or 'hub' in the name
+            log('🔍 Checking for objects with Farcaster-related names...');
+            Object.keys(window).forEach(key => {
+                if (key.toLowerCase().includes('farcaster') || key.toLowerCase().includes('hub')) {
+                    try {
+                        const obj = window[key];
+                        if (obj && typeof obj === 'object') {
+                            log(`🎯 Found related object: window.${key}`);
+                            log(`   Type: ${typeof obj}`);
+                            log(`   Methods: ${Object.getOwnPropertyNames(obj).slice(0, 10).join(', ')}...`);
+                            
+                            // Check if this looks like our SDK
+                            if (obj.ready || obj.actions || obj.connect) {
+                                log(`   ✅ This looks like a Farcaster SDK object!`);
+                                window.farcaster = obj;
+                                found = true;
+                            }
+                        }
+                    } catch (e) {
+                        // Ignore errors
+                    }
                 }
             });
             
@@ -162,23 +192,66 @@
             // Method 1: Official Farcaster package
             const script1 = document.createElement('script');
             script1.src = 'https://unpkg.com/@farcaster/hub-web@latest/dist/index.js';
-            script1.onload = () => log('✅ @farcaster/hub-web loaded');
+            script1.onload = () => {
+                log('✅ @farcaster/hub-web loaded');
+                // Check what this package created
+                setTimeout(() => inspectLoadedPackage('@farcaster/hub-web'), 500);
+            };
             script1.onerror = () => log('❌ @farcaster/hub-web failed');
             document.head.appendChild(script1);
             
             // Method 2: Alternative package name
             const script2 = document.createElement('script');
             script2.src = 'https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js';
-            script2.onload = () => log('✅ @farcaster-js/sdk loaded');
+            script2.onload = () => {
+                log('✅ @farcaster-js/sdk loaded');
+                setTimeout(() => inspectLoadedPackage('@farcaster-js/sdk'), 500);
+            };
             script2.onerror = () => log('❌ @farcaster-js/sdk failed');
             document.head.appendChild(script2);
             
             // Method 3: Try from CDN
             const script3 = document.createElement('script');
             script3.src = 'https://cdn.jsdelivr.net/npm/@farcaster/hub-web@latest/dist/index.js';
-            script3.onload = () => log('✅ CDN @farcaster/hub-web loaded');
+            script3.onload = () => {
+                log('✅ CDN @farcaster/hub-web loaded');
+                setTimeout(() => inspectLoadedPackage('CDN @farcaster/hub-web'), 500);
+            };
             script3.onerror = () => log('❌ CDN @farcaster/hub-web failed');
             document.head.appendChild(script3);
+        }
+        
+        // Inspect what a loaded package created
+        function inspectLoadedPackage(packageName) {
+            log(`🔍 Inspecting what ${packageName} created...`);
+            
+            // Check for any new objects that might be our SDK
+            Object.keys(window).forEach(key => {
+                if (key.toLowerCase().includes('farcaster') || key.toLowerCase().includes('hub') || key.toLowerCase().includes('fc')) {
+                    try {
+                        const obj = window[key];
+                        if (obj && typeof obj === 'object') {
+                            log(`🎯 ${packageName} created: window.${key}`);
+                            log(`   Type: ${typeof obj}`);
+                            
+                            // Show all properties
+                            const props = Object.getOwnPropertyNames(obj);
+                            log(`   All properties: ${props.join(', ')}`);
+                            
+                            // Check for SDK-like methods
+                            if (obj.ready || obj.actions || obj.connect || obj.signMessage) {
+                                log(`   ✅ This looks like a Farcaster SDK object!`);
+                                window.farcaster = obj;
+                                return true;
+                            }
+                        }
+                    } catch (e) {
+                        // Ignore errors
+                    }
+                }
+            });
+            
+            return false;
         }
         
         // Start testing when page loads
