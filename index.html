@@ -48,9 +48,9 @@
 <body>
     <div class="container">
         <h1>Farcaster Mini App Test</h1>
-        <p>Following official Farcaster loading guide exactly.</p>
+        <p>Testing multiple Farcaster SDK import methods from official docs.</p>
         
-        <div id="status" class="status info">Loading...</div>
+        <div id="status" class="status info">Testing SDK imports...</div>
         
         <div id="content" style="display: none;">
             <h2>Content Loaded Successfully!</h2>
@@ -61,9 +61,7 @@
         <div id="log" class="log"></div>
     </div>
 
-    <!-- Farcaster SDK - Official import -->
-    <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
-    
+    <!-- Test multiple Farcaster SDK import methods -->
     <script>
         // Simple logging
         function log(message) {
@@ -87,21 +85,66 @@
             updateStatus('✅ Content loaded and ready!', 'success');
         }
         
-        // Initialize Farcaster - Following official guide exactly
+        // Check for different SDK objects
+        function checkSDKAvailability() {
+            log('🔍 Checking for Farcaster SDK objects...');
+            
+            const possibleObjects = [
+                'window.farcaster',
+                'window.Farcaster',
+                'window.fc',
+                'window.FarcasterSDK',
+                'window.farcasterSDK'
+            ];
+            
+            let found = false;
+            possibleObjects.forEach(objName => {
+                try {
+                    const obj = eval(objName);
+                    if (obj) {
+                        log(`✅ Found: ${objName}`);
+                        found = true;
+                        window.farcaster = obj; // Set the standard reference
+                    }
+                } catch (e) {
+                    log(`❌ ${objName}: ${e.message}`);
+                }
+            });
+            
+            return found;
+        }
+        
+        // Initialize Farcaster
         async function initializeFarcaster() {
             try {
                 log('🚀 Starting Farcaster initialization...');
                 updateStatus('Initializing Farcaster SDK...', 'loading');
                 
-                // Wait for SDK to be ready
-                log('⏳ Waiting for SDK to be ready...');
-                await window.farcaster.ready();
-                log('✅ SDK is ready');
+                if (!window.farcaster) {
+                    throw new Error('No Farcaster SDK object found');
+                }
                 
-                // Call actions.ready() to dismiss splash screen
-                log('🚀 Calling actions.ready()...');
-                await window.farcaster.actions.ready();
-                log('🎉 actions.ready() called successfully!');
+                // Check if ready method exists
+                if (typeof window.farcaster.ready === 'function') {
+                    log('⏳ Waiting for SDK to be ready...');
+                    await window.farcaster.ready();
+                    log('✅ SDK is ready');
+                } else {
+                    log('⚠️ No ready() method found, proceeding...');
+                }
+                
+                // Check if actions.ready method exists
+                if (window.farcaster.actions && typeof window.farcaster.actions.ready === 'function') {
+                    log('🚀 Calling actions.ready()...');
+                    await window.farcaster.actions.ready();
+                    log('🎉 actions.ready() called successfully!');
+                } else if (typeof window.farcaster.ready === 'function') {
+                    log('🚀 Calling ready() directly...');
+                    await window.farcaster.ready();
+                    log('🎉 ready() called successfully!');
+                } else {
+                    log('⚠️ No ready method found');
+                }
                 
                 // Show content
                 showContent();
@@ -112,25 +155,62 @@
             }
         }
         
-        // Start initialization when page loads
-        window.addEventListener('load', function() {
-            log('📱 Page loaded, checking Farcaster SDK...');
+        // Test different import methods
+        function testImports() {
+            log('🧪 Testing different Farcaster SDK import methods...');
             
-            if (typeof window.farcaster !== 'undefined') {
-                log('✅ Farcaster SDK found, starting initialization...');
-                initializeFarcaster();
-            } else {
-                log('❌ Farcaster SDK not found');
-                updateStatus('❌ Farcaster SDK not found', 'error');
-            }
+            // Method 1: Official Farcaster package
+            const script1 = document.createElement('script');
+            script1.src = 'https://unpkg.com/@farcaster/hub-web@latest/dist/index.js';
+            script1.onload = () => log('✅ @farcaster/hub-web loaded');
+            script1.onerror = () => log('❌ @farcaster/hub-web failed');
+            document.head.appendChild(script1);
+            
+            // Method 2: Alternative package name
+            const script2 = document.createElement('script');
+            script2.src = 'https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js';
+            script2.onload = () => log('✅ @farcaster-js/sdk loaded');
+            script2.onerror = () => log('❌ @farcaster-js/sdk failed');
+            document.head.appendChild(script2);
+            
+            // Method 3: Try from CDN
+            const script3 = document.createElement('script');
+            script3.src = 'https://cdn.jsdelivr.net/npm/@farcaster/hub-web@latest/dist/index.js';
+            script3.onload = () => log('✅ CDN @farcaster/hub-web loaded');
+            script3.onerror = () => log('❌ CDN @farcaster/hub-web failed');
+            document.head.appendChild(script3);
+        }
+        
+        // Start testing when page loads
+        window.addEventListener('load', function() {
+            log('📱 Page loaded, starting SDK tests...');
+            updateStatus('Testing SDK imports...', 'loading');
+            
+            // Test imports first
+            testImports();
+            
+            // Check for SDK after imports
+            setTimeout(() => {
+                if (checkSDKAvailability()) {
+                    log('✅ Farcaster SDK found, starting initialization...');
+                    initializeFarcaster();
+                } else {
+                    log('❌ No Farcaster SDK found after imports');
+                    updateStatus('❌ No Farcaster SDK found', 'error');
+                }
+            }, 2000);
+            
+            // Keep checking
+            setTimeout(() => {
+                if (checkSDKAvailability()) {
+                    log('✅ Farcaster SDK found on delayed check...');
+                    initializeFarcaster();
+                }
+            }, 5000);
         });
         
         // Log initial state
-        if (typeof window.farcaster !== 'undefined') {
-            log('🎯 SDK already available on script load');
-        } else {
-            log('⏳ SDK not yet available, waiting for load...');
-        }
+        log('🎯 Starting Farcaster SDK test...');
     </script>
 </body>
 </html>
