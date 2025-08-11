@@ -4,8 +4,24 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tic Tac Toe</title>
+    <title>Arbitrum Game - Tic Tac Toe</title>
+    
+    <!-- Farcaster Mini App Meta Tags -->
+    <meta property="fc:frame" content="vNext" />
+    <meta property="fc:frame:image" content="https://arbitrumgame.vercel.app/preview.png" />
+    <meta property="fc:frame:button:1" content="Play Tic Tac Toe" />
+    <meta property="fc:frame:post_url" content="https://arbitrumgame.vercel.app/api/frame" />
+    
+    <!-- Farcaster Mini App Meta Tags -->
+    <meta property="fc:miniapp" content="arbitrumgame.vercel.app" />
+    <meta property="fc:miniapp:name" content="Arbitrum Game" />
+    <meta property="fc:miniapp:description" content="Play, Earn & Conquer on Arbitrum - Experience the future of blockchain gaming" />
+    <meta property="fc:miniapp:icon" content="https://arbitrumgame.vercel.app/icon.png" />
+    
     <link rel="stylesheet" href="style.css" />
+    
+    <!-- Farcaster SDK -->
+    <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
   </head>
   <body>
     <nav>
@@ -38,6 +54,39 @@
         </div>
       </div>
     </div>
+    
+    <!-- Farcaster SDK Initialization -->
+    <script>
+      // Initialize Farcaster SDK
+      async function initializeFarcaster() {
+        try {
+          // Check if we're in a Farcaster environment
+          if (typeof window.farcaster !== 'undefined') {
+            console.log('Farcaster SDK detected, initializing...');
+            
+            // Wait for the SDK to be ready
+            await window.farcaster.ready();
+            
+            // Call ready() to dismiss splash screen
+            await window.farcaster.actions.ready();
+            
+            console.log('Farcaster SDK ready! Splash screen dismissed.');
+          } else {
+            console.log('Not in Farcaster environment, running as standalone app');
+          }
+        } catch (error) {
+          console.error('Error initializing Farcaster SDK:', error);
+        }
+      }
+      
+      // Initialize when DOM is loaded
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeFarcaster);
+      } else {
+        initializeFarcaster();
+      }
+    </script>
+    
     <script src="script.js"></script>
   </body>
 </html>
