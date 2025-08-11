@@ -52,7 +52,10 @@ class TicTacToe {
     }
     
     handleCellClick(index) {
+        console.log('Cell clicked:', index, 'Current player:', this.currentPlayer);
+        
         if (this.board[index] !== '' || !this.gameActive) {
+            console.log('Cell already filled or game not active');
             return;
         }
         
@@ -60,15 +63,20 @@ class TicTacToe {
         this.board[index] = this.currentPlayer;
         this.updateCell(index);
         
+        console.log('Board after move:', this.board);
+        
         // Check for win or draw
         if (this.checkWin()) {
+            console.log('Win detected!');
             this.handleGameOver('win');
         } else if (this.checkDraw()) {
+            console.log('Draw detected!');
             this.handleGameOver('draw');
         } else {
             // Switch players
             this.currentPlayer = this.currentPlayer === 'X' ? 'O' : 'X';
             this.updateStatus();
+            console.log('Switched to player:', this.currentPlayer);
         }
     }
     
@@ -76,6 +84,9 @@ class TicTacToe {
         const cell = document.querySelector(`[data-cell-index="${index}"]`);
         cell.classList.add(this.currentPlayer);
         cell.setAttribute('data-player', this.currentPlayer);
+        
+        // Also set the text content directly to ensure visibility
+        cell.textContent = this.currentPlayer;
     }
     
     checkWin() {
@@ -140,6 +151,7 @@ class TicTacToe {
         cells.forEach(cell => {
             cell.classList.remove('x', 'o', 'winning');
             cell.removeAttribute('data-player');
+            cell.textContent = ''; // Clear the text content
         });
         
         this.updateStatus();

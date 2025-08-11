@@ -249,6 +249,11 @@ h1 {
     animation: placePiece 0.3s ease-out;
 }
 
+/* Ensure X and O are visible */
+.cell.x, .cell.o {
+    color: inherit;
+}
+
 @keyframes placePiece {
     0% {
         opacity: 0;
