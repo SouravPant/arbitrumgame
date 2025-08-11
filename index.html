@@ -33,17 +33,6 @@
         .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
         .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
         .loading { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
-        button {
-            background: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-        }
-        button:hover { background: #0056b3; }
-        button:disabled { background: #6c757d; cursor: not-allowed; }
         .log {
             background: #f8f9fa;
             border: 1px solid #e9ecef;
@@ -59,144 +48,88 @@
 <body>
     <div class="container">
         <h1>Farcaster Mini App Test</h1>
-        <p>This is a minimal test page to fix the Farcaster SDK loading issue.</p>
+        <p>Following official Farcaster loading guide exactly.</p>
         
-        <div id="status" class="status info">Initializing...</div>
+        <div id="status" class="status info">Loading...</div>
         
-        <div>
-            <button id="readyBtn" disabled>Call ready()</button>
-            <button id="checkBtn">Check SDK Status</button>
-            <button id="clearBtn">Clear Log</button>
+        <div id="content" style="display: none;">
+            <h2>Content Loaded Successfully!</h2>
+            <p>This content will be shown after the Farcaster SDK is ready.</p>
         </div>
         
         <h3>Console Log:</h3>
         <div id="log" class="log"></div>
     </div>
 
-    <!-- Farcaster SDK - Multiple import options -->
+    <!-- Farcaster SDK - Official import -->
     <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
-    <script>
-        // Fallback if first import fails
-        if (typeof window.farcaster === 'undefined') {
-            console.log('First SDK import failed, trying alternative...');
-            const script = document.createElement('script');
-            script.src = 'https://cdn.jsdelivr.net/npm/@farcaster-js/sdk@latest/dist/index.js';
-            document.head.appendChild(script);
-        }
-    </script>
-    
-    <!-- Try official Farcaster package -->
-    <script src="https://unpkg.com/@farcaster/hub-web@latest/dist/index.js"></script>
-    <script>
-        // Check if official package loaded
-        if (typeof window.farcaster === 'undefined' && typeof window.FarcasterHub !== 'undefined') {
-            console.log('Official Farcaster package loaded, setting up compatibility...');
-            window.farcaster = window.FarcasterHub;
-        }
-    </script>
     
     <script>
-        // Logging function
-        function log(message, type = 'info') {
+        // Simple logging
+        function log(message) {
             const logDiv = document.getElementById('log');
             const timestamp = new Date().toLocaleTimeString();
             logDiv.innerHTML += `[${timestamp}] ${message}\n`;
             logDiv.scrollTop = logDiv.scrollHeight;
-            console.log(`[${type.toUpperCase()}] ${message}`);
+            console.log(message);
         }
         
-        // Update status display
+        // Update status
         function updateStatus(message, className) {
             const statusDiv = document.getElementById('status');
             statusDiv.textContent = message;
             statusDiv.className = `status ${className}`;
         }
         
-        // Check if Farcaster SDK is available
-        function checkSDK() {
-            if (typeof window.farcaster !== 'undefined') {
-                log('✅ Farcaster SDK is available', 'success');
-                updateStatus('SDK Available - Ready to call ready()', 'success');
-                document.getElementById('readyBtn').disabled = false;
-                return true;
-            } else {
-                log('❌ Farcaster SDK not found', 'error');
-                updateStatus('SDK Not Found - Check console for errors', 'error');
-                document.getElementById('readyBtn').disabled = true;
-                return false;
-            }
+        // Show content when ready
+        function showContent() {
+            document.getElementById('content').style.display = 'block';
+            updateStatus('✅ Content loaded and ready!', 'success');
         }
         
-        // Call ready() function
-        async function callReady() {
+        // Initialize Farcaster - Following official guide exactly
+        async function initializeFarcaster() {
             try {
-                log('🔄 Attempting to call farcaster.actions.ready()...', 'info');
+                log('🚀 Starting Farcaster initialization...');
+                updateStatus('Initializing Farcaster SDK...', 'loading');
                 
-                if (typeof window.farcaster === 'undefined') {
-                    throw new Error('Farcaster SDK not available');
-                }
-                
-                // Wait for SDK to be ready first
-                log('⏳ Waiting for SDK to be ready...', 'info');
+                // Wait for SDK to be ready
+                log('⏳ Waiting for SDK to be ready...');
                 await window.farcaster.ready();
-                log('✅ SDK is ready', 'success');
+                log('✅ SDK is ready');
                 
-                // Now call actions.ready()
-                log('🚀 Calling farcaster.actions.ready()...', 'info');
+                // Call actions.ready() to dismiss splash screen
+                log('🚀 Calling actions.ready()...');
                 await window.farcaster.actions.ready();
-                log('🎉 ready() called successfully!', 'success');
+                log('🎉 actions.ready() called successfully!');
                 
-                updateStatus('✅ ready() called successfully!', 'success');
+                // Show content
+                showContent();
                 
             } catch (error) {
-                log(`❌ Error calling ready(): ${error.message}`, 'error');
+                log(`❌ Error: ${error.message}`);
                 updateStatus(`❌ Error: ${error.message}`, 'error');
             }
         }
         
-        // Event listeners
-        document.getElementById('readyBtn').addEventListener('click', callReady);
-        document.getElementById('checkBtn').addEventListener('click', checkSDK);
-        document.getElementById('clearBtn').addEventListener('click', () => {
-            document.getElementById('log').innerHTML = '';
-        });
-        
-        // Initialize when page loads
+        // Start initialization when page loads
         window.addEventListener('load', function() {
-            log('📱 Page loaded, checking Farcaster SDK...', 'info');
-            updateStatus('Checking SDK availability...', 'loading');
+            log('📱 Page loaded, checking Farcaster SDK...');
             
-            // Check immediately
-            checkSDK();
-            
-            // Also check after a short delay in case SDK loads late
-            setTimeout(checkSDK, 1000);
-            setTimeout(checkSDK, 3000);
-            setTimeout(checkSDK, 5000);
-            
-            // Try to manually load SDK if still not available
-            setTimeout(function() {
-                if (typeof window.farcaster === 'undefined') {
-                    log('🔄 Attempting manual SDK load...', 'info');
-                    const script = document.createElement('script');
-                    script.src = 'https://unpkg.com/@farcaster-js/sdk@0.0.1/dist/index.js';
-                    script.onload = function() {
-                        log('✅ Manual SDK load completed', 'success');
-                        checkSDK();
-                    };
-                    script.onerror = function() {
-                        log('❌ Manual SDK load failed', 'error');
-                    };
-                    document.head.appendChild(script);
-                }
-            }, 7000);
+            if (typeof window.farcaster !== 'undefined') {
+                log('✅ Farcaster SDK found, starting initialization...');
+                initializeFarcaster();
+            } else {
+                log('❌ Farcaster SDK not found');
+                updateStatus('❌ Farcaster SDK not found', 'error');
+            }
         });
         
-        // Log SDK loading events
+        // Log initial state
         if (typeof window.farcaster !== 'undefined') {
-            log('🎯 SDK already available on script load', 'success');
+            log('🎯 SDK already available on script load');
         } else {
-            log('⏳ SDK not yet available, waiting for load...', 'info');
+            log('⏳ SDK not yet available, waiting for load...');
         }
     </script>
 </body>
