@@ -4,61 +4,8 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Arbitrum Game - Tic Tac Toe</title>
-    
-    <!-- Farcaster Mini App Meta Tags -->
-    <meta property="fc:frame" content="vNext" />
-    <meta property="fc:frame:image" content="https://arbitrumgame.vercel.app/preview.png" />
-    <meta property="fc:frame:button:1" content="Play Tic Tac Toe" />
-    <meta property="fc:frame:post_url" content="https://arbitrumgame.vercel.app/api/frame" />
-    
-    <!-- Farcaster Mini App Meta Tags -->
-    <meta property="fc:miniapp" content="arbitrumgame.vercel.app" />
-    <meta property="fc:miniapp:name" content="Arbitrum Game" />
-    <meta property="fc:miniapp:description" content="Play, Earn & Conquer on Arbitrum - Experience the future of blockchain gaming" />
-    <meta property="fc:miniapp:icon" content="https://arbitrumgame.vercel.app/icon.png" />
-    
+    <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="style.css" />
-    
-    <!-- Farcaster SDK -->
-    <script src="https://unpkg.com/@farcaster-js/sdk@latest/dist/index.js"></script>
-    
-    <!-- Temporary: Call ready() immediately in head -->
-    <script>
-      // Multiple attempts to call ready() as soon as possible
-      function callReady() {
-        if (typeof window.farcaster !== 'undefined') {
-          console.log('Calling farcaster.actions.ready() immediately...');
-          try {
-            window.farcaster.actions.ready();
-            console.log('ready() called successfully!');
-            return true;
-          } catch (error) {
-            console.error('Error calling ready():', error);
-            return false;
-          }
-        }
-        return false;
-      }
-      
-      // Try immediately
-      if (!callReady()) {
-        // Try on DOMContentLoaded
-        document.addEventListener('DOMContentLoaded', function() {
-          if (!callReady()) {
-            // Try on load
-            window.addEventListener('load', function() {
-              if (!callReady()) {
-                // Multiple retries with increasing delays
-                [100, 500, 1000, 2000, 5000].forEach(delay => {
-                  setTimeout(callReady, delay);
-                });
-              }
-            });
-          }
-        });
-      }
-    </script>
   </head>
   <body>
     <nav>
@@ -91,38 +38,6 @@
         </div>
       </div>
     </div>
-    
-    <!-- Farcaster SDK Initialization -->
-    <script>
-      // Initialize Farcaster SDK
-      async function initializeFarcaster() {
-        try {
-          // Check if we're in a Farcaster environment
-          if (typeof window.farcaster !== 'undefined') {
-            console.log('Farcaster SDK detected, initializing...');
-            
-            // Wait for the SDK to be ready
-            await window.farcaster.ready();
-            
-            // Call ready() to dismiss splash screen
-            await window.farcaster.actions.ready();
-            
-            console.log('Farcaster SDK ready! Splash screen dismissed.');
-          } else {
-            console.log('Not in Farcaster environment, running as standalone app');
-          }
-        } catch (error) {
-          console.error('Error initializing Farcaster SDK:', error);
-        }
-      }
-      
-      // Initialize when DOM is loaded
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeFarcaster);
-      } else {
-        initializeFarcaster();
-      }
-    </script>
     
     <script src="script.js"></script>
   </body>
