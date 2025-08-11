@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=390, initial-scale=1.0" />
-    <title>Arbitrum Game - Farcaster Mini App</title>
+    <title>Arbitrum Tap Tap Game - Farcaster Mini App</title>
 
     <!-- Farcaster Mini App Metadata -->
     <meta name="fc:miniapp" content='{
@@ -22,18 +22,21 @@
     }' />
 
     <style>
-      body {
+      * {
         margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        min-height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
-        min-height: 100vh;
         padding: 16px;
-        box-sizing: border-box;
         text-align: center;
       }
 
@@ -42,9 +45,24 @@
         max-width: 390px;
         display: flex;
         justify-content: space-between;
+        align-items: center;
         font-size: 1rem;
         font-weight: bold;
         padding: 0 12px;
+        margin-bottom: 20px;
+      }
+
+      .game-title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+
+      .game-subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
+        opacity: 0.9;
       }
 
       .game-area {
@@ -52,29 +70,121 @@
         flex-direction: column;
         align-items: center;
         gap: 20px;
+        width: 100%;
+        max-width: 390px;
       }
 
-      .game-button {
-        width: 160px;
-        height: 160px;
+      .arbitrum-logo {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(45deg, #28a0f0, #7c3aed);
         border-radius: 50%;
-        background: white;
-        border: 4px solid white;
-        cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 48px;
-        transition: transform 0.2s;
+        font-size: 60px;
+        margin-bottom: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 4px solid rgba(255,255,255,0.3);
       }
 
-      .game-button:hover {
-        transform: scale(1.1);
+      .arbitrum-logo:hover {
+        transform: scale(1.05);
+        box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+      }
+
+      .arbitrum-logo:active {
+        transform: scale(0.95);
       }
 
       .stats {
-        font-size: 1.2rem;
-        margin: 6px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 100%;
+        max-width: 300px;
+      }
+
+      .stat-item {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px 20px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .click-count {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #ffd700;
+      }
+
+      .next-mint {
+        font-size: 1rem;
+        color: #ff6b6b;
+      }
+
+      .memecoins-grid {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 8px;
+        width: 100%;
+        max-width: 350px;
+        margin-top: 20px;
+      }
+
+      .memecoin-item {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 8px;
+        border-radius: 10px;
+        font-size: 0.7rem;
+        text-align: center;
+        backdrop-filter: blur(5px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.3s ease;
+      }
+
+      .memecoin-item:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+
+      .memecoin-symbol {
+        font-weight: bold;
+        color: #ffd700;
+      }
+
+      .memecoin-price {
+        font-size: 0.6rem;
+        opacity: 0.8;
+      }
+
+      .mint-notification {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 25px;
+        font-weight: bold;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        z-index: 1000;
+        animation: slideDown 0.5s ease-out;
+      }
+
+      @keyframes slideDown {
+        from {
+          transform: translateX(-50%) translateY(-100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(-50%) translateY(0);
+          opacity: 1;
+        }
       }
 
       .status {
@@ -83,6 +193,33 @@
         border-radius: 20px;
         font-size: 0.9rem;
         margin: 10px 0;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+
+      .nft-mint-button {
+        background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        color: white;
+        border: none;
+        padding: 12px 24px;
+        border-radius: 25px;
+        font-size: 1rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        margin-top: 10px;
+      }
+
+      .nft-mint-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      }
+
+      .nft-mint-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
       }
     </style>
   </head>
@@ -93,17 +230,30 @@
     </div>
 
     <div class="game-area">
-      <h1>🎮 Arbitrum Game</h1>
-      <p>Farcaster Mini App Test</p>
-      
-      <div class="game-button" id="gameButton">
-        🎯
+      <h1 class="game-title">🎮 Arbitrum Tap Tap</h1>
+      <p class="game-subtitle">Tap the Arbitrum logo to earn points!</p>
+
+      <div class="arbitrum-logo" id="arbitrumLogo">
+        🔵
       </div>
-      
-      <div class="stats" id="gameStats">
-        Clicks: 0
+
+      <div class="stats">
+        <div class="stat-item">
+          <div class="click-count" id="clickCount">Clicks: 0</div>
+        </div>
+        <div class="stat-item">
+          <div class="next-mint" id="nextMint">Next NFT at: 100 clicks</div>
+        </div>
       </div>
-      
+
+      <button class="nft-mint-button" id="mintButton" disabled>
+        🪙 Mint NFT (100 clicks required)
+      </button>
+
+      <div class="memecoins-grid" id="memecoinsGrid">
+        <!-- Memecoins will be populated here -->
+      </div>
+
       <div class="status" id="status">
         Initializing...
       </div>
@@ -112,13 +262,126 @@
     <script type="module">
       import { sdk } from 'https://esm.sh/@farcaster/miniapp-sdk';
 
+      // Game state
       let clickCount = 0;
-      const gameButton = document.getElementById('gameButton');
-      const gameStats = document.getElementById('gameStats');
+      let nextMintThreshold = 100;
+      let mintThresholds = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+
+      // Arbitrum memecoins data
+      const memecoins = [
+        { symbol: 'BARB', name: 'Baby Arbitrum', price: '$0.00002455', color: '#ffd700' },
+        { symbol: 'KABOSU', name: 'Kabosu', price: '$0.00000015', color: '#ff6b6b' },
+        { symbol: 'RUX', name: 'RunBlox', price: 'N/A', color: '#4ecdc4' },
+        { symbol: 'MIM', name: 'Magic Internet Money', price: '$1.00', color: '#45b7d1' },
+        { symbol: 'MAI', name: 'MAI', price: '$0.29', color: '#96ceb4' },
+        { symbol: 'UARB', name: 'Wrapped Arbitrum', price: '$0.46', color: '#feca57' },
+        { symbol: 'ATV111', name: 'Aarna ATV111', price: '$101.08', color: '#ff9ff3' },
+        { symbol: 'RSETH', name: 'rsETH', price: '$4,524', color: '#54a0ff' },
+        { symbol: 'ARBI', name: 'Arbitrum Index', price: 'N/A', color: '#5f27cd' },
+        { symbol: 'ARB.E', name: 'Bridged Arbitrum', price: 'N/A', color: '#00d2d3' }
+      ];
+
+      // DOM elements
+      const arbitrumLogo = document.getElementById('arbitrumLogo');
+      const clickCountElement = document.getElementById('clickCount');
+      const nextMintElement = document.getElementById('nextMint');
+      const mintButton = document.getElementById('mintButton');
+      const memecoinsGrid = document.getElementById('memecoinsGrid');
       const gameStatus = document.getElementById('gameStatus');
       const sdkStatus = document.getElementById('sdkStatus');
       const status = document.getElementById('status');
 
+      // Initialize memecoins grid
+      function initializeMemecoins() {
+        memecoinsGrid.innerHTML = memecoins.map(coin => `
+          <div class="memecoin-item" style="border-color: ${coin.color}">
+            <div class="memecoin-symbol">${coin.symbol}</div>
+            <div class="memecoin-price">${coin.price}</div>
+          </div>
+        `).join('');
+      }
+
+      // Update game stats
+      function updateStats() {
+        clickCountElement.textContent = `Clicks: ${clickCount}`;
+        
+        const nextThreshold = mintThresholds.find(threshold => threshold > clickCount);
+        if (nextThreshold) {
+          nextMintElement.textContent = `Next NFT at: ${nextThreshold} clicks`;
+          mintButton.textContent = `🪙 Mint NFT (${nextThreshold - clickCount} more clicks)`;
+        } else {
+          nextMintElement.textContent = 'All NFTs minted! 🎉';
+          mintButton.textContent = '🎉 All Done!';
+          mintButton.disabled = true;
+        }
+
+        // Enable/disable mint button
+        if (mintThresholds.includes(clickCount)) {
+          mintButton.disabled = false;
+          mintButton.textContent = `🪙 Mint NFT Now! (${clickCount} clicks)`;
+        }
+      }
+
+      // Show mint notification
+      function showMintNotification() {
+        const notification = document.createElement('div');
+        notification.className = 'mint-notification';
+        notification.textContent = `🎉 Time to mint NFT at ${clickCount} clicks!`;
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.remove();
+        }, 3000);
+      }
+
+      // Handle NFT minting
+      async function mintNFT() {
+        try {
+          status.textContent = '🔄 Minting NFT...';
+          
+          // Simulate NFT minting process
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          status.textContent = `✅ NFT minted successfully at ${clickCount} clicks!`;
+          showMintNotification();
+          
+          // Remove the threshold that was just met
+          const index = mintThresholds.indexOf(clickCount);
+          if (index > -1) {
+            mintThresholds.splice(index, 1);
+          }
+          
+          updateStats();
+          
+        } catch (error) {
+          status.textContent = `❌ NFT minting failed: ${error.message}`;
+        }
+      }
+
+      // Game click handler
+      arbitrumLogo.addEventListener('click', () => {
+        clickCount++;
+        
+        // Add click animation
+        arbitrumLogo.style.transform = 'scale(0.9)';
+        setTimeout(() => {
+          arbitrumLogo.style.transform = 'scale(1)';
+        }, 100);
+        
+        updateStats();
+        
+        // Check if it's time to mint
+        if (mintThresholds.includes(clickCount)) {
+          showMintNotification();
+        }
+        
+        status.textContent = `Clicked! Total: ${clickCount}`;
+      });
+
+      // Mint button handler
+      mintButton.addEventListener('click', mintNFT);
+
+      // Update status functions
       function updateStatus(message) {
         status.textContent = message;
         console.log(message);
@@ -132,32 +395,29 @@
         sdkStatus.textContent = `SDK: ${message}`;
       }
 
-      // Game logic
-      gameButton.addEventListener('click', () => {
-        clickCount++;
-        gameStats.textContent = `Clicks: ${clickCount}`;
-        updateStatus(`Clicked! Total: ${clickCount}`);
-      });
-
-      // Farcaster Mini App initialization (following boop-to-earn exactly)
+      // Farcaster Mini App initialization
       const startApp = async () => {
         try {
           updateStatus('Starting Farcaster Mini App...');
           updateSDKStatus('Initializing...');
-          
+
           // Get Ethereum provider (required step)
           updateStatus('Getting Ethereum provider...');
           await sdk.wallet.getEthereumProvider();
           updateStatus('Ethereum provider ready');
           updateSDKStatus('Provider Ready');
-          
+
           // Call sdk.actions.ready() to dismiss splash screen
           updateStatus('Calling sdk.actions.ready()...');
           sdk.actions.ready({ disableNativeGestures: true });
           updateStatus('✅ sdk.actions.ready() called successfully!');
           updateSDKStatus('Ready Called');
           updateGameStatus('Game Ready!');
-          
+
+          // Initialize game
+          initializeMemecoins();
+          updateStats();
+
         } catch (err) {
           console.warn("Initialization error:", err);
           updateStatus(`Error: ${err.message}`);
