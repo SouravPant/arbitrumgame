@@ -2,9 +2,8 @@
   "frame": {
     "name": "ArbiTap",
     "version": "1",
-    "iconUrl": "https://arbitrumgame.vercel.app/icon.png",
+    "iconUrl": "https://arbitrumgame.vercel.app/arbitrum-logo.png",
     "homeUrl": "https://arbitrumgame.vercel.app",
-    "imageUrl": "https://arbitrumgame.vercel.app/image.png",
     "buttonTitle": "Play Game",
     "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
     "splashBackgroundColor": "#667eea",
