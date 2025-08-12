@@ -1,12 +1,7 @@
 {
-  "accountAssociation": {
-    "header": "eyJmaWQiOjIzNDU1OSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweGI4NDEyQTEyYzE2NDE3QmJCMmREMGI1YzlFMDhkQzdiZjNBMjQ4RjYifQ",
-    "payload": "eyJkb21haW4iOiJhcmJpdHJ1bWdhbWUudmVyY2VsLmFwcCJ9",
-    "signature": "SZROcoSPQn25etecL2Q8IhAzj0GVRjZhANo9B4FFrgRgVLItH4S2oGZOjtQ+N+LEr7ErSzYLSEBf5Fm1VFmAoRw="
-  },
-  "miniapp": {
-    "version": "1",
+  "frame": {
     "name": "ArbiTap",
+    "version": "1",
     "iconUrl": "https://arbitrumgame.vercel.app/icon.png",
     "homeUrl": "https://arbitrumgame.vercel.app",
     "imageUrl": "https://arbitrumgame.vercel.app/image.png",
@@ -25,5 +20,10 @@
       "web3"
     ],
     "tagline": "Tap, Earn, Mint on Arbitrum"
+  },
+  "accountAssociation": {
+    "header": "eyJmaWQiOjIzNDU1OSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweGI4NDEyQTEyYzE2NDE3QmJCMmREMGI1YzlFMDhkQzdiZjNBMjQ4RjYifQ",
+    "payload": "eyJkb21haW4iOiJhcmJpdHJ1bWdhbWUudmVyY2VsLmFwcCJ9",
+    "signature": "SZROcoSPQn25etecL2Q8IhAzj0GVRjZhANo9B4FFrgRgVLItH4S2oGZOjtQ+N+LEr7ErSzYLSEBf5Fm1VFmAoRw="
   }
 }
