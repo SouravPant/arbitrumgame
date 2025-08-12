@@ -14,7 +14,7 @@
     "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
     "splashBackgroundColor": "#667eea",
     "webhookUrl": "https://arbitrumgame.vercel.app/api/webhook",
-    "subtitle": "Tap to earn points and mint NFTs",
+    "subtitle": "Tap, earn and mint NFTs",
     "description": "Experience the future of Web3 gaming! Tap the Arbitrum logo to earn points, unlock NFT minting at milestones, and explore popular memecoins on Arbitrum.",
     "primaryCategory": "games",
     "tags": [
