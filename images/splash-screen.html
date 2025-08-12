@@ -3,170 +3,89 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Splash Screen</title>
+    <title>Splash Screen Generator - 200x200px</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Arial', sans-serif;
-            color: white;
-            width: 1200px;
-            height: 800px;
-            overflow: hidden;
+            background: #f0f0f0;
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        .splash-container {
-            text-align: center;
-            position: relative;
-            z-index: 2;
-        }
-        .logo-container {
-            width: 300px;
-            height: 300px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 40px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-            animation: pulse 2s ease-in-out infinite;
-        }
-        .logo-container svg {
+        
+        .generator-container {
             width: 200px;
             height: 200px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
         }
-        .title {
-            font-size: 72px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        
+        .arbitrum-logo {
+            width: 120px;
+            height: 120px;
+            fill: white;
+            margin-bottom: 10px;
         }
-        .subtitle {
-            font-size: 28px;
-            margin-bottom: 40px;
-            opacity: 0.9;
-        }
-        .loading-bar {
-            width: 400px;
-            height: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            margin: 0 auto 30px;
-            overflow: hidden;
-        }
-        .loading-progress {
-            height: 100%;
-            background: linear-gradient(90deg, #4ade80, #22c55e);
-            border-radius: 4px;
-            animation: loading 3s ease-in-out infinite;
-        }
+        
         .loading-text {
-            font-size: 18px;
-            opacity: 0.8;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
         }
-        .background-elements {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 1;
+        
+        .loading-dots {
+            display: inline-block;
+            animation: loading 1.5s infinite;
         }
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 50%;
-            animation: float-particle 4s ease-in-out infinite;
-        }
-        .particle:nth-child(1) {
-            width: 20px;
-            height: 20px;
-            top: 100px;
-            left: 100px;
-            animation-delay: 0s;
-        }
-        .particle:nth-child(2) {
-            width: 15px;
-            height: 15px;
-            top: 200px;
-            right: 150px;
-            animation-delay: 1s;
-        }
-        .particle:nth-child(3) {
-            width: 25px;
-            height: 25px;
-            bottom: 150px;
-            left: 200px;
-            animation-delay: 2s;
-        }
-        .particle:nth-child(4) {
-            width: 18px;
-            height: 18px;
-            bottom: 100px;
-            right: 100px;
-            animation-delay: 3s;
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
+        
         @keyframes loading {
-            0% { width: 0%; }
-            50% { width: 70%; }
-            100% { width: 100%; }
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
         }
-        @keyframes float-particle {
-            0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0.3; }
-            50% { transform: translateY(-30px) rotate(180deg); opacity: 0.8; }
-        }
-        .instructions {
-            position: fixed;
+        
+        .specs {
+            position: absolute;
             top: 20px;
-            left: 20px;
+            left: 220px;
             background: rgba(0,0,0,0.8);
             color: white;
             padding: 15px;
-            border-radius: 8px;
-            font-family: Arial, sans-serif;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="instructions">
-        <strong>Splash Screen (1200x800px)</strong><br>
-        Screenshot this and save as:<br>
-        <code>splash.png</code>
+    <div class="specs">
+        💫 SPLASH SCREEN<br>
+        Size: 200x200px<br>
+        Format: PNG<br>
+        Usage: App loading screen
     </div>
     
-    <div class="background-elements">
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-        <div class="particle"></div>
-    </div>
-    
-    <div class="splash-container">
-        <div class="logo-container">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white"/>
-                <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
+    <div class="generator-container">
+        <svg class="arbitrum-logo" viewBox="0 0 283.46 283.46" xmlns="http://www.w3.org/2000/svg">
+            <g transform="translate(-8.27 -8.27)">
+                <path fill="white" d="M150 8.27c78.45 0 141.73 63.28 141.73 141.73S228.45 291.73 150 291.73 8.27 228.45 8.27 150 71.55 8.27 150 8.27z"/>
+                <polygon fill="#667eea" points="150,60 220,130 150,200 80,130"/>
+                <polygon fill="#764ba2" points="150,80 200,130 150,180 100,130"/>
+                <circle fill="white" cx="150" cy="130" r="20"/>
+            </g>
+        </svg>
+        <div class="loading-text">
+            Loading<span class="loading-dots">...</span>
         </div>
-        
-        <h1 class="title">Arbitrum Tap Tap</h1>
-        <p class="subtitle">Loading your Web3 gaming experience...</p>
-        
-        <div class="loading-bar">
-            <div class="loading-progress"></div>
-        </div>
-        
-        <div class="loading-text">Initializing game components...</div>
     </div>
 </body>
 </html>

@@ -3,63 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>App Icon - Arbitrum Logo</title>
+    <title>App Icon Generator - 1024x1024px</title>
     <style>
         body {
             margin: 0;
-            padding: 20px;
-            background: #667eea;
+            padding: 0;
+            background: #ffffff;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
         }
-        .icon-container {
-            width: 64px;
-            height: 64px;
+        
+        .generator-container {
+            width: 1024px;
+            height: 1024px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 16px;
+            border-radius: 180px;
             display: flex;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            position: relative;
+            box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3);
         }
+        
         .arbitrum-logo {
-            width: 40px;
-            height: 40px;
+            width: 600px;
+            height: 600px;
+            fill: white;
+            filter: drop-shadow(0 10px 30px rgba(0,0,0,0.2));
         }
-        .arbitrum-logo svg {
-            width: 100%;
-            height: 100%;
-        }
-        .instructions {
-            position: fixed;
+        
+        .specs {
+            position: absolute;
             top: 20px;
             left: 20px;
             background: rgba(0,0,0,0.8);
             color: white;
             padding: 15px;
-            border-radius: 8px;
-            font-family: Arial, sans-serif;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <div class="instructions">
-        <strong>App Icon (64x64px)</strong><br>
-        Screenshot this square and save as:<br>
-        <code>arbitrum-logo.png</code>
+    <div class="specs">
+        📱 APP ICON<br>
+        Size: 1024x1024px<br>
+        Format: PNG<br>
+        Alpha: No transparency<br>
+        Usage: Farcaster Mini App icon
     </div>
     
-    <div class="icon-container">
-        <div class="arbitrum-logo">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white"/>
-                <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-        </div>
+    <div class="generator-container">
+        <svg class="arbitrum-logo" viewBox="0 0 283.46 283.46" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#e8f4fd;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <g transform="translate(-8.27 -8.27)">
+                <path fill="url(#logoGradient)" d="M150 8.27c78.45 0 141.73 63.28 141.73 141.73S228.45 291.73 150 291.73 8.27 228.45 8.27 150 71.55 8.27 150 8.27z"/>
+                <path fill="currentColor" opacity="0.8" d="M150 25c68.99 0 125 56.01 125 125s-56.01 125-125 125S25 218.99 25 150 81.01 25 150 25z"/>
+                <polygon fill="white" points="150,60 220,130 150,200 80,130"/>
+                <polygon fill="rgba(255,255,255,0.7)" points="150,80 200,130 150,180 100,130"/>
+                <circle fill="white" cx="150" cy="130" r="25"/>
+            </g>
+        </svg>
     </div>
 </body>
 </html>

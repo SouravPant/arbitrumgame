@@ -2,176 +2,278 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Social Share Image</title>
+    <meta name="viewport" content="width=1200, initial-scale=1.0">
+    <title>Social Share Image Generator - 1200x630px</title>
     <style>
         body {
             margin: 0;
             padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Arial', sans-serif;
-            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             width: 1200px;
             height: 630px;
             overflow: hidden;
+            position: relative;
             display: flex;
-            justify-content: center;
             align-items: center;
         }
+        
         .social-container {
             width: 100%;
             height: 100%;
             display: flex;
-            flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: space-between;
+            padding: 0 80px;
             position: relative;
-            text-align: center;
         }
-        .background-pattern {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.1;
-            background-image: 
-                linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-                linear-gradient(-45deg, rgba(255,255,255,0.1) 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.1) 75%),
-                linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.1) 75%);
-            background-size: 40px 40px;
-            background-position: 0 0, 0 20px, 20px -20px, -20px 0px;
-        }
-        .logo-section {
-            margin-bottom: 40px;
+        
+        .social-content {
+            flex: 1;
+            color: white;
             z-index: 2;
         }
-        .main-logo {
-            width: 180px;
-            height: 180px;
+        
+        .social-badge {
             background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .social-title {
+            font-size: 64px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.4);
+            line-height: 1.1;
+        }
+        
+        .social-subtitle {
+            font-size: 28px;
+            margin-bottom: 30px;
+            opacity: 0.95;
+            font-weight: 500;
+        }
+        
+        .social-description {
+            font-size: 20px;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            line-height: 1.4;
+            max-width: 500px;
+        }
+        
+        .social-stats {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        .social-cta {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 8px 30px rgba(255, 107, 107, 0.4);
+            margin-right: 20px;
+        }
+        
+        .social-share {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 14px 28px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+        }
+        
+        .social-visual {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 0 auto 20px;
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
-        .main-logo svg {
-            width: 120px;
-            height: 120px;
+        
+        .arbitrum-logo {
+            width: 280px;
+            height: 280px;
+            background: linear-gradient(135deg, #28a0f0 0%, #7c3aed 50%, #28a0f0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.3),
+                0 0 0 8px rgba(255,255,255,0.1),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+            animation: glow 3s ease-in-out infinite;
+            position: relative;
         }
-        .title {
-            font-size: 72px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-            line-height: 1.1;
+        
+        .arbitrum-logo svg {
+            width: 170px;
+            height: 170px;
+            fill: white;
         }
-        .subtitle {
-            font-size: 32px;
-            margin-bottom: 30px;
-            opacity: 0.9;
-            max-width: 800px;
-            line-height: 1.3;
-        }
-        .cta-button {
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-            padding: 20px 40px;
-            border-radius: 50px;
-            font-size: 24px;
-            font-weight: bold;
-            box-shadow: 0 8px 25px rgba(238, 90, 36, 0.4);
-            border: none;
-            color: white;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .cta-button:hover {
-            transform: scale(1.05);
-        }
-        .floating-elements {
+        
+        .floating-coins {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
+            pointer-events: none;
         }
-        .floating-icon {
+        
+        .coin {
             position: absolute;
-            font-size: 40px;
-            opacity: 0.3;
-            animation: float 6s ease-in-out infinite;
+            width: 30px;
+            height: 30px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+            animation: floatCoin 4s ease-in-out infinite;
         }
-        .icon-1 {
+        
+        .coin:nth-child(1) {
             top: 80px;
-            left: 80px;
+            right: 150px;
             animation-delay: 0s;
         }
-        .icon-2 {
-            top: 120px;
-            right: 100px;
-            animation-delay: 2s;
-        }
-        .icon-3 {
+        
+        .coin:nth-child(2) {
             bottom: 100px;
-            left: 120px;
-            animation-delay: 4s;
+            right: 100px;
+            animation-delay: 1.5s;
         }
-        .icon-4 {
-            bottom: 80px;
-            right: 80px;
-            animation-delay: 1s;
+        
+        .coin:nth-child(3) {
+            top: 120px;
+            right: 50px;
+            animation-delay: 3s;
         }
-        @keyframes float {
+        
+        @keyframes glow {
+            0%, 100% { 
+                box-shadow: 
+                    0 20px 60px rgba(0,0,0,0.3),
+                    0 0 0 8px rgba(255,255,255,0.1),
+                    inset 0 2px 0 rgba(255,255,255,0.2);
+            }
+            50% { 
+                box-shadow: 
+                    0 25px 80px rgba(40, 160, 240, 0.4),
+                    0 0 0 12px rgba(255,255,255,0.2),
+                    inset 0 2px 0 rgba(255,255,255,0.3);
+            }
+        }
+        
+        @keyframes floatCoin {
             0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(10deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
         }
-        .instructions {
-            position: fixed;
+        
+        .specs {
+            position: absolute;
             top: 20px;
             left: 20px;
             background: rgba(0,0,0,0.8);
             color: white;
             padding: 15px;
-            border-radius: 8px;
-            font-family: Arial, sans-serif;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <div class="instructions">
-        <strong>Social Share Image (1200x630px)</strong><br>
-        Screenshot this and save as:<br>
-        <code>og-image.png</code>
+    <div class="specs">
+        🌐 SOCIAL SHARE (OG)<br>
+        Size: 1200x630px<br>
+        Ratio: 1.91:1<br>
+        Format: PNG<br>
+        Usage: Social media sharing
     </div>
     
     <div class="social-container">
-        <div class="background-pattern"></div>
-        <div class="floating-elements">
-            <div class="floating-icon icon-1">🎮</div>
-            <div class="floating-icon icon-2">🪙</div>
-            <div class="floating-icon icon-3">🖼️</div>
-            <div class="floating-icon icon-4">⚡</div>
+        <div class="social-content">
+            <div class="social-badge">🎮 Farcaster Mini App</div>
+            <h1 class="social-title">Arbitrum<br>Tap Tap</h1>
+            <p class="social-subtitle">Web3 Gaming Revolution</p>
+            <p class="social-description">
+                Join thousands of players tapping to earn points, minting NFTs, and exploring the best memecoins on Arbitrum.
+            </p>
+            
+            <div class="social-stats">
+                <div class="stat-item">
+                    <div class="stat-number">10K+</div>
+                    <div class="stat-label">Players</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">5M+</div>
+                    <div class="stat-label">Taps</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">1.2K</div>
+                    <div class="stat-label">NFTs Minted</div>
+                </div>
+            </div>
+            
+            <button class="social-cta">Play Now</button>
+            <button class="social-share">Share Game</button>
         </div>
         
-        <div class="logo-section">
-            <div class="main-logo">
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white"/>
-                    <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        <div class="social-visual">
+            <div class="floating-coins">
+                <div class="coin">💎</div>
+                <div class="coin">🪙</div>
+                <div class="coin">⭐</div>
+            </div>
+            
+            <div class="arbitrum-logo">
+                <svg viewBox="0 0 283.46 283.46" xmlns="http://www.w3.org/2000/svg">
+                    <g transform="translate(-8.27 -8.27)">
+                        <path fill="white" d="M150 8.27c78.45 0 141.73 63.28 141.73 141.73S228.45 291.73 150 291.73 8.27 228.45 8.27 150 71.55 8.27 150 8.27z"/>
+                        <polygon fill="rgba(255,255,255,0.8)" points="150,60 220,130 150,200 80,130"/>
+                        <polygon fill="rgba(255,255,255,0.6)" points="150,80 200,130 150,180 100,130"/>
+                        <circle fill="white" cx="150" cy="130" r="25"/>
+                    </g>
                 </svg>
             </div>
         </div>
-        
-        <h1 class="title">Arbitrum Tap Tap Game</h1>
-        <p class="subtitle">Tap the Arbitrum logo to earn points and unlock NFT minting opportunities on Arbitrum</p>
-        
-        <button class="cta-button">🎯 Play Now!</button>
     </div>
 </body>
 </html>

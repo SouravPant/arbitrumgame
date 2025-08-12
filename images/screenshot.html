@@ -2,178 +2,253 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Screenshot</title>
+    <meta name="viewport" content="width=1284, initial-scale=1.0">
+    <title>Screenshot Generator - 1284x2778px</title>
     <style>
         body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            font-family: 'Arial', sans-serif;
             color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            width: 1284px;
+            height: 2778px;
+            overflow: hidden;
+            position: relative;
         }
-        .game-container {
-            max-width: 400px;
-            margin: 0 auto;
+        
+        .phone-frame {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 80px 60px;
+            box-sizing: border-box;
+        }
+        
+        .status-bar {
+            width: 100%;
+            height: 44px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 30px;
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 40px;
+        }
+        
+        .game-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .game-title {
+            font-size: 48px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .game-subtitle {
+            font-size: 24px;
+            opacity: 0.9;
+        }
+        
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 80px;
+        }
+        
+        .stat-card {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 20px;
             padding: 30px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-        .game-title {
-            text-align: center;
-            font-size: 28px;
-            margin-bottom: 10px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-        .game-subtitle {
-            text-align: center;
-            font-size: 16px;
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-        .arbitrum-logo {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 30px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-        }
-        .arbitrum-logo:hover {
-            transform: scale(1.05);
-        }
-        .arbitrum-logo svg {
-            width: 80px;
-            height: 80px;
-        }
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .stat-item {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 15px;
-            border-radius: 12px;
             text-align: center;
             flex: 1;
-            margin: 0 5px;
+            margin: 0 20px;
+            backdrop-filter: blur(10px);
         }
-        .click-count {
-            font-size: 18px;
+        
+        .stat-number {
+            font-size: 42px;
             font-weight: bold;
+            margin-bottom: 10px;
         }
-        .next-mint {
-            font-size: 14px;
-            opacity: 0.9;
+        
+        .stat-label {
+            font-size: 18px;
+            opacity: 0.8;
         }
-        .mint-button {
-            width: 100%;
-            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        
+        .arbitrum-logo {
+            width: 400px;
+            height: 400px;
+            background: linear-gradient(135deg, #28a0f0 0%, #7c3aed 50%, #28a0f0 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 60px 0;
+            box-shadow: 
+                0 20px 60px rgba(0,0,0,0.3),
+                0 0 0 8px rgba(255,255,255,0.1),
+                inset 0 2px 0 rgba(255,255,255,0.2);
+            position: relative;
+            cursor: pointer;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .arbitrum-logo svg {
+            width: 250px;
+            height: 250px;
+            fill: white;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 60px;
+        }
+        
+        .btn {
+            padding: 20px 40px;
             border: none;
-            color: white;
-            padding: 15px;
-            border-radius: 12px;
-            font-size: 16px;
+            border-radius: 15px;
+            font-size: 20px;
             font-weight: bold;
             cursor: pointer;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 15px rgba(238, 90, 36, 0.4);
+            transition: all 0.3s ease;
         }
-        .memecoins-grid {
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .memecoin-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
         }
-        .memecoin-item {
-            background: rgba(255, 255, 255, 0.15);
-            padding: 12px;
-            border-radius: 8px;
+        
+        .memecoin-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
             text-align: center;
+            backdrop-filter: blur(10px);
         }
+        
         .memecoin-symbol {
+            font-size: 24px;
             font-weight: bold;
-            font-size: 16px;
+            margin-bottom: 10px;
         }
-        .memecoin-name {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-bottom: 5px;
-        }
+        
         .memecoin-price {
-            font-size: 14px;
+            font-size: 20px;
             color: #4ade80;
         }
-        .instructions {
-            position: fixed;
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .specs {
+            position: absolute;
             top: 20px;
-            left: 20px;
+            right: 20px;
             background: rgba(0,0,0,0.8);
             color: white;
             padding: 15px;
-            border-radius: 8px;
-            font-family: Arial, sans-serif;
+            border-radius: 10px;
             font-size: 14px;
+            font-weight: bold;
+            z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <div class="instructions">
-        <strong>Game Screenshot</strong><br>
-        Screenshot this game interface and save as:<br>
-        <code>screenshot.png</code>
+    <div class="specs">
+        📱 SCREENSHOT<br>
+        Size: 1284x2778px<br>
+        Format: PNG<br>
+        Orientation: Portrait<br>
+        Usage: App store preview
     </div>
     
-    <div class="game-container">
-        <h1 class="game-title">🎮 Arbitrum Tap Tap</h1>
-        <p class="game-subtitle">Tap the Arbitrum logo to earn points!</p>
+    <div class="phone-frame">
+        <div class="status-bar">
+            <span>9:41</span>
+            <span>🔋 100%</span>
+        </div>
+        
+        <div class="game-header">
+            <h1 class="game-title">Arbitrum Tap Tap</h1>
+            <p class="game-subtitle">Tap to earn points and mint NFTs</p>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-card">
+                <div class="stat-number">847</div>
+                <div class="stat-label">Total Taps</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">8</div>
+                <div class="stat-label">NFTs Minted</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">153</div>
+                <div class="stat-label">Until Next NFT</div>
+            </div>
+        </div>
         
         <div class="arbitrum-logo">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 2L2 7L12 12L22 7L12 2Z" fill="white"/>
-                <path d="M2 17L12 22L22 17" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M2 12L12 17L22 12" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <svg viewBox="0 0 283.46 283.46" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(-8.27 -8.27)">
+                    <path fill="white" d="M150 8.27c78.45 0 141.73 63.28 141.73 141.73S228.45 291.73 150 291.73 8.27 228.45 8.27 150 71.55 8.27 150 8.27z"/>
+                    <polygon fill="rgba(255,255,255,0.8)" points="150,60 220,130 150,200 80,130"/>
+                    <polygon fill="rgba(255,255,255,0.6)" points="150,80 200,130 150,180 100,130"/>
+                    <circle fill="white" cx="150" cy="130" r="25"/>
+                </g>
             </svg>
         </div>
         
-        <div class="stats">
-            <div class="stat-item">
-                <div class="click-count">Clicks: 0</div>
-            </div>
-            <div class="stat-item">
-                <div class="next-mint">Next NFT at: 100 clicks</div>
-            </div>
+        <div class="action-buttons">
+            <button class="btn btn-primary">Mint NFT</button>
+            <button class="btn btn-secondary">View Collection</button>
         </div>
         
-        <button class="mint-button">🪙 Mint NFT (100 clicks required)</button>
-        
-        <div class="memecoins-grid">
-            <div class="memecoin-item">
+        <div class="memecoin-grid">
+            <div class="memecoin-card">
                 <div class="memecoin-symbol">PEPE</div>
-                <div class="memecoin-name">Pepe</div>
                 <div class="memecoin-price">$0.000008</div>
             </div>
-            <div class="memecoin-item">
-                <div class="memecoin-symbol">UNI</div>
-                <div class="memecoin-name">Uniswap</div>
-                <div class="memecoin-price">$8.45</div>
-            </div>
-            <div class="memecoin-item">
+            <div class="memecoin-card">
                 <div class="memecoin-symbol">ARB</div>
-                <div class="memecoin-name">Arbitrum</div>
                 <div class="memecoin-price">$1.85</div>
             </div>
-            <div class="memecoin-item">
-                <div class="memecoin-symbol">CAKE</div>
-                <div class="memecoin-name">PancakeSwap</div>
-                <div class="memecoin-price">$2.34</div>
+            <div class="memecoin-card">
+                <div class="memecoin-symbol">UNI</div>
+                <div class="memecoin-price">$8.45</div>
+            </div>
+            <div class="memecoin-card">
+                <div class="memecoin-symbol">LINK</div>
+                <div class="memecoin-price">$15.67</div>
             </div>
         </div>
     </div>
