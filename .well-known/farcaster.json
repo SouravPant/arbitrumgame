@@ -2,8 +2,9 @@
   "frame": {
     "name": "ArbiTap",
     "version": "1",
-    "iconUrl": "https://arbitrumgame.vercel.app/arbitrum-logo.png",
+    "iconUrl": "https://arbitrumgame.vercel.app/icon.png",
     "homeUrl": "https://arbitrumgame.vercel.app",
+    "imageUrl": "https://arbitrumgame.vercel.app/image.png",
     "buttonTitle": "Play Game",
     "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
     "splashBackgroundColor": "#667eea",
@@ -11,6 +12,10 @@
     "subtitle": "Tap to earn points and mint NFTs",
     "description": "Experience the future of Web3 gaming! Tap the Arbitrum logo to earn points, unlock NFT minting at milestones, and explore popular memecoins on Arbitrum.",
     "primaryCategory": "games",
+    "screenshotUrls": [
+      "https://arbitrumgame.vercel.app/screenshot.png"
+    ],
+    "heroImageUrl": "https://arbitrumgame.vercel.app/hero.png",
     "tags": [
       "gaming",
       "arbitrum",
@@ -18,7 +23,11 @@
       "memecoins",
       "web3"
     ],
-    "tagline": "Tap, Earn, Mint on Arbitrum"
+    "tagline": "Tap, Earn, Mint on Arbitrum",
+    "ogTitle": "ArbiTap",
+    "ogDescription": "Tap the Arbitrum logo to earn points and unlock NFT minting opportunities on Arbitrum.",
+    "ogImageUrl": "https://arbitrumgame.vercel.app/og-image.png",
+    "castShareUrl": "https://warpcast.com/~/compose?text=Check+out+ArbiTap%21+Tap+to+earn+points+and+mint+NFTs+on+Arbitrum%0A%0Ahttps%3A//arbitrumgame.vercel.app"
   },
   "accountAssociation": {
     "header": "eyJmaWQiOjIzNDU1OSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweGI4NDEyQTEyYzE2NDE3QmJCMmREMGI1YzlFMDhkQzdiZjNBMjQ4RjYifQ",
