@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📥 Download Splash Screen - 200x200px</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .download-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+            max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 30px;
+        }
+        
+        .specs {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .spec-line {
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .spec-label {
+            color: #ffd700;
+        }
+        
+        .spec-value {
+            color: #4ade80;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            border: none;
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 15px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            min-width: 200px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
+        }
+        
+        .preview-btn {
+            background: linear-gradient(135deg, #28a0f0 0%, #7c3aed 100%);
+        }
+        
+        .preview-btn:hover {
+            box-shadow: 0 8px 25px rgba(40, 160, 240, 0.4);
+        }
+        
+        #downloadCanvas {
+            display: none;
+        }
+        
+        .success-message {
+            background: rgba(74, 222, 128, 0.2);
+            border: 2px solid #4ade80;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .preview-image {
+            width: 200px;
+            height: 200px;
+            margin: 20px auto;
+            border-radius: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+        
+        .logo-preview {
+            width: 120px;
+            height: 120px;
+            fill: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="download-card">
+        <h1>💫 Splash Screen</h1>
+        <p class="subtitle">200x200px Loading Screen for Farcaster</p>
+        
+        <div class="preview-image">
+            <svg class="logo-preview" viewBox="0 0 283.46 283.46" xmlns="http://www.w3.org/2000/svg">
+                <g transform="translate(-8.27 -8.27)">
+                    <path fill="white" d="M150 8.27c78.45 0 141.73 63.28 141.73 141.73S228.45 291.73 150 291.73 8.27 228.45 8.27 150 71.55 8.27 150 8.27z"/>
+                    <polygon fill="#667eea" points="150,60 220,130 150,200 80,130"/>
+                    <polygon fill="#764ba2" points="150,80 200,130 150,180 100,130"/>
+                    <circle fill="white" cx="150" cy="130" r="20"/>
+                </g>
+            </svg>
+        </div>
+        
+        <div class="specs">
+            <div class="spec-line">
+                <span class="spec-label">Filename:</span>
+                <span class="spec-value">splash.png</span>
+            </div>
+            <div class="spec-line">
+                <span class="spec-label">Dimensions:</span>
+                <span class="spec-value">200 × 200 pixels</span>
+            </div>
+            <div class="spec-line">
+                <span class="spec-label">Format:</span>
+                <span class="spec-value">PNG</span>
+            </div>
+            <div class="spec-line">
+                <span class="spec-label">Usage:</span>
+                <span class="spec-value">App loading screen</span>
+            </div>
+        </div>
+        
+        <button class="download-btn" onclick="downloadSplash()">
+            📥 Download splash.png
+        </button>
+        
+        <button class="download-btn preview-btn" onclick="window.open('images/splash-screen.html', '_blank')">
+            👀 Preview Generator
+        </button>
+        
+        <div class="success-message" id="successMessage">
+            ✅ <strong>Download Complete!</strong><br>
+            Upload <code>splash.png</code> to your GitHub repository root directory.
+        </div>
+    </div>
+    
+    <canvas id="downloadCanvas" width="200" height="200"></canvas>
+    
+    <script>
+        function downloadSplash() {
+            const canvas = document.getElementById('downloadCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set exact size
+            canvas.width = 200;
+            canvas.height = 200;
+            
+            // Create the gradient background
+            const gradient = ctx.createLinearGradient(0, 0, 200, 200);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            
+            // Fill the entire canvas with gradient
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, 200, 200);
+            
+            // Create rounded corners
+            const radius = 40;
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, 200, 200, radius);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Draw the Arbitrum logo in the center
+            drawArbitrumLogo(ctx, 100, 100, 60);
+            
+            // Add loading text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('Loading...', 100, 170);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.download = 'splash.png';
+            link.href = canvas.toDataURL('image/png', 1.0);
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            console.log('✅ splash.png downloaded successfully!');
+        }
+        
+        function drawArbitrumLogo(ctx, centerX, centerY, size) {
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // Outer white circle
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(0, 0, size * 0.85, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Inner colored shape
+            ctx.fillStyle = '#667eea';
+            ctx.beginPath();
+            ctx.moveTo(0, -size * 0.6);
+            ctx.lineTo(size * 0.5, size * 0.3);
+            ctx.lineTo(-size * 0.5, size * 0.3);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Center circle
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(0, 0, size * 0.25, 0, 2 * Math.PI);
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // Canvas polyfill for roundRect
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.lineTo(x + width - radius, y);
+                this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                this.lineTo(x + width, y + height - radius);
+                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                this.lineTo(x + radius, y + height);
+                this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                this.lineTo(x, y + radius);
+                this.quadraticCurveTo(x, y, x + radius, y);
+                this.closePath();
+            };
+        }
+        
+        console.log('💫 Splash Screen Download Ready!');
+    </script>
+</body>
+</html>

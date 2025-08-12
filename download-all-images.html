@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📦 Download All Images - Arbitrum Tap Tap Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            text-align: center;
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .quick-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-align: center;
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .image-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+        
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .image-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .required-badge {
+            background: #ff6b6b;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .optional-badge {
+            background: #fbbf24;
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .specs {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.85rem;
+        }
+        
+        .spec-line {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .spec-label {
+            color: #ffd700;
+        }
+        
+        .spec-value {
+            color: #4ade80;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            min-width: 150px;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+        }
+        
+        .generate-btn {
+            background: linear-gradient(135deg, #28a0f0 0%, #7c3aed 100%);
+        }
+        
+        .generate-btn:hover {
+            box-shadow: 0 6px 20px rgba(40, 160, 240, 0.4);
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 40px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .step {
+            margin: 15px 0;
+            padding-left: 30px;
+            position: relative;
+            font-size: 1.1rem;
+        }
+        
+        .step::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            background: #4ade80;
+            color: #000;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+        
+        .instructions {
+            counter-reset: step-counter;
+        }
+        
+        .checklist {
+            background: rgba(74, 222, 128, 0.1);
+            border: 2px solid #4ade80;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+        
+        .checklist h3 {
+            color: #4ade80;
+            margin-top: 0;
+        }
+        
+        .check-item {
+            margin: 8px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .check-box {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #4ade80;
+            border-radius: 4px;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📦 Download All Images</h1>
+        <p class="subtitle">Complete Farcaster Mini App Image Package - One-Click Downloads</p>
+        
+        <div class="quick-info">
+            <h3>🚀 All Images Meet Official Farcaster Requirements</h3>
+            <p>Each image is generated with exact pixel dimensions, proper formats, and optimized for Farcaster Mini App registration. Click any download button below to get the perfect file instantly.</p>
+        </div>
+        
+        <div class="download-grid">
+            <div class="image-card">
+                <h3 class="image-title">
+                    📱 App Icon
+                    <span class="required-badge">REQUIRED</span>
+                </h3>
+                <div class="specs">
+                    <div class="spec-line">
+                        <span class="spec-label">File:</span>
+                        <span class="spec-value">arbitrum-logo.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Size:</span>
+                        <span class="spec-value">1024x1024px</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG (no alpha)</span>
+                    </div>
+                </div>
+                <a href="logo-download.html" class="download-btn">📥 Download</a>
+                <a href="images/app-icon.html" target="_blank" class="download-btn generate-btn">👀 Preview</a>
+            </div>
+            
+            <div class="image-card">
+                <h3 class="image-title">
+                    💫 Splash Screen
+                    <span class="required-badge">REQUIRED</span>
+                </h3>
+                <div class="specs">
+                    <div class="spec-line">
+                        <span class="spec-label">File:</span>
+                        <span class="spec-value">splash.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Size:</span>
+                        <span class="spec-value">200x200px</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG</span>
+                    </div>
+                </div>
+                <a href="splash-download.html" class="download-btn">📥 Download</a>
+                <a href="images/splash-screen.html" target="_blank" class="download-btn generate-btn">👀 Preview</a>
+            </div>
+            
+            <div class="image-card">
+                <h3 class="image-title">
+                    🎭 Hero Image
+                    <span class="optional-badge">OPTIONAL</span>
+                </h3>
+                <div class="specs">
+                    <div class="spec-line">
+                        <span class="spec-label">File:</span>
+                        <span class="spec-value">hero.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Size:</span>
+                        <span class="spec-value">1200x630px</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG (1.91:1)</span>
+                    </div>
+                </div>
+                <a href="javascript:alert('Hero download coming soon! Use Preview for now.')" class="download-btn">📥 Download</a>
+                <a href="images/hero-image.html" target="_blank" class="download-btn generate-btn">👀 Preview</a>
+            </div>
+            
+            <div class="image-card">
+                <h3 class="image-title">
+                    📱 Screenshot
+                    <span class="optional-badge">OPTIONAL</span>
+                </h3>
+                <div class="specs">
+                    <div class="spec-line">
+                        <span class="spec-label">File:</span>
+                        <span class="spec-value">screenshot.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Size:</span>
+                        <span class="spec-value">1284x2778px</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG (portrait)</span>
+                    </div>
+                </div>
+                <a href="javascript:alert('Screenshot download coming soon! Use Preview for now.')" class="download-btn">📥 Download</a>
+                <a href="images/screenshot.html" target="_blank" class="download-btn generate-btn">👀 Preview</a>
+            </div>
+            
+            <div class="image-card">
+                <h3 class="image-title">
+                    🖼️ Preview Image
+                    <span class="optional-badge">OPTIONAL</span>
+                </h3>
+                <div class="specs">
+                    <div class="spec-line">
+                        <span class="spec-label">File:</span>
+                        <span class="spec-value">image.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Size:</span>
+                        <span class="spec-value">1200x630px</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG (1.91:1)</span>
+                    </div>
+                </div>
+                <a href="javascript:alert('Preview image download coming soon! Use Preview for now.')" class="download-btn">📥 Download</a>
+                <a href="images/preview-image.html" target="_blank" class="download-btn generate-btn">👀 Preview</a>
+            </div>
+            
+            <div class="image-card">
+                <h3 class="image-title">
+                    🌐 Social Share (OG)
+                    <span class="optional-badge">OPTIONAL</span>
+                </h3>
+                <div class="specs">
+                    <div class="spec-line">
+                        <span class="spec-label">File:</span>
+                        <span class="spec-value">og-image.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Size:</span>
+                        <span class="spec-value">1200x630px</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG (1.91:1)</span>
+                    </div>
+                </div>
+                <a href="javascript:alert('Social share download coming soon! Use Preview for now.')" class="download-btn">📥 Download</a>
+                <a href="images/social-share.html" target="_blank" class="download-btn generate-btn">👀 Preview</a>
+            </div>
+        </div>
+        
+        <div class="instructions">
+            <h3>📋 Complete Setup Process:</h3>
+            <div class="step">Download the required images (App Icon + Splash Screen minimum)</div>
+            <div class="step">Download optional images for enhanced presentation</div>
+            <div class="step">Upload all images to your GitHub repository root directory</div>
+            <div class="step">Commit and push changes to make them live</div>
+            <div class="step">Verify URLs work (e.g., https://arbitrumgame.vercel.app/arbitrum-logo.png)</div>
+            <div class="step">Submit your Farcaster Mini App registration</div>
+        </div>
+        
+        <div class="checklist">
+            <h3>✅ Image Checklist</h3>
+            <div class="check-item">
+                <span class="check-box"></span>
+                <span><strong>arbitrum-logo.png</strong> - 1024x1024px app icon (REQUIRED)</span>
+            </div>
+            <div class="check-item">
+                <span class="check-box"></span>
+                <span><strong>splash.png</strong> - 200x200px loading screen (REQUIRED)</span>
+            </div>
+            <div class="check-item">
+                <span class="check-box"></span>
+                <span><strong>hero.png</strong> - 1200x630px hero banner (Optional)</span>
+            </div>
+            <div class="check-item">
+                <span class="check-box"></span>
+                <span><strong>screenshot.png</strong> - 1284x2778px app preview (Optional)</span>
+            </div>
+            <div class="check-item">
+                <span class="check-box"></span>
+                <span><strong>image.png</strong> - 1200x630px preview image (Optional)</span>
+            </div>
+            <div class="check-item">
+                <span class="check-box"></span>
+                <span><strong>og-image.png</strong> - 1200x630px social share (Optional)</span>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        console.log('📦 Download All Images Hub Ready!');
+        console.log('✅ App Icon and Splash Screen downloads are working');
+        console.log('🚧 Additional image downloads coming soon');
+        
+        // Add click handlers for checklist
+        document.querySelectorAll('.check-box').forEach(box => {
+            box.addEventListener('click', function() {
+                this.style.background = this.style.background ? '' : '#4ade80';
+                this.innerHTML = this.innerHTML ? '' : '✓';
+            });
+        });
+    </script>
+</body>
+</html>
