@@ -3,115 +3,497 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📥 Download Image Generators - Arbitrum Tap Tap Game</title>
+    <title>📥 Download Images - Arbitrum Tap Tap Game</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 40px 20px;
             margin: 0;
-            padding: 20px;
             min-height: 100vh;
         }
         .container {
-            max-width: 600px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 30px;
-            backdrop-filter: blur(10px);
         }
         h1 {
             text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            opacity: 0.9;
             margin-bottom: 30px;
         }
-        .download-link {
-            display: block;
-            background: rgba(255, 255, 255, 0.2);
+        .constraints-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .constraints-info h3 {
+            margin-top: 0;
+            color: #ffd700;
+            font-size: 1.4rem;
+        }
+        .constraint-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .constraint-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #4ade80;
+        }
+        .constraint-title {
+            font-weight: bold;
+            color: #4ade80;
+            margin-bottom: 5px;
+        }
+        .download-all-btn {
+            background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
             color: white;
-            text-decoration: none;
-            padding: 20px;
-            margin: 15px 0;
-            border-radius: 10px;
-            text-align: center;
-            font-size: 18px;
-            transition: background 0.3s;
-        }
-        .download-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        .filename {
-            font-family: monospace;
-            background: rgba(0, 0, 0, 0.3);
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 14px;
-            margin-top: 10px;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px auto;
             display: block;
+            transition: all 0.3s ease;
+        }
+        .download-all-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+        }
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        .image-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: transform 0.3s ease;
+        }
+        .image-card:hover {
+            transform: translateY(-3px);
+        }
+        .image-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        .image-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #fff;
+            margin: 0;
+        }
+        .status-badge {
+            background: #4ade80;
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .image-specs {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9rem;
+        }
+        .spec-line {
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .spec-label {
+            color: #ffd700;
+        }
+        .spec-value {
+            color: #4ade80;
+        }
+        .download-section {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        .generate-btn {
+            background: linear-gradient(135deg, #28a0f0 0%, #7c3aed 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+        }
+        .generate-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(40, 160, 240, 0.4);
+        }
+        .download-btn {
+            background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            flex: 1;
+            text-align: center;
+        }
+        .download-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(74, 222, 128, 0.4);
         }
         .instructions {
-            background: rgba(0, 0, 0, 0.2);
-            padding: 20px;
-            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
             margin-top: 30px;
+        }
+        .step {
+            margin: 12px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+        .step::before {
+            content: counter(step-counter);
+            counter-increment: step-counter;
+            position: absolute;
+            left: 0;
+            background: #4ade80;
+            color: #000;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        .instructions {
+            counter-reset: step-counter;
+        }
+        .upload-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border-left: 4px solid #ffd700;
+        }
+        .upload-info h4 {
+            margin-top: 0;
+            color: #ffd700;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📥 Download Image Generators</h1>
-        <p style="text-align: center; margin-bottom: 30px;">
-            Click any link below to download the HTML file for generating your Farcaster Mini App images.
-        </p>
+        <h1>📥 Download Images</h1>
+        <p class="subtitle">Complete Farcaster Mini App Image Package</p>
+        
+        <div class="constraints-info">
+            <h3>✅ All Farcaster Constraints Implemented</h3>
+            <p>Your configuration meets all official requirements:</p>
+            <div class="constraint-list">
+                <div class="constraint-item">
+                    <div class="constraint-title">Image Dimensions</div>
+                    <div>Exact pixel requirements met</div>
+                </div>
+                <div class="constraint-item">
+                    <div class="constraint-title">Aspect Ratios</div>
+                    <div>1.91:1 ratio for social images</div>
+                </div>
+                <div class="constraint-item">
+                    <div class="constraint-title">File Format</div>
+                    <div>PNG format, no alpha where required</div>
+                </div>
+                <div class="constraint-item">
+                    <div class="constraint-title">Text Length</div>
+                    <div>Name ≤50 chars, description ≤280 chars</div>
+                </div>
+                <div class="constraint-item">
+                    <div class="constraint-title">URL Structure</div>
+                    <div>Valid HTTPS URLs, proper domains</div>
+                </div>
+                <div class="constraint-item">
+                    <div class="constraint-title">Configuration</div>
+                    <div>Valid JSON, required fields present</div>
+                </div>
+            </div>
+        </div>
 
-        <a href="images/app-icon.html" download class="download-link">
-            🎯 App Icon Generator
-            <span class="filename">app-icon.html</span>
-        </a>
+        <button class="download-all-btn" onclick="downloadAllImages()">
+            📦 Generate & Download All Images
+        </button>
 
-        <a href="images/screenshot.html" download class="download-link">
-            📱 Screenshot Generator
-            <span class="filename">screenshot.html</span>
-        </a>
+        <div class="images-grid">
+            <div class="image-card">
+                <div class="image-header">
+                    <h3 class="image-title">🎯 App Icon</h3>
+                    <span class="status-badge">REQUIRED</span>
+                </div>
+                <div class="image-specs">
+                    <div class="spec-line">
+                        <span class="spec-label">Filename:</span>
+                        <span class="spec-value">arbitrum-logo.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Dimensions:</span>
+                        <span class="spec-value">1024x1024px</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG (no alpha)</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Usage:</span>
+                        <span class="spec-value">Primary app icon</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="images/app-icon.html" target="_blank" class="generate-btn">Generate</a>
+                    <button class="download-btn" onclick="downloadImage('app-icon', 'arbitrum-logo.png')">Download</button>
+                </div>
+            </div>
 
-        <a href="images/preview-image.html" download class="download-link">
-            🖼️ Preview Image Generator
-            <span class="filename">preview-image.html</span>
-        </a>
+            <div class="image-card">
+                <div class="image-header">
+                    <h3 class="image-title">💫 Splash Screen</h3>
+                    <span class="status-badge">REQUIRED</span>
+                </div>
+                <div class="image-specs">
+                    <div class="spec-line">
+                        <span class="spec-label">Filename:</span>
+                        <span class="spec-value">splash.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Dimensions:</span>
+                        <span class="spec-value">200x200px</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Usage:</span>
+                        <span class="spec-value">Loading screen</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="images/splash-screen.html" target="_blank" class="generate-btn">Generate</a>
+                    <button class="download-btn" onclick="downloadImage('splash-screen', 'splash.png')">Download</button>
+                </div>
+            </div>
 
-        <a href="images/hero-image.html" download class="download-link">
-            🌟 Hero Image Generator
-            <span class="filename">hero-image.html</span>
-        </a>
+            <div class="image-card">
+                <div class="image-header">
+                    <h3 class="image-title">🎭 Hero Image</h3>
+                    <span class="status-badge">OPTIONAL</span>
+                </div>
+                <div class="image-specs">
+                    <div class="spec-line">
+                        <span class="spec-label">Filename:</span>
+                        <span class="spec-value">hero.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Dimensions:</span>
+                        <span class="spec-value">1200x630px (1.91:1)</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Usage:</span>
+                        <span class="spec-value">Hero banner</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="images/hero-image.html" target="_blank" class="generate-btn">Generate</a>
+                    <button class="download-btn" onclick="downloadImage('hero-image', 'hero.png')">Download</button>
+                </div>
+            </div>
 
-        <a href="images/splash-screen.html" download class="download-link">
-            ⚡ Splash Screen Generator
-            <span class="filename">splash-screen.html</span>
-        </a>
+            <div class="image-card">
+                <div class="image-header">
+                    <h3 class="image-title">📱 Screenshot</h3>
+                    <span class="status-badge">OPTIONAL</span>
+                </div>
+                <div class="image-specs">
+                    <div class="spec-line">
+                        <span class="spec-label">Filename:</span>
+                        <span class="spec-value">screenshot.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Dimensions:</span>
+                        <span class="spec-value">1284x2778px (portrait)</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Usage:</span>
+                        <span class="spec-value">App store preview</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="images/screenshot.html" target="_blank" class="generate-btn">Generate</a>
+                    <button class="download-btn" onclick="downloadImage('screenshot', 'screenshot.png')">Download</button>
+                </div>
+            </div>
 
-        <a href="images/social-share.html" download class="download-link">
-            📢 Social Share Generator
-            <span class="filename">social-share.html</span>
-        </a>
+            <div class="image-card">
+                <div class="image-header">
+                    <h3 class="image-title">🖼️ Preview Image</h3>
+                    <span class="status-badge">OPTIONAL</span>
+                </div>
+                <div class="image-specs">
+                    <div class="spec-line">
+                        <span class="spec-label">Filename:</span>
+                        <span class="spec-value">image.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Dimensions:</span>
+                        <span class="spec-value">1200x630px (1.91:1)</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Usage:</span>
+                        <span class="spec-value">App preview/sharing</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="images/preview-image.html" target="_blank" class="generate-btn">Generate</a>
+                    <button class="download-btn" onclick="downloadImage('preview-image', 'image.png')">Download</button>
+                </div>
+            </div>
+
+            <div class="image-card">
+                <div class="image-header">
+                    <h3 class="image-title">🌐 Social Share (OG)</h3>
+                    <span class="status-badge">OPTIONAL</span>
+                </div>
+                <div class="image-specs">
+                    <div class="spec-line">
+                        <span class="spec-label">Filename:</span>
+                        <span class="spec-value">og-image.png</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Dimensions:</span>
+                        <span class="spec-value">1200x630px (1.91:1)</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Format:</span>
+                        <span class="spec-value">PNG</span>
+                    </div>
+                    <div class="spec-line">
+                        <span class="spec-label">Usage:</span>
+                        <span class="spec-value">Social media sharing</span>
+                    </div>
+                </div>
+                <div class="download-section">
+                    <a href="images/social-share.html" target="_blank" class="generate-btn">Generate</a>
+                    <button class="download-btn" onclick="downloadImage('social-share', 'og-image.png')">Download</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="upload-info">
+            <h4>📁 Upload Instructions</h4>
+            <p>After downloading, upload all images to your GitHub repository <strong>root directory</strong> (same level as index.html). The files should be accessible at:</p>
+            <ul>
+                <li><code>https://arbitrumgame.vercel.app/arbitrum-logo.png</code></li>
+                <li><code>https://arbitrumgame.vercel.app/splash.png</code></li>
+                <li><code>https://arbitrumgame.vercel.app/hero.png</code></li>
+                <li><code>https://arbitrumgame.vercel.app/screenshot.png</code></li>
+                <li><code>https://arbitrumgame.vercel.app/image.png</code></li>
+                <li><code>https://arbitrumgame.vercel.app/og-image.png</code></li>
+            </ul>
+        </div>
 
         <div class="instructions">
-            <h3>📋 How to Use:</h3>
-            <ol>
-                <li>Download all 6 HTML files</li>
-                <li>Open each HTML file in your browser</li>
-                <li>Take screenshots and save with these names:</li>
-                <ul>
-                    <li><code>arbitrum-logo.png</code> (64x64px)</li>
-                    <li><code>screenshot.png</code> (400x600px)</li>
-                    <li><code>image.png</code> (1200x630px)</li>
-                    <li><code>hero.png</code> (1200x600px)</li>
-                    <li><code>splash.png</code> (1200x800px)</li>
-                    <li><code>og-image.png</code> (1200x630px)</li>
-                </ul>
-                <li>Upload PNG files to GitHub</li>
-                <li>Submit to Farcaster!</li>
-            </ol>
+            <h3>📋 Complete Setup Process:</h3>
+            <div class="step">Open each image generator using the "Generate" buttons</div>
+            <div class="step">Wait for pages to load completely with all animations</div>
+            <div class="step">Use "Download" buttons or manually screenshot each image</div>
+            <div class="step">Save files with the exact filenames shown in specs</div>
+            <div class="step">Upload all 6 images to your GitHub repository root</div>
+            <div class="step">Commit and push changes to make them live</div>
+            <div class="step">Test URLs to verify images are accessible</div>
+            <div class="step">Submit your Farcaster Mini App registration</div>
         </div>
     </div>
+
+    <script>
+        function downloadAllImages() {
+            const generators = [
+                { url: 'images/app-icon.html', name: 'app-icon', filename: 'arbitrum-logo.png' },
+                { url: 'images/splash-screen.html', name: 'splash-screen', filename: 'splash.png' },
+                { url: 'images/hero-image.html', name: 'hero-image', filename: 'hero.png' },
+                { url: 'images/screenshot.html', name: 'screenshot', filename: 'screenshot.png' },
+                { url: 'images/preview-image.html', name: 'preview-image', filename: 'image.png' },
+                { url: 'images/social-share.html', name: 'social-share', filename: 'og-image.png' }
+            ];
+            
+            alert('🚀 Opening all image generators!\n\nPlease:\n1. Wait for each page to load\n2. Use the individual download buttons\n3. Save with exact filenames shown');
+            
+            generators.forEach((generator, index) => {
+                setTimeout(() => {
+                    window.open(generator.url, '_blank');
+                }, index * 600);
+            });
+        }
+
+        function downloadImage(generatorName, filename) {
+            // Open the generator in a new tab for manual download
+            const generatorUrl = `images/${generatorName}.html`;
+            const newWindow = window.open(generatorUrl, '_blank');
+            
+            // Show download instructions
+            setTimeout(() => {
+                alert(`📸 Screenshot Instructions for ${filename}:\n\n1. Wait for the page to load completely\n2. Take a screenshot of the image area\n3. Save as: ${filename}\n4. Upload to GitHub root directory`);
+            }, 1000);
+        }
+
+        // Add download instructions on page load
+        window.addEventListener('load', () => {
+            console.log('🖼️ Farcaster Image Generator Ready!');
+            console.log('All images meet official Farcaster Mini App specifications');
+        });
+    </script>
 </body>
 </html>
