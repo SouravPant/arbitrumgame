@@ -1,6 +1,6 @@
 # 🎮 Arbitrum Tap Tap Game
 
-A fun and interactive tap-to-earn game built as a Farcaster Mini App, featuring popular memecoins and NFT minting mechanics on the Arbitrum network.
+A professional, production-ready tap-to-earn game built on Arbitrum with NFT minting, milestone rewards, and global leaderboards. This game showcases Arbitrum's Layer 2 capabilities while providing an engaging gaming experience.
 
 ## 🚀 Live Demo
 
@@ -8,7 +8,23 @@ A fun and interactive tap-to-earn game built as a Farcaster Mini App, featuring 
 
 ## 🎯 Game Overview
 
-The Arbitrum Tap Tap Game is an engaging web3 gaming experience where players tap the Arbitrum logo to earn points and unlock NFT minting opportunities. The game combines simple tap mechanics with blockchain technology, featuring popular memecoins and progressive NFT rewards.
+The Arbitrum Tap Tap Game is a sophisticated Web3 gaming experience that combines simple tap mechanics with blockchain technology. Players tap the Arbitrum logo to earn points, unlock NFT minting at specific milestones, and compete on global leaderboards.
+
+## 🏆 Milestone System
+
+The game features a progressive milestone system with increasing rewards:
+
+| Milestone | Taps Required | ETH Reward | NFT Unlock |
+|-----------|---------------|-------------|------------|
+| 🥉 Bronze | 100 | 0.001 ETH | ✅ |
+| 🥈 Silver | 500 | 0.005 ETH | ✅ |
+| 🥇 Gold | 1,000 | 0.01 ETH | ✅ |
+| 💎 Diamond | 5,000 | 0.05 ETH | ✅ |
+| 👑 Legend | 10,000 | 0.1 ETH | ✅ |
+| 🚀 Master | 50,000 | 0.5 ETH | ✅ |
+| 🌟 Grandmaster | 100,000 | 1.0 ETH | ✅ |
+| 🏆 Champion | 200,000 | 2.0 ETH | ✅ |
+| 🎖️ Ultimate | 300,000 | 3.0 ETH | ✅ |
 
 ## 🎮 Game Features
 
@@ -19,41 +35,30 @@ The Arbitrum Tap Tap Game is an engaging web3 gaming experience where players ta
 - **Real-time Stats**: Live tracking of clicks and progress
 
 ### NFT Minting System
-- **Milestone Rewards**: Mint NFTs at 100, 200, 300, 400, 500, 600, 700, 800, 900, and 1000 clicks
+- **Milestone Rewards**: Mint NFTs at each milestone threshold
 - **Smart Notifications**: Automatic alerts when minting thresholds are reached
 - **Interactive Minting**: One-click NFT creation with visual confirmation
+- **Arbitrum Integration**: All NFTs minted on Arbitrum network
 
-### Memecoin Integration
-The game features 8 popular memecoins with real-time price data and contract addresses:
+### Leaderboard System
+- **Global Rankings**: Compete with players worldwide
+- **Real-time Updates**: Live leaderboard with current standings
+- **Achievement Tracking**: Monitor your progress and ranking
+- **Social Features**: Share achievements and compete with friends
 
-## 🪙 Featured Memecoins
-
-| Symbol | Name | Current Price | Contract Address |
-|--------|------|---------------|------------------|
-| **PEPE** | Pepe | $0.000008 | `0x6982508145454Ce325DdEe47Fd4C4f5C4C9b6b8b` |
-| **UNI** | Uniswap | $8.45 | `0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984` |
-| **BOOP** | Boop | $0.12 | `0x2b4aC0F9B2eC1f1b1E6E8C1A0B0B0B0B0B0B0B0` |
-| **ARB** | Arbitrum | $1.85 | `0x912CE59144191C1204E64559FE8253a0e49E6548` |
-| **CAKE** | PancakeSwap | $2.34 | `0x0E09FaBB73Bd3Ade0a17ECC321fD13a19e81cE82` |
-| **AIDOGE** | AI Doge | $0.00000012 | `0x09E18590E8f76b6Cf764Bd6E1a6B6A0E6B4fEF02` |
-| **LINK** | Chainlink | $15.67 | `0x514910771AF9Ca656af840dff83E8264EcF986CA` |
-| **BONK** | Bonk | $0.000023 | `0x1151CB3d861920e07a38e03eEAd0C3591d6E6f07` |
-
-## 🎨 Design Features
-
-### Professional Arbitrum Logo
-- **High-Quality SVG**: Custom-designed Arbitrum logo with professional aesthetics
-- **Interactive Elements**: Hover effects, click animations, and rotating gradients
-- **Responsive Design**: Optimized for all screen sizes and devices
-- **Visual Polish**: Glassmorphism effects, shadows, and smooth transitions
-
-### User Interface
-- **Modern Design**: Clean, intuitive interface with gradient backgrounds
-- **Responsive Layout**: Mobile-first design optimized for Farcaster Mini Apps
+### Professional Design
+- **Official Arbitrum Branding**: Authentic Arbitrum visual identity
+- **Modern UI/UX**: Clean, intuitive interface with glassmorphism effects
+- **Responsive Design**: Optimized for all devices and screen sizes
 - **Accessibility**: High contrast colors and clear visual hierarchy
-- **Performance**: Optimized animations and smooth interactions
 
 ## 🔧 Technical Features
+
+### Blockchain Integration
+- **Arbitrum Network**: Built on Arbitrum One for fast, low-cost transactions
+- **Smart Contracts**: Solidity contracts for NFT minting and game logic
+- **Ethereum Provider**: Integrated wallet connection support
+- **Gas Optimization**: Efficient contract design for cost-effective operations
 
 ### Farcaster Integration
 - **Mini App Support**: Fully compatible with Farcaster clients
@@ -61,73 +66,175 @@ The game features 8 popular memecoins with real-time price data and contract add
 - **Meta Tags**: Proper `fc:miniapp` configuration for Farcaster discovery
 - **Ready State**: Implements proper SDK initialization and ready calls
 
-### Blockchain Features
-- **Ethereum Provider**: Integrated wallet connection support
-- **Contract Addresses**: All memecoin contract addresses displayed
-- **NFT Minting**: Simulated blockchain interactions for game mechanics
-- **Web3 Ready**: Prepared for future blockchain integrations
+### Performance & Security
+- **Optimized Animations**: Smooth 60fps gameplay experience
+- **Security Features**: Reentrancy protection and access controls
+- **Gas Efficiency**: Optimized smart contract operations
+- **Error Handling**: Comprehensive error handling and user feedback
 
 ## 🚀 Getting Started
 
 ### Prerequisites
-- Modern web browser with JavaScript enabled
+- Node.js 18+ and npm/yarn
+- MetaMask or other Web3 wallet
+- Arbitrum network configured in wallet
 - Farcaster account (for Mini App experience)
-- Web3 wallet (for future blockchain features)
 
 ### Installation
-1. Clone the repository:
+
+1. **Clone the repository**
    ```bash
    git clone https://github.com/SouravPant/arbitrumgame.git
    cd arbitrumgame
    ```
 
-2. Open `index.html` in your browser or deploy to a web server
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-3. For Farcaster Mini App deployment:
-   - Deploy to Vercel, Netlify, or your preferred hosting platform
-   - Ensure the domain matches your `farcaster.json` configuration
-   - Test the Mini App in Farcaster clients
+3. **Set up environment variables**
+   ```bash
+   cp config.env.example .env
+   # Edit .env with your configuration
+   ```
 
-## 🎯 How to Play
+4. **Deploy smart contract (optional)**
+   ```bash
+   # Deploy to Arbitrum Sepolia testnet
+   npx hardhat run scripts/deploy.js --network arbitrumSepolia
+   
+   # Deploy to Arbitrum One mainnet
+   npx hardhat run scripts/deploy.js --network arbitrumOne
+   ```
 
-1. **Start Tapping**: Click the central Arbitrum logo to earn points
-2. **Track Progress**: Monitor your click count and next NFT milestone
-3. **Mint NFTs**: When you reach milestone clicks (100, 200, 300, etc.), click the mint button
-4. **Explore Memecoins**: View real-time prices and contract addresses for featured tokens
-5. **Complete Challenges**: Aim for the 1000-click milestone to unlock all NFTs
+5. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+6. **Build for production**
+   ```bash
+   npm run build
+   ```
+
+## 🏗️ Smart Contract Deployment
+
+### Contract Features
+- **ERC-721 NFT Standard**: Compliant with OpenZeppelin standards
+- **Milestone Tracking**: Automated milestone achievement detection
+- **Reward Distribution**: ETH rewards for milestone achievements
+- **Leaderboard Integration**: On-chain score tracking and rankings
+- **Security Features**: Reentrancy protection and access controls
+
+### Deployment Steps
+
+1. **Configure Hardhat**
+   ```bash
+   # Set up your .env file with private key and RPC URLs
+   PRIVATE_KEY=your_private_key
+   ARBITRUM_RPC_URL=https://arb1.arbitrum.io/rpc
+   ARBISCAN_API_KEY=your_api_key
+   ```
+
+2. **Deploy to Testnet**
+   ```bash
+   npx hardhat run scripts/deploy.js --network arbitrumSepolia
+   ```
+
+3. **Verify Contract**
+   ```bash
+   npx hardhat verify --network arbitrumSepolia DEPLOYED_CONTRACT_ADDRESS
+   ```
+
+4. **Deploy to Mainnet**
+   ```bash
+   npx hardhat run scripts/deploy.js --network arbitrumOne
+   ```
+
+## 🌐 Deployment
+
+### Vercel (Recommended)
+1. Connect your GitHub repository to Vercel
+2. Set environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Manual Deployment
+1. Build the project: `npm run build`
+2. Upload `dist` folder to your hosting provider
+3. Configure domain and SSL certificates
+
+### Environment Variables
+```bash
+# Required
+GAME_CONTRACT_ADDRESS=deployed_contract_address
+ARBITRUM_CHAIN_ID=42161
+
+# Optional
+FARCASTER_APP_ID=your_farcaster_app_id
+WEBHOOK_SECRET=your_webhook_secret
+```
+
+## 🎨 Customization
+
+### Game Mechanics
+- Modify milestone thresholds in `contracts/ArbitrumTapGame.sol`
+- Adjust reward amounts in the smart contract
+- Customize game difficulty and progression
+
+### Visual Design
+- Update colors in CSS variables
+- Modify animations and transitions
+- Customize Arbitrum branding elements
+
+### Smart Contract
+- Add new game features and functions
+- Implement additional reward mechanisms
+- Extend leaderboard functionality
 
 ## 🔗 Important Links
 
 - **Arbitrum Documentation**: [https://docs.arbitrum.io](https://docs.arbitrum.io)
 - **Farcaster Mini Apps**: [https://miniapps.farcaster.xyz](https://miniapps.farcaster.xyz)
 - **Game Repository**: [https://github.com/SouravPant/arbitrumgame](https://github.com/SouravPant/arbitrumgame)
+- **Arbitrum Bridge**: [https://bridge.arbitrum.io](https://bridge.arbitrum.io)
+- **Arbitrum Portal**: [https://portal.arbitrum.io](https://portal.arbitrum.io)
 
 ## 🛠️ Technology Stack
 
 - **Frontend**: HTML5, CSS3, JavaScript (ES6+)
-- **Blockchain**: Arbitrum Network, Ethereum
-- **Integration**: Farcaster Mini App SDK
+- **Blockchain**: Arbitrum Network, Solidity, Hardhat
+- **Smart Contracts**: OpenZeppelin, ERC-721
+- **Integration**: Farcaster Mini App SDK, Wagmi, Viem
 - **Design**: Custom CSS with modern web standards
 - **Hosting**: Vercel (recommended)
 
 ## 🔮 Future Enhancements
 
-- **Real NFT Minting**: Integration with actual smart contracts
-- **Leaderboards**: Global player rankings and achievements
-- **Social Features**: Share scores and achievements on Farcaster
-- **More Memecoins**: Expand the token selection
+- **Real-time Multiplayer**: Live player interactions and competitions
+- **Advanced NFTs**: Dynamic NFTs that evolve with gameplay
+- **DeFi Integration**: Yield farming and staking mechanics
+- **Cross-chain Features**: Multi-chain NFT and reward systems
 - **Mobile App**: Native mobile application development
-
-## 📱 Farcaster Mini App Features
-
-- **Seamless Integration**: Works perfectly within Farcaster clients
-- **Optimized Layout**: Designed specifically for Mini App dimensions
-- **Touch Controls**: Optimized for mobile touch interactions
-- **Social Sharing**: Easy sharing of game achievements
+- **Social Features**: Guilds, tournaments, and team competitions
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit issues, feature requests, or pull requests.
+We welcome contributions from the community! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+### Development Setup
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+### Code Standards
+- Follow Solidity best practices
+- Use consistent code formatting
+- Add comprehensive documentation
+- Include error handling
+- Write unit tests for smart contracts
 
 ## 📄 License
 
@@ -137,7 +244,15 @@ This project is open source and available under the [MIT License](LICENSE).
 
 - **Arbitrum Team**: For building an amazing Layer 2 solution
 - **Farcaster Community**: For the innovative Mini App ecosystem
+- **OpenZeppelin**: For secure smart contract libraries
 - **Web3 Developers**: For inspiration and technical guidance
+
+## 🆘 Support
+
+- **Documentation**: [https://docs.arbitrum.io](https://docs.arbitrum.io)
+- **Discord**: [https://discord.gg/arbitrum](https://discord.gg/arbitrum)
+- **Twitter**: [@arbitrum](https://twitter.com/arbitrum)
+- **GitHub Issues**: Report bugs and feature requests
 
 ---
 
