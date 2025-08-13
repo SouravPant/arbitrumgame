@@ -8,14 +8,18 @@ class ArbitrumGameContract {
         this.wagmiClient = null;
         this.account = null;
         this.chainId = 42161; // Arbitrum One
+        this.farcasterSDK = null;
     }
 
-    // Initialize Wagmi client
+    // Initialize Farcaster SDK and Wagmi client
     async initializeWagmi() {
         try {
+            // Initialize Farcaster SDK first
+            await this.initializeFarcasterSDK();
+            
             // Check if we're in a Farcaster frame
-            if (window.farcaster) {
-                console.log('Running in Farcaster frame');
+            if (this.farcasterSDK && this.farcasterSDK.context) {
+                console.log('Running in Farcaster miniapp');
                 await this.setupFarcasterWallet();
             } else {
                 console.log('Running in regular browser');
@@ -26,15 +30,129 @@ class ArbitrumGameContract {
         }
     }
 
+    // Initialize Farcaster miniapp SDK
+    async initializeFarcasterSDK() {
+        try {
+            // Check if Farcaster SDK is available globally
+            if (typeof window !== 'undefined' && window.FarcasterSDK) {
+                this.farcasterSDK = window.FarcasterSDK;
+                
+                // Call ready to dismiss splash screen
+                await this.farcasterSDK.actions.ready();
+                console.log('Farcaster SDK initialized and ready');
+                
+                // Get context information
+                const context = this.farcasterSDK.context;
+                if (context) {
+                    console.log('Farcaster context:', context);
+                    this.updateFarcasterStatus(true);
+                }
+            } else {
+                // Try to load SDK dynamically
+                await this.loadFarcasterSDK();
+            }
+            
+        } catch (error) {
+            console.error('Failed to initialize Farcaster SDK:', error);
+            this.updateFarcasterStatus(false);
+        }
+    }
+
+    // Load Farcaster SDK dynamically
+    async loadFarcasterSDK() {
+        try {
+            // Create script element for Farcaster SDK
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.innerHTML = `
+                import { sdk } from 'https://unpkg.com/@farcaster/miniapp-sdk@latest/dist/index.js';
+                window.FarcasterSDK = sdk;
+                
+                // Initialize SDK and call ready
+                if (sdk && sdk.actions) {
+                    await sdk.actions.ready();
+                    console.log('Farcaster SDK ready called');
+                    
+                    // Dispatch custom event to notify main script
+                    window.dispatchEvent(new CustomEvent('farcasterSDKReady', { detail: sdk }));
+                }
+            `;
+            
+            document.head.appendChild(script);
+            
+            // Wait for SDK to be ready
+            await new Promise((resolve, reject) => {
+                const timeout = setTimeout(() => reject(new Error('SDK load timeout')), 5000);
+                
+                window.addEventListener('farcasterSDKReady', (event) => {
+                    clearTimeout(timeout);
+                    this.farcasterSDK = event.detail;
+                    this.updateFarcasterStatus(true);
+                    resolve();
+                }, { once: true });
+            });
+            
+        } catch (error) {
+            console.error('Failed to load Farcaster SDK:', error);
+            // Fallback: just call a simple ready function if we're in a Farcaster context
+            this.fallbackFarcasterReady();
+        }
+    }
+
+    // Fallback method to call ready if SDK loading fails
+    fallbackFarcasterReady() {
+        try {
+            // Check if we're in a Farcaster context by looking for common indicators
+            const userAgent = navigator.userAgent;
+            const isFarcaster = userAgent.includes('Farcaster') || 
+                              window.location.href.includes('farcaster') ||
+                              document.referrer.includes('farcaster');
+            
+            if (isFarcaster) {
+                // Try to call ready on any available SDK
+                if (window.sdk && window.sdk.actions && window.sdk.actions.ready) {
+                    window.sdk.actions.ready();
+                    console.log('Fallback: Farcaster SDK ready called');
+                } else if (window.parent && window.parent.postMessage) {
+                    // Send ready message to parent frame
+                    window.parent.postMessage({ type: 'farcaster_ready' }, '*');
+                    console.log('Fallback: Posted ready message to parent');
+                }
+                this.updateFarcasterStatus(true);
+            }
+        } catch (error) {
+            console.error('Fallback ready failed:', error);
+        }
+    }
+
+    // Update Farcaster status UI
+    updateFarcasterStatus(isInFarcaster) {
+        const farcasterStatus = document.getElementById('farcasterStatus');
+        if (farcasterStatus) {
+            if (isInFarcaster) {
+                farcasterStatus.textContent = '🟢 Running in Farcaster';
+                farcasterStatus.className = 'farcaster-status farcaster-active';
+            } else {
+                farcasterStatus.textContent = '🔵 Running in Browser';
+                farcasterStatus.className = 'farcaster-status farcaster-browser';
+            }
+        }
+    }
+
     // Setup wallet connection for Farcaster
     async setupFarcasterWallet() {
         try {
-            // Farcaster-specific wallet connection
-            if (window.farcaster && window.farcaster.connectWallet) {
-                const wallet = await window.farcaster.connectWallet();
-                this.account = wallet.address;
-                this.updateWalletStatus(true);
-                console.log('Farcaster wallet connected:', this.account);
+            // Use Farcaster SDK for wallet connection
+            if (this.farcasterSDK && this.farcasterSDK.actions) {
+                // Get user information from Farcaster context
+                const context = this.farcasterSDK.context;
+                if (context && context.user) {
+                    console.log('Farcaster user:', context.user);
+                }
+                
+                // For now, we'll still use the regular wallet connection
+                // as Farcaster miniapp wallet integration is still evolving
+                await this.setupRegularWallet();
             }
         } catch (error) {
             console.error('Farcaster wallet connection failed:', error);

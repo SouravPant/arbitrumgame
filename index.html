@@ -762,6 +762,30 @@
             background: rgba(239, 68, 68, 0.2);
             border: 1px solid var(--error);
         }
+
+        /* Farcaster Status */
+        .farcaster-status {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(31, 31, 31, 0.9);
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            z-index: 1000;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+
+        .farcaster-active {
+            background: rgba(40, 160, 240, 0.2);
+            border: 1px solid var(--arbitrum-blue);
+        }
+
+        .farcaster-browser {
+            background: rgba(124, 58, 237, 0.2);
+            border: 1px solid var(--arbitrum-purple);
+        }
     </style>
 </head>
 <body>
@@ -772,6 +796,11 @@
     <!-- Wallet Status -->
     <div class="wallet-status wallet-disconnected" id="walletStatus">
         🔴 Wallet Disconnected
+    </div>
+    
+    <!-- Farcaster Status -->
+    <div class="farcaster-status farcaster-browser" id="farcasterStatus">
+        🔵 Running in Browser
     </div>
 
     <!-- Header -->
