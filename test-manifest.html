@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farcaster Manifest Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        pre {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Farcaster Manifest Test</h1>
+    
+    <div class="test-section">
+        <h2>📋 Manifest Status</h2>
+        <div id="manifest-status" class="status info">Testing manifest...</div>
+        <div id="manifest-content"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🖼️ Image URLs Test</h2>
+        <div id="image-status" class="status info">Testing images...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 Webhook Test</h2>
+        <div id="webhook-status" class="status info">Testing webhook...</div>
+    </div>
+
+    <script>
+        async function testManifest() {
+            try {
+                const response = await fetch('/.well-known/farcaster.json');
+                if (response.ok) {
+                    const manifest = await response.json();
+                    document.getElementById('manifest-status').innerHTML = 
+                        '<strong>✅ SUCCESS:</strong> Manifest is accessible and valid JSON';
+                    document.getElementById('manifest-status').className = 'status success';
+                    
+                    document.getElementById('manifest-content').innerHTML = 
+                        '<pre>' + JSON.stringify(manifest, null, 2) + '</pre>';
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            } catch (error) {
+                document.getElementById('manifest-status').innerHTML = 
+                    '<strong>❌ ERROR:</strong> ' + error.message;
+                document.getElementById('manifest-status').className = 'status error';
+            }
+        }
+
+        async function testImages() {
+            const images = [
+                { name: 'Icon', url: '/arbitrum-logo.png' },
+                { name: 'Image', url: '/image.png' },
+                { name: 'Splash', url: '/splash.png' }
+            ];
+            
+            let results = [];
+            for (const img of images) {
+                try {
+                    const response = await fetch(img.url, { method: 'HEAD' });
+                    if (response.ok) {
+                        results.push(`✅ ${img.name}: Accessible`);
+                    } else {
+                        results.push(`❌ ${img.name}: HTTP ${response.status}`);
+                    }
+                } catch (error) {
+                    results.push(`❌ ${img.name}: ${error.message}`);
+                }
+            }
+            
+            document.getElementById('image-status').innerHTML = 
+                '<strong>Image Test Results:</strong><br>' + results.join('<br>');
+            document.getElementById('image-status').className = 'status success';
+        }
+
+        async function testWebhook() {
+            try {
+                const response = await fetch('/api/webhook', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'test', data: { test: true } })
+                });
+                
+                if (response.ok) {
+                    document.getElementById('webhook-status').innerHTML = 
+                        '<strong>✅ SUCCESS:</strong> Webhook endpoint is accessible';
+                    document.getElementById('webhook-status').className = 'status success';
+                } else {
+                    document.getElementById('webhook-status').innerHTML = 
+                        '<strong>⚠️ WARNING:</strong> Webhook returned HTTP ' + response.status;
+                    document.getElementById('webhook-status').className = 'status error';
+                }
+            } catch (error) {
+                document.getElementById('webhook-status').innerHTML = 
+                    '<strong>❌ ERROR:</strong> ' + error.message;
+                document.getElementById('webhook-status').className = 'status error';
+            }
+        }
+
+        // Run tests
+        testManifest();
+        testImages();
+        testWebhook();
+    </script>
+</body>
+</html>
