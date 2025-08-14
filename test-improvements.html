@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARBITAP Improvements Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .improvement-list {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        
+        .improvement-list h3 {
+            color: #155724;
+            margin-top: 0;
+        }
+        
+        .improvement-list ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        
+        .improvement-list li {
+            margin: 5px 0;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 ARBITAP Improvements Test</h1>
+    
+    <div class="test-section">
+        <h2>✅ Recent Improvements Made</h2>
+        <div class="improvement-list">
+            <h3>🎨 Visual Improvements</h3>
+            <ul>
+                <li><strong>Better Text Visibility:</strong> White text with strong shadows for better contrast</li>
+                <li><strong>Improved Stat Cards:</strong> Darker background with white borders for clarity</li>
+                <li><strong>Fun Popup Animations:</strong> Random messages like "Boop!", "Tap!", "Arbitrum!" appear when tapping</li>
+                <li><strong>Particle Effects:</strong> Colorful particles explode from tap button</li>
+                <li><strong>Enhanced Tap Feedback:</strong> Better button scaling and visual response</li>
+            </ul>
+            
+            <h3>🔊 Audio & Haptic Improvements</h3>
+            <ul>
+                <li><strong>Sound Effects:</strong> Random pitch beep sounds on each tap</li>
+                <li><strong>Haptic Feedback:</strong> Phone vibration on mobile devices</li>
+                <li><strong>Audio Fallback:</strong> Graceful handling if audio is not available</li>
+            </ul>
+            
+            <h3>📱 Mobile Optimizations</h3>
+            <ul>
+                <li><strong>Touch Feedback:</strong> Haptic vibration for better mobile experience</li>
+                <li><strong>Responsive Design:</strong> All improvements work on mobile devices</li>
+                <li><strong>Performance:</strong> Optimized animations and effects</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🎮 Test the Improved Game</h2>
+        <div class="iframe-container">
+            <iframe src="index.html" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🧪 Test Checklist</h2>
+        <div id="testChecklist">
+            <div class="status info">
+                <h3>Please test the following:</h3>
+                <ol>
+                    <li><strong>Text Visibility:</strong> Can you clearly read "42" and "0" in the stat cards?</li>
+                    <li><strong>Tap Animations:</strong> Do you see fun popup messages when tapping?</li>
+                    <li><strong>Particle Effects:</strong> Do colorful particles appear around the tap button?</li>
+                    <li><strong>Sound Effects:</strong> Do you hear beep sounds when tapping? (Check if sound is enabled)</li>
+                    <li><strong>Haptic Feedback:</strong> Does your phone vibrate when tapping? (Mobile only)</li>
+                    <li><strong>Button Response:</strong> Does the tap button scale down when pressed?</li>
+                    <li><strong>Overall Feel:</strong> Does the game feel more responsive and fun?</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>📊 Expected Results</h2>
+        <div class="status success">
+            <h3>✅ What Should Work Now:</h3>
+            <ul>
+                <li>Clear, readable white text on dark backgrounds</li>
+                <li>Fun popup messages: "+1!", "Boop!", "Tap!", "Arbitrum!", "🎯", "💫", "⚡", "🚀", "💎", "🎮"</li>
+                <li>Colorful particle explosions (white, blue, purple, gold, green)</li>
+                <li>Audio feedback with random pitch variations</li>
+                <li>Mobile vibration feedback</li>
+                <li>Smooth button animations and scaling</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔧 Troubleshooting</h2>
+        <div class="status warning">
+            <h3>If something isn't working:</h3>
+            <ul>
+                <li><strong>No Sound:</strong> Check if your browser allows audio, or try clicking the page first</li>
+                <li><strong>No Vibration:</strong> Haptic feedback only works on mobile devices with vibration</li>
+                <li><strong>No Popups:</strong> Make sure you're clicking the main tap button (the blue circle)</li>
+                <li><strong>Text Still Hard to Read:</strong> Try refreshing the page to load the new styles</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh iframe to ensure latest changes are loaded
+        window.addEventListener('load', () => {
+            const iframe = document.querySelector('iframe');
+            if (iframe) {
+                iframe.src = iframe.src + '?t=' + Date.now();
+            }
+        });
+    </script>
+</body>
+</html>
