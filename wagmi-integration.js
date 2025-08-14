@@ -160,21 +160,66 @@ class ArbitrumGameContract {
         }
     }
 
-    // Setup regular wallet connection
+    // Setup regular wallet connection with Arbitrum support
     async setupRegularWallet() {
         try {
             // Check if MetaMask is available
             if (typeof window.ethereum !== 'undefined') {
+                // Request accounts
                 const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
                 this.account = accounts[0];
+                
+                // Check if we're on Arbitrum network
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                const arbitrumChainId = '0xa4b1'; // Arbitrum One in hex
+                
+                if (chainId !== arbitrumChainId) {
+                    // Try to switch to Arbitrum
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: arbitrumChainId }],
+                        });
+                        console.log('Switched to Arbitrum network');
+                    } catch (switchError) {
+                        // If Arbitrum is not added, add it
+                        if (switchError.code === 4902) {
+                            await window.ethereum.request({
+                                method: 'wallet_addEthereumChain',
+                                params: [{
+                                    chainId: arbitrumChainId,
+                                    chainName: 'Arbitrum One',
+                                    nativeCurrency: {
+                                        name: 'ETH',
+                                        symbol: 'ETH',
+                                        decimals: 18
+                                    },
+                                    rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+                                    blockExplorerUrls: ['https://arbiscan.io']
+                                }],
+                            });
+                            console.log('Added Arbitrum network');
+                        }
+                    }
+                }
+                
                 this.updateWalletStatus(true);
-                console.log('MetaMask wallet connected:', this.account);
+                console.log('Wallet connected on Arbitrum:', this.account);
                 
                 // Listen for account changes
                 window.ethereum.on('accountsChanged', (accounts) => {
                     this.account = accounts[0] || null;
                     this.updateWalletStatus(!!this.account);
                 });
+                
+                // Listen for chain changes
+                window.ethereum.on('chainChanged', (chainId) => {
+                    if (chainId !== arbitrumChainId) {
+                        console.log('Please switch to Arbitrum network');
+                        this.updateWalletStatus(false);
+                    }
+                });
+                
             } else {
                 console.log('No wallet provider found');
                 this.updateWalletStatus(false);
@@ -188,13 +233,23 @@ class ArbitrumGameContract {
     // Update wallet status UI
     updateWalletStatus(connected) {
         const walletStatus = document.getElementById('walletStatus');
+        const connectBtn = document.getElementById('connectWalletBtn');
+        
         if (walletStatus) {
             if (connected) {
                 walletStatus.textContent = `🟢 Wallet Connected: ${this.account?.slice(0, 6)}...${this.account?.slice(-4)}`;
                 walletStatus.className = 'wallet-status wallet-connected';
+                if (connectBtn) {
+                    connectBtn.textContent = '✅ Connected';
+                    connectBtn.disabled = true;
+                }
             } else {
                 walletStatus.textContent = '🔴 Wallet Disconnected';
                 walletStatus.className = 'wallet-status wallet-disconnected';
+                if (connectBtn) {
+                    connectBtn.textContent = '🔗 Connect Wallet';
+                    connectBtn.disabled = false;
+                }
             }
         }
     }

@@ -802,16 +802,47 @@
             transform: translateY(-2px);
         }
 
-        /* Wallet Connection Status */
-        .wallet-status {
+        /* Wallet Connection Container */
+        .wallet-connect-container {
             position: fixed;
             top: 20px;
             right: 20px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .connect-wallet-btn {
+            background: var(--arbitrum-gradient);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 16px rgba(40, 160, 240, 0.3);
+        }
+
+        .connect-wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 160, 240, 0.4);
+        }
+
+        .connect-wallet-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Wallet Connection Status */
+        .wallet-status {
             background: rgba(31, 31, 31, 0.9);
             padding: 12px 16px;
             border-radius: 12px;
             font-size: 0.875rem;
-            z-index: 1000;
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
         }
@@ -856,9 +887,14 @@
     <div class="bg-gradient-overlay"></div>
     <div class="radial-gradient-overlay"></div>
 
-    <!-- Wallet Status (Right Side) -->
-    <div class="wallet-status wallet-disconnected" id="walletStatus">
-        🔴 Wallet Disconnected
+    <!-- Wallet Connection Button -->
+    <div class="wallet-connect-container">
+        <button id="connectWalletBtn" class="connect-wallet-btn">
+            🔗 Connect Wallet
+        </button>
+        <div class="wallet-status wallet-disconnected" id="walletStatus">
+            🔴 Wallet Disconnected
+        </div>
     </div>
 
     <!-- Header -->
@@ -889,7 +925,9 @@
                 </div>
                 
                 <div class="tap-button" id="tapButton">
-                    <img src="https://res.coinpaper.com/coinpaper/arb_fba92b25bc.png" alt="Arbitrum" style="width: 80px; height: 80px; border-radius: 50%;">
+                    <svg viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                    </svg>
                 </div>
                 
                 <p class="tap-text">Tap to earn points and unlock NFTs!</p>
@@ -1124,20 +1162,7 @@
             const notification = document.createElement('div');
             notification.className = 'achievement-notification';
             
-            // Special memecoin messages for milestones
-            const milestoneMessages = {
-                100: '🐸 PEPE LEVEL UNLOCKED! 🐸',
-                500: '🚀 DEGEN MODE ACTIVATED! 🚀',
-                1000: '💎 DIAMOND HANDS ACHIEVED! 💎',
-                5000: '🏎️ LAMBO INCOMING! 🏎️',
-                10000: '🌙 TO THE MOON! 🌙',
-                50000: '🐂 BULL MARKET MODE! 🐂',
-                100000: '💪 LEGENDARY STATUS! 💪',
-                200000: '🌟 GOD MODE UNLOCKED! 🌟',
-                300000: '👑 KING OF ARBITRUM! 👑'
-            };
-            
-            const specialMessage = milestoneMessages[milestone] || '🎉 Milestone Achieved!';
+            const specialMessage = '🎉 Milestone Achieved!';
             
             let txInfo = '';
             if (txHash) {
@@ -1301,6 +1326,7 @@
             initializeMilestones();
             initializeLeaderboard();
             setupGameHandlers();
+            setupWalletConnection();
             updateStats();
             
             // Show initial stats immediately
@@ -1311,6 +1337,32 @@
             if (elements.nftsMinted) {
                 elements.nftsMinted.textContent = formatNumber(gameState.nftsMinted);
                 console.log('Initial NFTs minted set to:', gameState.nftsMinted);
+            }
+        }
+
+        // Setup wallet connection button
+        function setupWalletConnection() {
+            const connectBtn = document.getElementById('connectWalletBtn');
+            if (connectBtn) {
+                connectBtn.addEventListener('click', async () => {
+                    try {
+                        connectBtn.textContent = '⏳ Connecting...';
+                        connectBtn.disabled = true;
+                        
+                        if (window.gameContract) {
+                            await window.gameContract.setupRegularWallet();
+                        } else {
+                            console.error('Game contract not initialized');
+                        }
+                        
+                        connectBtn.textContent = '🔗 Connect Wallet';
+                        connectBtn.disabled = false;
+                    } catch (error) {
+                        console.error('Wallet connection failed:', error);
+                        connectBtn.textContent = '🔗 Connect Wallet';
+                        connectBtn.disabled = false;
+                    }
+                });
             }
         }
 
@@ -1326,14 +1378,8 @@
             const popup = document.createElement('div');
             popup.className = 'tap-popup';
             
-            // Random Arbitrum memecoin messages (Pepe-style)
-            const messages = [
-                'PEPE! 🐸', 'ARB! 🚀', 'MOON! 🌙', 'WAGMI! 💎', 
-                'DEGEN! 🎯', 'APE! 🦍', 'BULL! 🐂', 'PUMP! 📈',
-                'HODL! 💪', 'LAMBO! 🏎️', 'TO THE MOON! 🚀', 'DIAMOND HANDS! 💎',
-                'ARBITRUM! 🔵', 'LAYER 2! ⚡', 'GAS FREE! 💨', 'SCALE! 📊',
-                'ROLLUP! 📜', 'OPTIMISM! 🌟', 'POLYGON! 🔷', 'ETHEREUM! 🌐'
-            ];
+            // Random fun messages
+            const messages = ['+1!', 'Boop!', 'Tap!', 'Arbitrum!', '🎯', '💫', '⚡', '🚀', '💎', '🎮'];
             const randomMessage = messages[Math.floor(Math.random() * messages.length)];
             popup.textContent = randomMessage;
             
