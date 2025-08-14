@@ -1,29 +1,31 @@
 {
-  "accountAssociation": {
-    "header": "eyJmaWQiOjIzNDU1OSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweGI4NDEyQTEyYzE2NDE3QmJCMmREMGI1YzlFMDhkQzdiZjNBMjQ4RjYifQ",
-    "payload": "eyJkb21haW4iOiJhcmJpdHJ1bWdhbWUudmVyY2VsLmFwcCJ9",
-    "signature": "SZROcoSPQn25etecL2Q8IhAzj0GVRjZhANo9B4FFrgRgVLItH4S2oGZOjtQ+N+LEr7ErSzYLSEBf5Fm1VFmAoRw="
-  },
-  "miniapp": {
-    "version": "1",
-    "name": "ArbiTap",
-    "iconUrl": "https://arbitrumgame.vercel.app/icon.png",
-    "homeUrl": "https://arbitrumgame.vercel.app",
-    "imageUrl": "https://arbitrumgame.vercel.app/image.png",
-    "buttonTitle": "Play Game",
-    "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
-    "splashBackgroundColor": "#667eea",
-    "webhookUrl": "https://arbitrumgame.vercel.app/api/webhook",
-    "subtitle": "Tap to earn and mint",
-    "description": "Experience the future of Web3 gaming! Tap the Arbitrum logo to earn points, unlock NFT minting at milestones, and explore popular memecoins on Arbitrum.",
-    "primaryCategory": "games",
-    "tags": [
-      "gaming",
-      "arbitrum",
-      "nft",
-      "memecoins",
-      "web3"
-    ],
-    "tagline": "Tap, Earn, Mint on Arbitrum"
+  "name": "Arbitrum Tap Tap Game",
+  "iconUrl": "https://arbitrumgame.vercel.app/arbitrum-logo.png",
+  "subtitle": "Official Arbitrum Gaming Experience",
+  "description": "Experience the future of Web3 gaming on Arbitrum! Tap to earn points, unlock exclusive NFTs at milestones, and compete on the global leaderboard. Built with Arbitrum's Layer 2 technology for fast, low-cost transactions.",
+  "primaryCategory": "games",
+  "imageUrl": "https://arbitrumgame.vercel.app/image.png",
+  "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
+  "splashBackgroundColor": "#28a0f0",
+  "tags": [
+    "gaming",
+    "arbitrum",
+    "nft",
+    "web3",
+    "layer2",
+    "defi",
+    "blockchain"
+  ],
+  "tagline": "Tap, Earn, Mint on Arbitrum",
+  "buttonTitle": "Play Arbitrum Game",
+  "homeUrl": "https://arbitrumgame.vercel.app",
+  "webhookUrl": "https://arbitrumgame.vercel.app/api/webhook",
+  "metadata": {
+    "version": "1.0.0",
+    "developer": "Arbitrum Community",
+    "website": "https://arbitrum.io",
+    "support": "https://discord.gg/arbitrum",
+    "privacyPolicy": "https://arbitrumgame.vercel.app/privacy",
+    "termsOfService": "https://arbitrumgame.vercel.app/terms"
   }
 }
