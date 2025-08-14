@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Embed Test - ARBITAP</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .metadata {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            overflow-x: auto;
+        }
+        .success { color: #155724; }
+        .error { color: #721c24; }
+        .info { color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Farcaster Embed Test</h1>
+    
+    <div class="test-section">
+        <h2>📋 Current Embed Metadata</h2>
+        <div class="metadata">
+&lt;meta name="fc:miniapp" content='{
+  "version": "1",
+  "imageUrl": "https://arbitrumgame.vercel.app/image.png",
+  "aspectRatio": "1.91:1",
+  "button": {
+    "title": "Play ARBITAP",
+    "action": {
+      "type": "launch_frame",
+      "name": "ARBITAP",
+      "url": "https://arbitrumgame.vercel.app"
+    }
+  },
+  "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
+  "splashBackgroundColor": "#28a0f0"
+}' /&gt;
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>✅ Validation Results</h2>
+        <ul>
+            <li class="success">✅ version: 1 (Valid)</li>
+            <li class="success">✅ imageUrl: https://arbitrumgame.vercel.app/image.png (Valid)</li>
+            <li class="success">✅ aspectRatio: 1.91:1 (Valid - matches image dimensions)</li>
+            <li class="success">✅ button.title: "Play ARBITAP" (Valid)</li>
+            <li class="success">✅ button.action.type: "launch_frame" (Valid)</li>
+            <li class="success">✅ button.action.name: "ARBITAP" (Valid)</li>
+            <li class="success">✅ button.action.url: "https://arbitrumgame.vercel.app" (Valid)</li>
+            <li class="success">✅ splashImageUrl: https://arbitrumgame.vercel.app/splash.png (Valid)</li>
+            <li class="success">✅ splashBackgroundColor: "#28a0f0" (Valid)</li>
+        </ul>
+    </div>
+    
+    <div class="test-section">
+        <h2>🔗 Test Links</h2>
+        <p><strong>Farcaster Embed Tool:</strong> <a href="https://farcaster.xyz/~/developers/mini-apps/embed?url=https%3A%2F%2Farbitrumgame.vercel.app" target="_blank">Test Embed</a></p>
+        <p><strong>Your App:</strong> <a href="https://arbitrumgame.vercel.app" target="_blank">ARBITAP Game</a></p>
+        <p><strong>Manifest:</strong> <a href="https://arbitrumgame.vercel.app/.well-known/farcaster.json" target="_blank">Farcaster Manifest</a></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>📱 Expected Embed Preview</h2>
+        <div style="border: 2px solid #ddd; border-radius: 8px; padding: 20px; background: white;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <img src="https://arbitrumgame.vercel.app/image.png" alt="ARBITAP" style="width: 120px; height: 63px; object-fit: cover; border-radius: 8px;">
+                <div style="flex: 1;">
+                    <h3 style="margin: 0 0 5px 0; color: #333;">ARBITAP - Arbitrum Tap Tap Game</h3>
+                    <p style="margin: 0 0 10px 0; color: #666; font-size: 14px;">Experience the future of Web3 gaming on Arbitrum! Tap to earn points, unlock exclusive NFTs at milestones, and compete on the global leaderboard.</p>
+                    <button style="background: #28a0f0; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-weight: bold; cursor: pointer;">Play ARBITAP</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>🚀 Next Steps</h2>
+        <ol>
+            <li>Deploy your updated <code>index.html</code> to Vercel</li>
+            <li>Test the embed at: <a href="https://farcaster.xyz/~/developers/mini-apps/embed?url=https%3A%2F%2Farbitrumgame.vercel.app" target="_blank">Farcaster Embed Tool</a></li>
+            <li>Submit your app at: <a href="https://miniapps.farcaster.xyz" target="_blank">Farcaster Mini Apps</a></li>
+        </ol>
+    </div>
+</body>
+</html>

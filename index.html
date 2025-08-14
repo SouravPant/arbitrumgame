@@ -3,22 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARBITAP - Gaming Experience</title>
+    <title>ARBITAP - Arbitrum Tap Tap Game</title>
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://arbitrumgame.vercel.app/" />
+    <meta property="og:title" content="ARBITAP - Arbitrum Tap Tap Game" />
+    <meta property="og:description" content="Experience the future of Web3 gaming on Arbitrum! Tap to earn points, unlock exclusive NFTs at milestones, and compete on the global leaderboard." />
+    <meta property="og:image" content="https://arbitrumgame.vercel.app/image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="https://arbitrumgame.vercel.app/" />
+    <meta property="twitter:title" content="ARBITAP - Arbitrum Tap Tap Game" />
+    <meta property="twitter:description" content="Experience the future of Web3 gaming on Arbitrum! Tap to earn points, unlock exclusive NFTs at milestones, and compete on the global leaderboard." />
+    <meta property="twitter:image" content="https://arbitrumgame.vercel.app/image.png" />
     
     <!-- Farcaster Mini App Metadata -->
     <meta name="fc:miniapp" content='{
       "version": "1",
       "imageUrl": "https://arbitrumgame.vercel.app/image.png",
+      "aspectRatio": "1.91:1",
       "button": {
         "title": "Play ARBITAP",
         "action": {
           "type": "launch_frame",
           "name": "ARBITAP",
-          "url": "https://arbitrumgame.vercel.app",
-          "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
-          "splashBackgroundColor": "#28a0f0"
+          "url": "https://arbitrumgame.vercel.app"
         }
-      }
+      },
+      "splashImageUrl": "https://arbitrumgame.vercel.app/splash.png",
+      "splashBackgroundColor": "#28a0f0"
     }' />
     
     <!-- Wagmi and Farcaster Integration -->
