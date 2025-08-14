@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARBITAP Game Status</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .status-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .test-button {
+            background: #28a0f0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        
+        .test-button:hover {
+            background: #1e88e5;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 ARBITAP Game Status Check</h1>
+    
+    <div class="status-section">
+        <h2>📊 Current Status</h2>
+        <div id="gameStatus">
+            <div class="status info">Checking game status...</div>
+        </div>
+    </div>
+    
+    <div class="status-section">
+        <h2>🎮 Live Game Preview</h2>
+        <div class="iframe-container">
+            <iframe src="https://arbitrumgame.vercel.app/" width="100%" height="100%" frameborder="0"></iframe>
+        </div>
+    </div>
+    
+    <div class="status-section">
+        <h2>🔗 Quick Links</h2>
+        <p><a href="https://arbitrumgame.vercel.app/" target="_blank" class="test-button">🎮 Play ARBITAP</a></p>
+        <p><a href="https://arbitrumgame.vercel.app/.well-known/farcaster.json" target="_blank" class="test-button">📋 Farcaster Manifest</a></p>
+        <p><a href="https://farcaster.xyz/~/developers/mini-apps/embed?url=https%3A%2F%2Farbitrumgame.vercel.app" target="_blank" class="test-button">🔗 Test Farcaster Embed</a></p>
+        <p><a href="https://miniapps.farcaster.xyz" target="_blank" class="test-button">🚀 Submit to Farcaster</a></p>
+    </div>
+    
+    <div class="status-section">
+        <h2>✅ Recent Improvements Deployed</h2>
+        <div class="status success">
+            <h3>🎨 Visual Improvements:</h3>
+            <ul>
+                <li>✅ Better text visibility (white text with shadows)</li>
+                <li>✅ Improved stat card backgrounds</li>
+                <li>✅ Fun popup animations ("Boop!", "Tap!", "Arbitrum!")</li>
+                <li>✅ Colorful particle effects</li>
+                <li>✅ Enhanced tap button feedback</li>
+            </ul>
+            
+            <h3>🔊 Audio & Haptic:</h3>
+            <ul>
+                <li>✅ Sound effects on tap</li>
+                <li>✅ Mobile vibration feedback</li>
+                <li>✅ Audio fallback handling</li>
+            </ul>
+            
+            <h3>📱 Mobile Optimizations:</h3>
+            <ul>
+                <li>✅ Touch-friendly interface</li>
+                <li>✅ Responsive design</li>
+                <li>✅ Haptic feedback</li>
+            </ul>
+        </div>
+    </div>
+    
+    <div class="status-section">
+        <h2>🧪 Test Instructions</h2>
+        <div class="status info">
+            <h3>To test the improvements:</h3>
+            <ol>
+                <li>Click the "Play ARBITAP" button above</li>
+                <li>Look for clear white text in the stat cards</li>
+                <li>Tap the blue button and watch for:
+                    <ul>
+                        <li>Fun popup messages ("Boop!", "Tap!", etc.)</li>
+                        <li>Colorful particle explosions</li>
+                        <li>Sound effects (if audio is enabled)</li>
+                        <li>Phone vibration (on mobile)</li>
+                    </ul>
+                </li>
+                <li>Check if the game feels more responsive and fun</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Check game status
+        async function checkGameStatus() {
+            const statusDiv = document.getElementById('gameStatus');
+            
+            try {
+                // Check main game
+                const gameResponse = await fetch('https://arbitrumgame.vercel.app/');
+                if (gameResponse.ok) {
+                    statusDiv.innerHTML = '<div class="status success">✅ Game is live and accessible at https://arbitrumgame.vercel.app/</div>';
+                } else {
+                    statusDiv.innerHTML = '<div class="status error">❌ Game returned HTTP ' + gameResponse.status + '</div>';
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '<div class="status error">❌ Cannot access game: ' + error.message + '</div>';
+            }
+        }
+        
+        // Run status check
+        checkGameStatus();
+    </script>
+</body>
+</html>
