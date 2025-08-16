@@ -3,7 +3,19 @@
 
 class ArbitrumGameContract {
     constructor() {
-        this.contractAddress = localStorage.getItem('gameContractAddress') || '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De'; // Deployed contract
+        // Use network-specific contract address
+        this.contractAddress = this.getContractAddress();
+        this.networks = {
+            ARBITRUM_SEPOLIA: {
+                chainId: 421614,
+                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De'
+            },
+            ARBITRUM_ONE: {
+                chainId: 42161,
+                contractAddress: null // No mainnet deployment yet
+            }
+        };
+        
         this.contractABI = [
             {
                 "inputs": [{"internalType": "uint256", "name": "newLevel", "type": "uint256"}],
@@ -62,7 +74,7 @@ class ArbitrumGameContract {
         ];
         this.wagmiClient = null;
         this.account = null;
-        this.chainId = 42161; // Arbitrum One
+        this.chainId = 421614; // Using Arbitrum Sepolia testnet where contract is deployed
         this.farcasterSDK = null;
     }
 
@@ -70,6 +82,36 @@ class ArbitrumGameContract {
     async initializeWagmi() {
         try {
             // Initialize Farcaster SDK first
+
+
+    // Get contract address for current network
+    getContractAddress() {
+        const storedAddress = localStorage.getItem('gameContractAddress');
+        if (storedAddress) return storedAddress;
+        
+        // Use testnet address since that's where contract is deployed
+        return this.networks.ARBITRUM_SEPOLIA.contractAddress;
+    }
+
+    // Verify contract exists on current network
+    async verifyContractOnNetwork(chainId) {
+        const network = Object.values(this.networks).find(n => n.chainId === chainId);
+        if (!network || !network.contractAddress) {
+            console.warn(`No contract deployed on chain ID ${chainId}`);
+            return false;
+        }
+        
+        try {
+            await this.loadEthersLibrary();
+            const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+            const code = await provider.getCode(network.contractAddress);
+            return code !== '0x';
+        } catch (error) {
+            console.error('Contract verification failed:', error);
+            return false;
+        }
+    }
+
             await this.initializeFarcasterSDK();
             
             // Check if we're in a Farcaster frame

@@ -518,6 +518,19 @@
             margin-top: 5px;
         }
 
+        /* Network Status Styles */
+        .network-status {
+            background: rgba(30, 30, 30, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            padding: 8px 12px;
+            font-size: 12px;
+            color: #fff;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
         /* Responsive Design */
         @media (max-width: 360px) {
             .container {
@@ -555,6 +568,10 @@
                 <div class="app-title">ARBITAP</div>
                 <div class="wallet-info">
                     <div class="wallet-status" id="walletStatus">Connect Wallet</div>
+                    <div id="networkStatus" class="network-status">
+                        <span id="networkIcon">🟡</span>
+                        <span id="networkText">Arbitrum Sepolia (Testnet)</span>
+                    </div>
                 </div>
             </div>
 
@@ -640,8 +657,29 @@
             5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000
         ];
 
+        // Network Configurations
+        const NETWORKS = {
+            ARBITRUM_ONE: {
+                chainId: '0xa4b1',
+                name: 'Arbitrum One',
+                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+                blockExplorerUrls: ['https://arbiscan.io'],
+                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De' // Mainnet Contract Address
+            },
+            ARBITRUM_SEPOLIA: {
+                chainId: '0x166eed', // Chain ID 421614
+                name: 'Arbitrum Sepolia',
+                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+                blockExplorerUrls: ['https://sepolia.arbiscan.io'],
+                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De' // Testnet Contract Address
+            }
+        };
+
+        // Set default network to Arbitrum Sepolia (Testnet)
+        // You can change this to NETWORKS.ARBITRUM_ONE to connect to Mainnet
+        let CURRENT_NETWORK = NETWORKS.ARBITRUM_SEPOLIA;
+
         // Contract ABI and address from deployed contract
-        const CONTRACT_ADDRESS = "0xF3FF71531F523f09c42490760e9Ba43eD30bb0De";
         const CONTRACT_ABI = [
             {
                 "inputs": [{"internalType": "uint256", "name": "newLevel", "type": "uint256"}],
@@ -716,7 +754,7 @@
             levelUpCost: 1000,
             walletConnected: false,
             walletAddress: null,
-            contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De'
+            contractAddress: CURRENT_NETWORK.contractAddress
         };
 
         // Sample leaderboard data - Top 15 players
@@ -769,14 +807,18 @@
                 regenCost: document.getElementById('regenCost'),
                 levelUpCost: document.getElementById('levelUpCost'),
                 walletStatus: document.getElementById('walletStatus'),
-                connectWalletBtn: document.getElementById('connectWalletBtn')
+                connectWalletBtn: document.getElementById('connectWalletBtn'),
+                networkStatus: document.getElementById('networkStatus'),
+                networkText: document.getElementById('networkText'),
+                networkIcon: document.getElementById('networkIcon')
             };
 
             console.log('Elements initialized:', {
                 tapButton: !!elements.tapButton,
                 totalTaps: !!elements.totalTaps,
                 leaderboardToggle: !!elements.leaderboardToggle,
-                connectWalletBtn: !!elements.connectWalletBtn
+                connectWalletBtn: !!elements.connectWalletBtn,
+                networkStatus: !!elements.networkStatus
             });
         }
 
@@ -1049,6 +1091,17 @@
             }
         }
 
+        // Function to update network status display
+        function updateNetworkStatus(networkInfo) {
+            if (!elements.networkStatus || !elements.networkText || !elements.networkIcon) return;
+
+            elements.networkText.textContent = `${networkInfo.name} (${networkInfo.isTestnet ? 'Testnet' : 'Mainnet'})`;
+            elements.networkIcon.textContent = networkInfo.isTestnet ? '🧪' : '🌐';
+            elements.networkStatus.style.borderColor = networkInfo.isTestnet ? 'var(--orange)' : 'var(--primary-blue)';
+            console.log(`Network updated: ${networkInfo.name}`);
+        }
+
+
         // Manual wallet connection function
         async function connectWallet() {
             try {
@@ -1064,8 +1117,11 @@
                     const address = accounts[0];
                     console.log('Wallet connected successfully:', address);
 
-                    // Check and switch to Arbitrum if needed
-                    await switchToArbitrum();
+                    // Check and switch to the target network if needed
+                    await switchToTargetNetwork();
+
+                    // After potential switch, re-check current network and update status
+                    await updateCurrentNetworkInfo();
 
                     updateWalletStatus(true, address);
                     return true;
@@ -1085,9 +1141,9 @@
             }
         }
 
-        // Switch to Arbitrum network
-        async function switchToArbitrum() {
-            const arbitrumChainId = '0xa4b1'; // Arbitrum One mainnet
+        // Switch to the target network (defined by CURRENT_NETWORK)
+        async function switchToTargetNetwork() {
+            const targetChainId = CURRENT_NETWORK.chainId;
 
             if (typeof window.ethereum === 'undefined') {
                 console.error('Ethereum provider not found.');
@@ -1096,44 +1152,44 @@
 
             try {
                 const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
-                if (currentChainId === arbitrumChainId) {
-                    console.log('Already on Arbitrum One.');
+                if (currentChainId === targetChainId) {
+                    console.log(`Already on ${CURRENT_NETWORK.name}.`);
                     return;
                 }
 
                 await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
-                    params: [{ chainId: arbitrumChainId }],
+                    params: [{ chainId: targetChainId }],
                 });
-                console.log('Switched to Arbitrum One.');
+                console.log(`Switched to ${CURRENT_NETWORK.name}.`);
             } catch (error) {
                 if (error.code === 4902) { // Common error code for unknown chain
-                    console.log('Arbitrum One network not added, attempting to add...');
+                    console.log(`Network with chainId ${targetChainId} not added, attempting to add...`);
                     try {
                         await window.ethereum.request({
                             method: 'wallet_addEthereumChain',
                             params: [{
-                                chainId: arbitrumChainId,
-                                chainName: 'Arbitrum One',
+                                chainId: targetChainId,
+                                chainName: CURRENT_NETWORK.name,
                                 nativeCurrency: {
                                     name: 'Arbitrum Ether',
                                     symbol: 'ETH',
                                     decimals: 18
                                 },
-                                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
-                                blockExplorerUrls: ['https://arbiscan.io']
+                                rpcUrls: CURRENT_NETWORK.rpcUrls,
+                                blockExplorerUrls: CURRENT_NETWORK.blockExplorerUrls
                             }],
                         });
-                        console.log('Added Arbitrum One network successfully.');
+                        console.log(`Added ${CURRENT_NETWORK.name} network successfully.`);
                         // Retry switching after adding
-                        await switchToArbitrum();
+                        await switchToTargetNetwork();
                     } catch (addError) {
-                        console.error('Failed to add Arbitrum One network:', addError);
-                        alert('Failed to add Arbitrum network. Please add it manually in your wallet.');
+                        console.error(`Failed to add ${CURRENT_NETWORK.name} network:`, addError);
+                        alert(`Failed to add ${CURRENT_NETWORK.name} network. Please add it manually in your wallet.`);
                     }
                 } else {
-                    console.error('Failed to switch to Arbitrum One:', error);
-                    alert(`Failed to switch to Arbitrum: ${error.message}. Please switch manually.`);
+                    console.error(`Failed to switch to ${CURRENT_NETWORK.name}:`, error);
+                    alert(`Failed to switch to ${CURRENT_NETWORK.name}: ${error.message}. Please switch manually.`);
                 }
             }
         }
@@ -1158,30 +1214,79 @@
 
                 const provider = new window.ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
+                const network = await provider.getNetwork();
 
-                // Use the deployed contract address
-                const contractAddress = gameState.contractAddress || CONTRACT_ADDRESS;
+                console.log(`Connected to network: ${network.name} Chain ID: ${network.chainId}`);
 
-                window.gameContract = new window.ethers.Contract(contractAddress, CONTRACT_ABI, signer);
+                // Verify we're on the correct network
+                const currentChainId = '0x' + network.chainId.toString(16);
+                if (currentChainId !== CURRENT_NETWORK.chainId) {
+                    console.warn(`Connected to wrong network. Expected: ${CURRENT_NETWORK.name}, Got: ${network.name}`);
+                    showNotification(`Please switch to ${CURRENT_NETWORK.name} network`, '#ff9900');
+                    return;
+                }
+
+                // Verify contract deployment
+                const isContractDeployed = await verifyContractDeployment();
+                if (!isContractDeployed) {
+                    console.error('Contract verification failed');
+                    return;
+                }
+
+                // Initialize game contract with network-specific address
+                const contractAddress = CURRENT_NETWORK.contractAddress;
+                gameContract = new window.ethers.Contract(contractAddress, CONTRACT_ABI, signer);
                 console.log('Game contract initialized successfully with address:', contractAddress);
 
-                // Test contract connection
-                try {
-                    const network = await provider.getNetwork();
-                    console.log('Connected to network:', network.name, 'Chain ID:', network.chainId);
-
-                    if (network.chainId !== 42161 && network.chainId !== 421614) {
-                        showNotification('Please switch to Arbitrum network', '#ff9900');
-                    }
-                } catch (networkError) {
-                    console.warn('Could not verify network connection:', networkError);
-                }
 
             } catch (error) {
                 console.error('Failed to initialize contract:', error);
                 showNotification('Blockchain connection failed. Using local mode.', '#ff9900');
             }
         }
+
+        // Verify contract is deployed on current network
+        async function verifyContractDeployment() {
+            if (!CURRENT_NETWORK.contractAddress) {
+                console.warn(`No contract deployed on ${CURRENT_NETWORK.name}`);
+                showNotification(`⚠️ Contract not deployed on ${CURRENT_NETWORK.name}`, '#ff9900');
+                return false;
+            }
+
+            try {
+                await loadEthersJS();
+
+                if (typeof window.ethereum === 'undefined' || typeof window.ethers === 'undefined') {
+                    return false;
+                }
+
+                const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+                const code = await provider.getCode(CURRENT_NETWORK.contractAddress);
+
+                if (code === '0x') {
+                    console.error(`Contract not found at ${CURRENT_NETWORK.contractAddress} on ${CURRENT_NETWORK.name}`);
+                    showNotification(`❌ Contract not found on ${CURRENT_NETWORK.name}`, '#ff3b30');
+                    return false;
+                } else {
+                    console.log(`✅ Contract verified at ${CURRENT_NETWORK.contractAddress} on ${CURRENT_NETWORK.name}`);
+                    showNotification(`✅ Connected to ${CURRENT_NETWORK.name}`, '#30d158');
+                    return true;
+                }
+            } catch (error) {
+                console.error('Contract verification failed:', error);
+                showNotification('Contract verification failed', '#ff3b30');
+                return false;
+            }
+        }
+
+        // Get current network info
+        function getCurrentNetworkInfo() {
+            return {
+                ...CURRENT_NETWORK,
+                isTestnet: CURRENT_NETWORK === NETWORKS.ARBITRUM_SEPOLIA
+            };
+        }
+
 
         // Power-up functions with contract integration
         async function upgradeTapPower() {
@@ -1192,13 +1297,13 @@
             }
 
             // Try blockchain upgrade if wallet connected and contract available
-            if (isWalletConnected && window.gameContract && typeof window.ethers !== 'undefined') {
+            if (isWalletConnected && gameContract && typeof window.ethers !== 'undefined') {
                 try {
                     showNotification('Upgrading Tap Power on blockchain...', '#ffd700');
 
                     // Update taps on contract (deduct cost)
                     const newTapCount = gameState.totalTaps - cost;
-                    const tx = await window.gameContract.updateTaps(newTapCount);
+                    const tx = await gameContract.updateTaps(newTapCount);
 
                     showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                     const receipt = await tx.wait();
@@ -1244,18 +1349,13 @@
         async function upgradeMaxEnergy() {
             const cost = gameState.energyCost;
             if (gameState.totalTaps >= cost) {
-                if (isWalletConnected && window.gameContract) {
+                if (isWalletConnected && gameContract && typeof window.ethers !== 'undefined') {
                     try {
                         showNotification('Upgrading Max Energy on blockchain...', '#00bfff');
 
-                        // Create contract instance with ethers
-                        const provider = new window.ethers.providers.Web3Provider(window.ethereum);
-                        const signer = provider.getSigner();
-                        const contract = new window.ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
                         // Update taps on contract (deduct cost)
                         const newTapCount = gameState.totalTaps - cost;
-                        const tx = await contract.updateTaps(newTapCount);
+                        const tx = await gameContract.updateTaps(newTapCount);
 
                         showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                         const receipt = await tx.wait();
@@ -1264,66 +1364,53 @@
                             showNotification(`Max Energy upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
 
                             // Apply upgrade locally
-                            gameState.totalTaps -= cost;
-                            gameState.energyLevel++;
-                            gameState.energyCost = Math.floor(cost * 1.5);
-                            gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
-                            gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
-
-                            updateUI();
-                            saveGameState();
+                            applyMaxEnergyUpgrade(cost);
+                            return;
                         } else {
                             throw new Error("Transaction failed");
                         }
                     } catch (error) {
-                        console.error('Blockchain update failed:', error);
+                        console.error('Blockchain upgrade failed:', error);
                         if (error.code === 4001) {
                             showNotification('Transaction rejected by user.', '#ff3b30');
                         } else {
-                            showNotification('Blockchain update failed. Attempting local upgrade.', '#ff9900');
-                            // Apply upgrade locally
-                            gameState.totalTaps -= cost;
-                            gameState.energyLevel++;
-                            gameState.energyCost = Math.floor(cost * 1.5);
-                            gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
-                            gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
-                            updateUI();
-                            saveGameState();
+                            showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
+                            applyMaxEnergyUpgrade(cost);
                         }
                         return;
                     }
                 } else {
                     // Local upgrade
-                    gameState.totalTaps -= cost;
-                    gameState.energyLevel++;
-                    gameState.energyCost = Math.floor(cost * 1.5);
-                    gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
-                    gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
-
-                    updateUI();
-                    saveGameState();
-                    showNotification(`Max Energy: ${gameState.maxEnergy}! (Local)`, '#00bfff');
+                    applyMaxEnergyUpgrade(cost);
                 }
             } else {
                 showNotification('Not enough taps to upgrade!', '#ff3b30');
             }
         }
 
+        function applyMaxEnergyUpgrade(cost) {
+            gameState.totalTaps -= cost;
+            gameState.energyLevel++;
+            gameState.energyCost = Math.floor(cost * 1.5);
+            gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
+            gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
+
+            updateUI();
+            saveGameState();
+            showNotification(`Max Energy: ${gameState.maxEnergy}!`, '#00bfff');
+        }
+
+
         async function upgradeEnergyRegen() {
             const cost = gameState.regenCost;
             if (gameState.totalTaps >= cost) {
-                if (isWalletConnected && window.gameContract) {
+                if (isWalletConnected && gameContract && typeof window.ethers !== 'undefined') {
                     try {
                         showNotification('Upgrading Energy Regen on blockchain...', '#00ff00');
 
-                        // Create contract instance with ethers
-                        const provider = new window.ethers.providers.Web3Provider(window.ethereum);
-                        const signer = provider.getSigner();
-                        const contract = new window.ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
                         // Update taps on contract (deduct cost)
                         const newTapCount = gameState.totalTaps - cost;
-                        const tx = await contract.updateTaps(newTapCount);
+                        const tx = await gameContract.updateTaps(newTapCount);
 
                         showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                         const receipt = await tx.wait();
@@ -1332,46 +1419,39 @@
                             showNotification(`Energy Regen upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
 
                             // Apply upgrade locally
-                            gameState.totalTaps -= cost;
-                            gameState.regenLevel++;
-                            gameState.regenCost = Math.floor(cost * 1.5);
-                            gameState.energyRegenRate = gameState.regenLevel;
-
-                            updateUI();
-                            saveGameState();
+                            applyEnergyRegenUpgrade(cost);
+                            return;
                         } else {
                             throw new Error("Transaction failed");
                         }
                     } catch (error) {
-                        console.error('Blockchain update failed:', error);
+                        console.error('Blockchain upgrade failed:', error);
                         if (error.code === 4001) {
                             showNotification('Transaction rejected by user.', '#ff3b30');
                         } else {
-                            showNotification('Blockchain update failed. Attempting local upgrade.', '#ff9900');
-                            // Apply upgrade locally
-                            gameState.totalTaps -= cost;
-                            gameState.regenLevel++;
-                            gameState.regenCost = Math.floor(cost * 1.5);
-                            gameState.energyRegenRate = gameState.regenLevel;
-                            updateUI();
-                            saveGameState();
+                            showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
+                            applyEnergyRegenUpgrade(cost);
                         }
                         return;
                     }
                 } else {
                     // Local upgrade
-                    gameState.totalTaps -= cost;
-                    gameState.regenLevel++;
-                    gameState.regenCost = Math.floor(cost * 1.5);
-                    gameState.energyRegenRate = gameState.regenLevel;
-
-                    updateUI();
-                    saveGameState();
-                    showNotification(`+${gameState.regenLevel} Regen Speed! (Local)`, '#00ff00');
+                    applyEnergyRegenUpgrade(cost);
                 }
             } else {
                 showNotification('Not enough taps to upgrade!', '#ff3b30');
             }
+        }
+
+        function applyEnergyRegenUpgrade(cost) {
+            gameState.totalTaps -= cost;
+            gameState.regenLevel++;
+            gameState.regenCost = Math.floor(cost * 1.5);
+            gameState.energyRegenRate = gameState.regenLevel;
+
+            updateUI();
+            saveGameState();
+            showNotification(`+${gameState.regenLevel} Regen Speed!`, '#00ff00');
         }
 
         // Attach event listeners to power-up cards
@@ -1391,6 +1471,43 @@
             });
         }
 
+        // Update current network information and display
+        async function updateCurrentNetworkInfo() {
+            if (typeof window.ethereum === 'undefined') {
+                console.warn('Ethereum provider not detected. Cannot update network info.');
+                return;
+            }
+            try {
+                const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+                const network = await provider.getNetwork();
+                const chainId = '0x' + network.chainId.toString(16);
+
+                let networkInfo = { ...CURRENT_NETWORK, isTestnet: CURRENT_NETWORK === NETWORKS.ARBITRUM_SEPOLIA }; // Default to current network
+
+                if (chainId === NETWORKS.ARBITRUM_ONE.chainId) {
+                    networkInfo = { ...NETWORKS.ARBITRUM_ONE, isTestnet: false };
+                } else if (chainId === NETWORKS.ARBITRUM_SEPOLIA.chainId) {
+                    networkInfo = { ...NETWORKS.ARBITRUM_SEPOLIA, isTestnet: true };
+                } else {
+                    // If the connected chain is neither, use a generic representation or show an error
+                    networkInfo = {
+                        chainId: chainId,
+                        name: `Unknown Network (${network.name})`,
+                        rpcUrls: [],
+                        blockExplorerUrls: [],
+                        contractAddress: null,
+                        isTestnet: false // Assume not a testnet if unknown
+                    };
+                    showNotification(`Connected to an unsupported network (${network.name}). Please switch to Arbitrum.`, '#ff9900');
+                }
+                CURRENT_NETWORK = networkInfo; // Update the global CURRENT_NETWORK
+                updateNetworkStatus(networkInfo);
+            } catch (error) {
+                console.error('Error updating current network info:', error);
+                showNotification('Failed to get network information.', '#ff3b30');
+            }
+        }
+
         // Initialize game when page loads
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Initializing ARBITAP game...');
@@ -1408,17 +1525,8 @@
                     showNotification('Blockchain features disabled', '#ff9900');
                 });
 
-            // Wait for wagmi integration to be ready
-            if (window.gameContract) {
-                console.log('Wagmi integration already available');
-            } else {
-                // Wait a bit for wagmi integration to load
-                setTimeout(() => {
-                    if (window.gameContract) {
-                        console.log('Wagmi integration loaded');
-                    }
-                }, 1000);
-            }
+            // Update network status initially
+            await updateCurrentNetworkInfo();
 
             // Wallet connection setup
             const walletStatus = document.getElementById('walletStatus');
@@ -1432,7 +1540,7 @@
                     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
                     if (accounts.length > 0) {
                         updateWalletStatus(true, accounts[0]);
-                        await initializeContract();
+                        await initializeContract(); // Initialize contract after wallet is connected
                     } else {
                         updateWalletStatus(false);
                     }
@@ -1448,14 +1556,15 @@
                         await initializeContract();
                     } else {
                         updateWalletStatus(false);
-                        window.gameContract = null;
+                        gameContract = null; // Clear contract instance if wallet disconnected
                     }
                 });
 
                 // Listen for chain changes
-                window.ethereum.on('chainChanged', function(chainId) {
+                window.ethereum.on('chainChanged', async function(chainId) {
                     console.log('Chain changed to:', chainId);
-                    window.location.reload();
+                    await updateCurrentNetworkInfo(); // Update network display
+                    await initializeContract(); // Re-initialize contract for the new chain
                 });
             } else {
                 console.warn('MetaMask or other Web3 provider not detected.');
@@ -1477,7 +1586,7 @@
                 elements.leaderboardToggle.addEventListener('click', function() {
                     const content = elements.leaderboardContent;
                     const toggle = elements.leaderboardToggle;
-                    
+
                     if (content.classList.contains('expanded')) {
                         content.classList.remove('expanded');
                         toggle.classList.remove('expanded');
