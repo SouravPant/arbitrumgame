@@ -232,24 +232,23 @@ class ArbitrumGameContract {
 
     // Update wallet status UI
     updateWalletStatus(connected) {
-        const walletStatus = document.getElementById('walletStatus');
-        const connectBtn = document.getElementById('connectWalletBtn');
-        
-        if (walletStatus) {
-            if (connected) {
-                walletStatus.textContent = `🟢 Wallet Connected: ${this.account?.slice(0, 6)}...${this.account?.slice(-4)}`;
-                walletStatus.className = 'wallet-status wallet-connected';
-                if (connectBtn) {
-                    connectBtn.textContent = '✅ Connected';
-                    connectBtn.disabled = true;
-                }
-            } else {
-                walletStatus.textContent = '🔴 Wallet Disconnected';
-                walletStatus.className = 'wallet-status wallet-disconnected';
-                if (connectBtn) {
-                    connectBtn.textContent = '🔗 Connect Wallet';
-                    connectBtn.disabled = false;
-                }
+        if (connected && this.account) {
+            // Dispatch custom event for the main game
+            window.dispatchEvent(new CustomEvent('walletConnected', {
+                detail: { address: this.account }
+            }));
+            
+            // Update using global function if available
+            if (window.updateWalletStatus) {
+                window.updateWalletStatus(true, this.account);
+            }
+        } else {
+            // Dispatch disconnect event
+            window.dispatchEvent(new CustomEvent('walletDisconnected'));
+            
+            // Update using global function if available
+            if (window.updateWalletStatus) {
+                window.updateWalletStatus(false);
             }
         }
     }

@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARBITAP - Gaming Experience</title>
-    
+    <title>ARBITAP - Tap to Earn</title>
+
     <!-- Farcaster Mini App Metadata -->
     <meta name="fc:miniapp" content='{
       "version": "1",
@@ -20,275 +20,236 @@
         }
       }
     }' />
-    
-    <!-- Wagmi and Farcaster Integration -->
-    <script src="https://unpkg.com/@wagmi/core@1.4.13/dist/wagmi-core.umd.js"></script>
-    <script src="https://unpkg.com/wagmi@1.4.13/dist/wagmi.umd.js"></script>
-    <script src="https://unpkg.com/viem@1.19.9/dist/viem.umd.js"></script>
+
+    <!-- Wagmi Integration -->
     <script src="wagmi-integration.js"></script>
-    
-    <!-- Professional Notcoin-Inspired Styling -->
+
+    <!-- Notcoin-Inspired Modern Styling -->
     <style>
         :root {
-            --arbitrum-blue: #28a0f0;
-            --arbitrum-purple: #7c3aed;
-            --arbitrum-gradient: linear-gradient(135deg, #28a0f0 0%, #7c3aed 100%);
-            --arbitrum-gold: #fad258;
-            --arbitrum-dark: #1f1f1f;
-            --background: #0a0a0a;
-            --surface: #1a1a1a;
-            --surface-light: #2a2a2a;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --accent: #00d4aa;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --error: #ef4444;
-            --notcoin-yellow: #fbbf24;
-            --notcoin-orange: #f59e0b;
+            --primary-blue: #007AFF;
+            --secondary-blue: #5AC8FA;
+            --background: #000014;
+            --surface: #1C1C1E;
+            --surface-light: #2C2C2E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --gold: #FFD700;
+            --green: #30D158;
+            --red: #FF3B30;
+            --orange: #FF9500;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: var(--arbitrum-gradient);
+            background: linear-gradient(135deg, var(--background) 0%, #001122 100%);
             color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 100px;
-        }
-
-        /* Professional Overlay System */
-        .bg-gradient-overlay {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
+            height: 100vh;
+            overflow: hidden;
             position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.4) 40%, rgba(40,160,240,0.1) 100%);
-            z-index: 1;
-            pointer-events: none;
+            user-select: none;
         }
 
-        .radial-gradient-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(40, 160, 240, 0.3) 0%, rgba(40, 160, 240, 0) 70%);
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        /* Header with Professional Styling */
-        .header {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            text-align: center;
-            padding: 16px 16px;
-            z-index: 10;
-            background: rgba(31, 31, 31, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .arbitrum-logo {
-            width: 48px;
-            height: 48px;
-            margin: 0 auto 12px;
-            background: var(--arbitrum-gradient);
-            border-radius: 16px;
+        .container {
+            height: 100vh;
             display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 32px rgba(40, 160, 240, 0.4);
+            flex-direction: column;
             position: relative;
             overflow: hidden;
         }
 
-        .arbitrum-logo::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: rotate 4s linear infinite;
+        /* Header */
+        .header {
+            padding: 20px 20px 10px;
+            text-align: center;
+            background: rgba(28, 28, 30, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
         }
 
-        .arbitrum-logo svg {
-            width: 28px;
-            height: 28px;
-            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
-            z-index: 2;
-            position: relative;
-        }
-
-        .game-title {
-            font-size: 1.5rem;
+        .header h1 {
+            font-size: 24px;
             font-weight: 800;
-            margin-bottom: 4px;
-            background: linear-gradient(45deg, #fff, #e0e7ff);
+            margin-bottom: 5px;
+            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        .game-subtitle {
-            font-size: 0.875rem;
+        .header p {
+            font-size: 14px;
             color: var(--text-secondary);
             font-weight: 500;
         }
 
-        /* Main Content Area */
-        .main-content {
-            padding: 100px 16px 20px;
-            min-height: calc(100vh - 200px);
-            position: relative;
-            z-index: 5;
+        /* Balance Section */
+        .balance-section {
+            padding: 30px 20px 20px;
+            text-align: center;
+        }
+
+        .balance-container {
+            background: rgba(28, 28, 30, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .balance-label {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .balance-value {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--gold);
+            margin-bottom: 15px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+
+        .level-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 16px;
+            padding: 15px 20px;
+            border: 1px solid rgba(0, 122, 255, 0.2);
+        }
+
+        .level-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+
+        .level-progress {
+            flex: 1;
+            margin: 0 15px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .next-level {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
         }
 
         /* Tap Section */
         .tap-section {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 20px;
-            border-radius: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            text-align: center;
-            box-shadow: 
-                0 8px 32px rgba(0,0,0,0.6),
-                0 0 0 1px rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-        }
-
-        .stat-value {
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: #ffffff !important;
-            margin-bottom: 8px;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.8);
-            min-height: 3rem;
+            flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(45deg, #ffffff, #f0f0f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
-        }
-
-        .stat-label {
-            font-size: 0.875rem;
-            color: #ffffff;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            font-weight: 600;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-            opacity: 0.9;
+            padding: 20px;
+            position: relative;
         }
 
         .tap-button {
-            width: 140px;
-            height: 140px;
-            background: var(--arbitrum-gradient);
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.1s ease;
             box-shadow: 
-                0 20px 60px rgba(40, 160, 240, 0.4),
-                0 0 0 4px rgba(255,255,255,0.1),
-                inset 0 1px 0 rgba(255,255,255,0.2);
-            margin: 0 auto 32px;
+                0 20px 60px rgba(0, 122, 255, 0.4),
+                0 0 0 8px rgba(255, 255, 255, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
             position: relative;
             overflow: hidden;
-        }
-
-        .tap-button::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.4), transparent);
-            animation: rotate 3s linear infinite;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .tap-button:hover::before {
-            opacity: 1;
-        }
-
-        .tap-button:hover {
-            transform: scale(1.05);
-            box-shadow: 
-                0 25px 80px rgba(40, 160, 240, 0.5),
-                0 0 0 8px rgba(255,255,255,0.2),
-                inset 0 1px 0 rgba(255,255,255,0.3);
+            border: none;
+            outline: none;
         }
 
         .tap-button:active {
             transform: scale(0.95);
+            box-shadow: 
+                0 15px 40px rgba(0, 122, 255, 0.5),
+                0 0 0 4px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
         }
 
-        .tap-button svg {
-            width: 56px;
-            height: 56px;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.4));
-            z-index: 2;
-            position: relative;
+        .tap-icon {
+            font-size: 80px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
         }
 
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        /* Bottom Stats */
+        .bottom-stats {
+            padding: 20px;
+            background: rgba(28, 28, 30, 0.8);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Fun Popup Animations */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 15px 10px;
+            background: rgba(44, 44, 46, 0.6);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Animations */
         .tap-popup {
             position: absolute;
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--gold);
             pointer-events: none;
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #ffffff;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-            animation: popupFloat 1s ease-out forwards;
+            animation: popupFloat 1.2s ease-out forwards;
             z-index: 1000;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
         }
 
         @keyframes popupFloat {
@@ -298,23 +259,22 @@
             }
             20% {
                 opacity: 1;
-                transform: translateY(-20px) scale(1.2);
+                transform: translateY(-30px) scale(1.2);
             }
             100% {
                 opacity: 0;
-                transform: translateY(-60px) scale(1);
+                transform: translateY(-80px) scale(1);
             }
         }
 
-        /* Particle Effects */
         .tap-particle {
             position: absolute;
-            width: 4px;
-            height: 4px;
-            background: #ffffff;
+            width: 6px;
+            height: 6px;
+            background: var(--gold);
             border-radius: 50%;
             pointer-events: none;
-            animation: particleExplode 0.8s ease-out forwards;
+            animation: particleExplode 1s ease-out forwards;
         }
 
         @keyframes particleExplode {
@@ -324,1153 +284,493 @@
             }
             50% {
                 opacity: 1;
-                transform: scale(1) translateY(-20px);
+                transform: scale(1) translateY(-30px);
             }
             100% {
                 opacity: 0;
-                transform: scale(0) translateY(-40px);
+                transform: scale(0) translateY(-60px);
             }
         }
 
-        .tap-text {
-            font-size: 1rem;
-            color: #ffffff;
-            margin-bottom: 20px;
-            font-weight: 500;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
-            opacity: 0.9;
-        }
-
-        /* NFT Section */
-        .nft-section {
-            background: rgba(31, 31, 31, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 28px;
-            margin-bottom: 40px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 24px;
-        }
-
-        .section-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--arbitrum-gradient);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 16px;
-            font-size: 20px;
-            box-shadow: 0 4px 16px rgba(40, 160, 240, 0.3);
-        }
-
-        .section-title {
-            font-size: 1.25rem;
-            font-weight: 700;
-            background: linear-gradient(45deg, #fff, #e0e7ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .milestones-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .milestone {
-            background: rgba(42, 42, 42, 0.8);
-            padding: 20px 16px;
-            border-radius: 16px;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            position: relative;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            cursor: pointer;
-        }
-
-        .milestone.achieved {
-            background: rgba(16, 185, 129, 0.2);
-            border-color: var(--success);
-            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
-        }
-
-        .milestone.next {
-            background: rgba(245, 158, 11, 0.2);
-            border-color: var(--warning);
-            animation: pulse 2s infinite;
-            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
-        }
-
-        .milestone.claimable {
-            background: rgba(251, 191, 36, 0.2);
-            border-color: var(--notcoin-yellow);
-            animation: glow 2s infinite;
-            box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3);
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 4px 20px rgba(251, 191, 36, 0.3); }
-            50% { box-shadow: 0 4px 30px rgba(251, 191, 36, 0.6); }
-        }
-
-        .milestone-value {
-            font-size: 1.125rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-            color: var(--text-primary);
-        }
-
-        .milestone-status {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .milestone-claim {
-            margin-top: 8px;
-            padding: 8px 12px;
-            background: var(--notcoin-yellow);
-            color: #1f1f1f;
-            border: none;
-            border-radius: 8px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .milestone-claim:hover {
-            background: var(--notcoin-orange);
-            transform: scale(1.05);
-        }
-
-        .mint-button {
-            width: 100%;
-            background: var(--arbitrum-gradient);
-            color: white;
-            border: none;
-            padding: 20px;
-            border-radius: 16px;
-            font-size: 1.125rem;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 32px rgba(40, 160, 240, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .mint-button::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .mint-button:hover::before {
-            left: 100%;
-        }
-
-        .mint-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px rgba(40, 160, 240, 0.5);
-        }
-
-        .mint-button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Leaderboard Section */
-        .leaderboard-section {
-            background: rgba(31, 31, 31, 0.9);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 28px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.3);
-        }
-
-        .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .leaderboard-item {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            background: rgba(42, 42, 42, 0.8);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .leaderboard-item:hover {
-            transform: translateX(8px);
-            background: rgba(42, 42, 42, 0.9);
-        }
-
-        .rank {
-            width: 40px;
-            height: 40px;
-            background: var(--arbitrum-gradient);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 1rem;
-            margin-right: 20px;
-            box-shadow: 0 4px 16px rgba(40, 160, 240, 0.3);
-        }
-
-        .player-info {
-            flex: 1;
-        }
-
-        .player-name {
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: var(--text-primary);
-        }
-
-        .player-score {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(31, 31, 31, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 16px 0;
-            display: flex;
-            justify-content: space-around;
-            z-index: 10;
-            box-shadow: 0 -8px 32px rgba(0,0,0,0.3);
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 12px 20px;
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            min-width: 90px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .nav-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--arbitrum-gradient);
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            border-radius: 16px;
-        }
-
-        .nav-item.active::before {
-            opacity: 0.15;
-        }
-
-        .nav-item.active {
-            color: var(--arbitrum-blue);
-            transform: translateY(-4px);
-        }
-
-        .nav-item:hover {
-            transform: translateY(-2px);
-        }
-
-        .nav-icon {
-            width: 28px;
-            height: 28px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            z-index: 2;
-            position: relative;
-        }
-
-        .nav-label {
-            font-size: 0.75rem;
-            font-weight: 600;
-            z-index: 2;
-            position: relative;
-        }
-
-        /* Content Sections */
-        .content-section {
-            display: none;
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        .content-section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Status and Loading */
-        .status {
-            text-align: center;
-            padding: 20px;
-            background: rgba(31, 31, 31, 0.8);
-            border-radius: 16px;
-            margin: 20px 0;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,.3);
-            border-radius: 50%;
-            border-top-color: var(--arbitrum-blue);
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 12px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 12px;
-            }
-            
-            .milestones-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            
-            .tap-button {
-                width: 120px;
-                height: 120px;
-            }
-            
-            .tap-button svg {
-                width: 48px;
-                height: 48px;
-            }
-
-            .main-content {
-                padding: 100px 12px 20px;
-            }
-        }
-
-        /* Achievement Notification */
-        .achievement-notification {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: var(--arbitrum-gradient);
-            color: white;
-            padding: 24px;
-            border-radius: 20px;
-            box-shadow: 0 16px 48px rgba(0,0,0,0.4);
-            z-index: 1000;
-            animation: slideInRight 0.5s ease-out;
-            max-width: 320px;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-        }
-
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-
-        @keyframes slideOutRight {
-            from { transform: translateX(0); opacity: 1; }
-            to { transform: translateX(100%); opacity: 0; }
-        }
-
-        /* Contract Interaction Notification */
-        .contract-notification {
+        .level-up-notification {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, var(--notcoin-yellow) 0%, var(--notcoin-orange) 100%);
-            color: #1f1f1f;
-            padding: 32px;
+            background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
+            color: #000;
+            padding: 30px 40px;
             border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-            z-index: 1001;
-            animation: contractPulse 0.5s ease-out;
-            max-width: 400px;
             text-align: center;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 3px solid rgba(255,255,255,0.3);
+            z-index: 1001;
+            animation: levelUpPulse 0.6s ease-out;
+            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.5);
         }
 
-        @keyframes contractPulse {
+        @keyframes levelUpPulse {
             0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
             50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
 
-        .contract-notification h3 {
-            font-size: 1.5rem;
+        .level-up-notification h3 {
+            font-size: 24px;
             font-weight: 800;
-            margin-bottom: 16px;
-            color: #1f1f1f;
+            margin-bottom: 10px;
         }
 
-        .contract-notification p {
-            font-size: 1.125rem;
-            margin-bottom: 12px;
-            color: #1f1f1f;
+        .level-up-notification p {
+            font-size: 16px;
             font-weight: 600;
         }
 
-        .contract-reward {
-            font-size: 1.25rem;
-            font-weight: 800;
-            color: #10b981;
-            margin-bottom: 20px;
-        }
-
-        .contract-close {
-            background: rgba(31, 31, 31, 0.9);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .contract-close:hover {
-            background: rgba(31, 31, 31, 1);
-            transform: translateY(-2px);
-        }
-
-        /* Wallet Connection Container */
-        .wallet-connect-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .connect-wallet-btn {
-            background: var(--arbitrum-gradient);
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            cursor: pointer;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 16px rgba(40, 160, 240, 0.3);
-        }
-
-        .connect-wallet-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 160, 240, 0.4);
-        }
-
-        .connect-wallet-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Wallet Connection Status */
+        /* Wallet Status */
         .wallet-status {
-            background: rgba(31, 31, 31, 0.9);
-            padding: 12px 16px;
+            position: fixed;
+            top: 60px;
+            right: 20px;
+            background: rgba(28, 28, 30, 0.9);
+            padding: 8px 12px;
             border-radius: 12px;
-            font-size: 0.875rem;
+            font-size: 12px;
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
         }
 
         .wallet-connected {
-            background: rgba(16, 185, 129, 0.2);
-            border: 1px solid var(--success);
+            color: var(--green);
         }
 
         .wallet-disconnected {
-            background: rgba(239, 68, 68, 0.2);
-            border: 1px solid var(--error);
+            color: var(--red);
         }
 
-        /* Farcaster Status */
-        .farcaster-status {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(31, 31, 31, 0.9);
-            padding: 12px 16px;
-            border-radius: 12px;
-            font-size: 0.875rem;
-            z-index: 1000;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+        /* Energy System */
+        .energy-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 15px;
+            gap: 8px;
         }
 
-        .farcaster-active {
-            background: rgba(40, 160, 240, 0.2);
-            border: 1px solid var(--arbitrum-blue);
+        .energy-icon {
+            font-size: 20px;
         }
 
-        .farcaster-browser {
-            background: rgba(124, 58, 237, 0.2);
-            border: 1px solid var(--arbitrum-purple);
+        .energy-bar {
+            width: 120px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .energy-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--green), var(--secondary-blue));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 100%;
+        }
+
+        .energy-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .balance-value {
+                font-size: 40px;
+            }
+
+            .tap-button {
+                width: 180px;
+                height: 180px;
+            }
+
+            .tap-icon {
+                font-size: 70px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .stat-item {
+                padding: 12px 8px;
+            }
+
+            .stat-value {
+                font-size: 18px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .balance-value {
+                font-size: 36px;
+            }
+
+            .tap-button {
+                width: 160px;
+                height: 160px;
+            }
+
+            .tap-icon {
+                font-size: 60px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Professional Overlay System -->
-    <div class="bg-gradient-overlay"></div>
-    <div class="radial-gradient-overlay"></div>
-
-    <!-- Wallet Connection Button -->
-    <div class="wallet-connect-container">
-        <button id="connectWalletBtn" class="connect-wallet-btn">
-            🔗 Connect Wallet
-        </button>
+    <div class="container">
+        <!-- Wallet Status -->
         <div class="wallet-status wallet-disconnected" id="walletStatus">
             🔴 Wallet Disconnected
         </div>
-    </div>
 
-    <!-- Header -->
-    <div class="header">
-        <div class="arbitrum-logo">
-            <svg viewBox="0 0 24 24" fill="white">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
+        <!-- Header -->
+        <div class="header">
+            <h1>ARBITAP</h1>
+            <p>Tap to Earn on Arbitrum</p>
         </div>
-        <h1 class="game-title">ARBITAP</h1>
-        <p class="game-subtitle">Gaming Experience</p>
-    </div>
 
-    <!-- Main Content -->
-    <div class="main-content">
+        <!-- Balance Section -->
+        <div class="balance-section">
+            <div class="balance-container">
+                <div class="balance-label">Your Balance</div>
+                <div class="balance-value" id="totalTaps">0</div>
+
+                <!-- Level System -->
+                <div class="level-info">
+                    <div class="level-text" id="currentLevel">Level 1</div>
+                    <div class="level-progress">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="next-level" id="nextLevel">Level 2</div>
+                </div>
+
+                <!-- Energy System -->
+                <div class="energy-container">
+                    <span class="energy-icon">⚡</span>
+                    <div class="energy-bar">
+                        <div class="energy-fill" id="energyFill"></div>
+                    </div>
+                    <span class="energy-text" id="energyText">1000/1000</span>
+                </div>
+            </div>
+        </div>
+
         <!-- Tap Section -->
-        <div class="content-section active" id="tapSection">
-            <div class="tap-section">
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <div class="stat-value" id="totalTaps">42</div>
-                        <div class="stat-label">Total Taps</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-value" id="nftsMinted">0</div>
-                        <div class="stat-label">NFTs Minted</div>
-                    </div>
-                </div>
-                
-                <div class="tap-button" id="tapButton">
-                    <svg viewBox="0 0 24 24" fill="white">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
-                </div>
-                
-                <p class="tap-text">Tap to earn points and unlock NFTs!</p>
-                
-                <!-- Debug Button (temporary) -->
-                <button onclick="updateStats()" style="background: var(--notcoin-yellow); color: #1f1f1f; border: none; padding: 8px 16px; border-radius: 8px; margin-top: 16px; cursor: pointer; font-weight: 600;">
-                    🔧 Debug: Update Stats
-                </button>
-            </div>
+        <div class="tap-section">
+            <button class="tap-button" id="tapButton">
+                <div class="tap-icon">⚡</div>
+            </button>
         </div>
 
-        <!-- NFT Milestones Section -->
-        <div class="content-section" id="nftSection">
-            <div class="nft-section">
-                <div class="section-header">
-                    <div class="section-icon">🎨</div>
-                    <h2 class="section-title">NFT Milestones</h2>
+        <!-- Bottom Stats -->
+        <div class="bottom-stats">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="tapsPowerStat">1</div>
+                    <div class="stat-label">Tap Power</div>
                 </div>
-                
-                <div class="milestones-grid" id="milestones">
-                    <!-- Milestones will be populated by JavaScript -->
+                <div class="stat-item">
+                    <div class="stat-value" id="currentLevelStat">1</div>
+                    <div class="stat-label">Level</div>
                 </div>
-                
-                <button class="mint-button" id="mintButton" disabled>
-                    🪙 Mint NFT (100 more taps)
-                </button>
-                
-                <div class="status" id="mintStatus">
-                    <span>Reach milestones to mint exclusive Arbitrum NFTs!</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- Leaderboard Section -->
-        <div class="content-section" id="leaderboardSection">
-            <div class="leaderboard-section">
-                <div class="section-header">
-                    <div class="section-icon">🏅</div>
-                    <h2 class="section-title">Global Leaderboard</h2>
-                </div>
-                
-                <div class="leaderboard-list" id="leaderboard">
-                    <!-- Leaderboard will be populated by JavaScript -->
+                <div class="stat-item">
+                    <div class="stat-value" id="totalEarnedStat">0</div>
+                    <div class="stat-label">Total Earned</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item active" data-section="tapSection">
-            <div class="nav-icon">👆</div>
-            <div class="nav-label">Tap Tap</div>
-        </div>
-        <div class="nav-item" data-section="nftSection">
-            <div class="nav-icon">🎨</div>
-            <div class="nav-label">NFTs</div>
-        </div>
-        <div class="nav-item" data-section="leaderboardSection">
-            <div class="nav-icon">🏅</div>
-            <div class="nav-label">Leaderboard</div>
-        </div>
-    </div>
+    <!-- Game Script -->
+    <script>
+        // Game Configuration - Notcoin-style progression
+        const LEVEL_REQUIREMENTS = [
+            0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500,
+            5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000,
+            21000, 23100, 25300, 27600, 30000, 32500, 35100, 37800, 40600, 43500,
+            46500, 49600, 52800, 56100, 59500, 63000, 66600, 70300, 74100, 78000
+        ];
 
-    <!-- Scripts -->
-    <script type="module">
-        // Game Configuration
-        const MILESTONES = [100, 500, 1000, 5000, 10000, 50000, 100000, 200000, 300000];
-        const REWARD_AMOUNTS = [0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1.0, 2.0, 3.0]; // ETH rewards
-        
         // Game State
         let gameState = {
-            totalTaps: 42,
-            nftsMinted: 0,
-            achievedMilestones: [],
-            currentRank: '-',
+            totalTaps: 0,
+            currentLevel: 1,
+            tapPower: 1,
+            energy: 1000,
+            maxEnergy: 1000,
+            energyRegenRate: 1, // per second
+            totalEarned: 0,
             walletAddress: null,
             isConnected: false
         };
 
-        // DOM Elements - will be initialized after DOM loads
+        // DOM Elements
         let elements = {};
 
-        // Initialize elements after DOM loads
+        // Initialize elements
         function initializeElements() {
             elements = {
-                tapButton: document.getElementById('tapButton'),
                 totalTaps: document.getElementById('totalTaps'),
-                nftsMinted: document.getElementById('nftsMinted'),
-                mintButton: document.getElementById('mintButton'),
-                mintStatus: document.getElementById('mintStatus'),
-                milestones: document.getElementById('milestones'),
-                leaderboard: document.getElementById('leaderboard'),
+                currentLevel: document.getElementById('currentLevel'),
+                currentLevelStat: document.getElementById('currentLevelStat'),
+                nextLevel: document.getElementById('nextLevel'),
+                progressBar: document.getElementById('progressBar'),
+                tapButton: document.getElementById('tapButton'),
+                tapsPowerStat: document.getElementById('tapsPowerStat'),
+                totalEarnedStat: document.getElementById('totalEarnedStat'),
+                energyFill: document.getElementById('energyFill'),
+                energyText: document.getElementById('energyText'),
                 walletStatus: document.getElementById('walletStatus')
             };
-            
-            console.log('Elements initialized:', {
-                totalTaps: !!elements.totalTaps,
-                nftsMinted: !!elements.nftsMinted,
-                tapButton: !!elements.tapButton
-            });
         }
 
-        // Navigation
-        const navItems = document.querySelectorAll('.nav-item');
-        const contentSections = document.querySelectorAll('.content-section');
-
-        // Navigation Handler
-        navItems.forEach(item => {
-            item.addEventListener('click', () => {
-                const targetSection = item.getAttribute('data-section');
-                
-                // Update active nav item
-                navItems.forEach(nav => nav.classList.remove('active'));
-                item.classList.add('active');
-                
-                // Update active content section
-                contentSections.forEach(section => section.classList.remove('active'));
-                document.getElementById(targetSection).classList.add('active');
-            });
-        });
-
-        // Initialize Milestones
-        function initializeMilestones() {
-            elements.milestones.innerHTML = MILESTONES.map((milestone, index) => `
-                <div class="milestone" data-milestone="${milestone}" onclick="claimMilestone(${milestone})">
-                    <div class="milestone-value">${formatNumber(milestone)}</div>
-                    <div class="milestone-status">${REWARD_AMOUNTS[index]} ETH</div>
-                    <button class="milestone-claim" id="claim-${milestone}" style="display: none;">
-                        🪙 Claim NFT
-                    </button>
-                </div>
-            `).join('');
-        }
-
-        // Initialize Leaderboard
-        function initializeLeaderboard() {
-            const sampleLeaderboard = [
-                { rank: 1, name: "Arbitrum_Champion", score: 1250000 },
-                { rank: 2, name: "TapMaster_Pro", score: 890000 },
-                { rank: 3, name: "NFT_Collector", score: 650000 },
-                { rank: 4, name: "Web3_Gamer", score: 420000 },
-                { rank: 5, name: "Crypto_Tapper", score: 310000 }
-            ];
-
-            elements.leaderboard.innerHTML = sampleLeaderboard.map(player => `
-                <div class="leaderboard-item">
-                    <div class="rank">#${player.rank}</div>
-                    <div class="player-info">
-                        <div class="player-name">${player.name}</div>
-                        <div class="player-score">${formatNumber(player.score)} taps</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // Format large numbers
+        // Format numbers
         function formatNumber(num) {
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
         }
 
-        // Update Game Stats
-        function updateStats() {
-            console.log('Updating stats:', gameState.totalTaps, gameState.nftsMinted);
-            
+        // Calculate level from taps
+        function calculateLevel(taps) {
+            for (let i = LEVEL_REQUIREMENTS.length - 1; i >= 0; i--) {
+                if (taps >= LEVEL_REQUIREMENTS[i]) {
+                    return i + 1;
+                }
+            }
+            return 1;
+        }
+
+        // Calculate progress to next level
+        function calculateProgress(taps, level) {
+            if (level >= LEVEL_REQUIREMENTS.length) return 100;
+
+            const currentReq = LEVEL_REQUIREMENTS[level - 1];
+            const nextReq = LEVEL_REQUIREMENTS[level];
+            const progress = ((taps - currentReq) / (nextReq - currentReq)) * 100;
+
+            return Math.min(100, Math.max(0, progress));
+        }
+
+        // Update all UI elements
+        function updateUI() {
+            const newLevel = calculateLevel(gameState.totalTaps);
+            const leveledUp = newLevel > gameState.currentLevel;
+
+            if (leveledUp) {
+                gameState.currentLevel = newLevel;
+                gameState.tapPower = Math.floor(newLevel / 5) + 1;
+                showLevelUpNotification(newLevel);
+            }
+
+            // Update display elements
             if (elements.totalTaps) {
                 elements.totalTaps.textContent = formatNumber(gameState.totalTaps);
-                console.log('Total taps element updated:', elements.totalTaps.textContent);
-            }
-            
-            if (elements.nftsMinted) {
-                elements.nftsMinted.textContent = formatNumber(gameState.nftsMinted);
-                console.log('NFTs minted element updated:', elements.nftsMinted.textContent);
-            }
-            
-            if (elements.mintButton) {
-                const nextMilestone = MILESTONES.find(m => m > gameState.totalTaps);
-                if (nextMilestone) {
-                    const remaining = nextMilestone - gameState.totalTaps;
-                    elements.mintButton.textContent = `🪙 Mint NFT (${formatNumber(remaining)} more taps)`;
-                    elements.mintButton.disabled = true;
-                } else {
-                    elements.mintButton.textContent = '🎉 All Milestones Achieved!';
-                    elements.mintButton.disabled = true;
-                }
             }
 
-            updateMilestoneStates();
+            if (elements.currentLevel) {
+                elements.currentLevel.textContent = `Level ${gameState.currentLevel}`;
+            }
+
+            if (elements.currentLevelStat) {
+                elements.currentLevelStat.textContent = gameState.currentLevel;
+            }
+
+            if (elements.nextLevel) {
+                const nextLvl = gameState.currentLevel + 1;
+                elements.nextLevel.textContent = nextLvl <= LEVEL_REQUIREMENTS.length ? `Level ${nextLvl}` : 'MAX';
+            }
+
+            if (elements.progressBar) {
+                const progress = calculateProgress(gameState.totalTaps, gameState.currentLevel);
+                elements.progressBar.style.width = progress + '%';
+            }
+
+            if (elements.tapsPowerStat) {
+                elements.tapsPowerStat.textContent = gameState.tapPower;
+            }
+
+            if (elements.totalEarnedStat) {
+                elements.totalEarnedStat.textContent = formatNumber(gameState.totalEarned);
+            }
+
+            // Update energy
+            if (elements.energyFill) {
+                const energyPercent = (gameState.energy / gameState.maxEnergy) * 100;
+                elements.energyFill.style.width = energyPercent + '%';
+            }
+
+            if (elements.energyText) {
+                elements.energyText.textContent = `${gameState.energy}/${gameState.maxEnergy}`;
+            }
         }
 
-        // Update Milestone Visual States
-        function updateMilestoneStates() {
-            const milestoneElements = elements.milestones.querySelectorAll('.milestone');
-            milestoneElements.forEach((element, index) => {
-                const milestone = MILESTONES[index];
-                element.classList.remove('achieved', 'next', 'claimable');
-                
-                if (gameState.achievedMilestones.includes(milestone)) {
-                    element.classList.add('achieved');
-                } else if (gameState.totalTaps >= milestone) {
-                    element.classList.add('claimable');
-                    const claimButton = element.querySelector('.milestone-claim');
-                    if (claimButton) {
-                        claimButton.style.display = 'block';
-                    }
-                } else if (milestone === MILESTONES.find(m => m > gameState.totalTaps)) {
-                    element.classList.add('next');
-                }
-            });
+        // Handle tap
+        function handleTap() {
+            if (gameState.energy < gameState.tapPower) return;
+
+            gameState.energy -= gameState.tapPower;
+            gameState.totalTaps += gameState.tapPower;
+            gameState.totalEarned += gameState.tapPower;
+
+            // Tap animations
+            createTapPopup();
+            createTapParticles();
+
+            // Haptic feedback
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+
+            // Update blockchain if connected
+            if (window.gameContract && window.gameContract.account) {
+                window.gameContract.updatePlayerTaps(gameState.totalTaps).catch(console.error);
+            }
+
+            updateUI();
         }
 
-        // Check for Milestone Achievement
-        function checkMilestones() {
-            MILESTONES.forEach((milestone, index) => {
-                if (gameState.totalTaps >= milestone && !gameState.achievedMilestones.includes(milestone)) {
-                    gameState.achievedMilestones.push(milestone);
-                    gameState.nftsMinted++;
-                    
-                    elements.mintButton.disabled = false;
-                    elements.mintButton.textContent = `🪙 Mint NFT Now! (${formatNumber(milestone)} taps)`;
-                    
-                    showAchievementNotification(milestone, REWARD_AMOUNTS[index]);
-                    updateStats();
-                }
-            });
-        }
-
-        // Show Achievement Notification
-        function showAchievementNotification(milestone, reward, txHash = null) {
+        // Show level up notification
+        function showLevelUpNotification(level) {
             const notification = document.createElement('div');
-            notification.className = 'achievement-notification';
-            
-            const specialMessage = '🎉 Milestone Achieved!';
-            
-            let txInfo = '';
-            if (txHash) {
-                txInfo = `<p style="margin-bottom: 8px; font-size: 0.875rem; color: var(--text-secondary);">TX: ${txHash.slice(0, 10)}...${txHash.slice(-8)}</p>`;
-            }
-            
+            notification.className = 'level-up-notification';
             notification.innerHTML = `
-                <h3 style="margin-bottom: 12px; font-size: 1.25rem; font-weight: 700;">${specialMessage}</h3>
-                <p style="margin-bottom: 8px; font-size: 1.125rem;">${formatNumber(milestone)} taps reached!</p>
-                <p style="margin-bottom: 8px; color: var(--notcoin-yellow); font-weight: 600;">Reward: ${reward} ETH</p>
-                <p style="font-weight: 700; color: var(--accent);">NFT claimed successfully!</p>
-                ${txInfo}
+                <h3>🎉 Level Up!</h3>
+                <p>Welcome to Level ${level}</p>
+                <p>Tap Power: ${gameState.tapPower}</p>
             `;
-            
+
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.5s ease-in';
+                notification.style.animation = 'fadeOut 0.5s ease-in';
                 setTimeout(() => notification.remove(), 500);
-            }, 5000);
+            }, 3000);
         }
 
-        // Show Error Notification
-        function showErrorNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'achievement-notification';
-            notification.style.background = 'var(--error)';
-            
-            notification.innerHTML = `
-                <h3 style="margin-bottom: 12px; font-size: 1.25rem; font-weight: 700;">❌ Error</h3>
-                <p style="margin-bottom: 8px; font-size: 1.125rem;">${message}</p>
-                <p style="font-weight: 700; color: #fff;">Please try again</p>
-            `;
-            
-            document.body.appendChild(notification);
-            
-            setTimeout(() => {
-                notification.style.animation = 'slideOutRight 0.5s ease-in';
-                setTimeout(() => notification.remove(), 500);
-            }, 5000);
-        }
-
-        // Handle NFT Minting
-        async function mintNFT() {
-            try {
-                elements.mintStatus.innerHTML = '<span class="loading"></span>Minting NFT on Arbitrum...';
-                elements.mintButton.disabled = true;
-                
-                await new Promise(resolve => setTimeout(resolve, 3000));
-                
-                elements.mintStatus.innerHTML = '<span>✅ NFT minted successfully on Arbitrum!</span>';
-                elements.mintButton.textContent = '🎉 NFT Minted!';
-                
-            } catch (error) {
-                elements.mintStatus.innerHTML = `<span>❌ Minting failed: ${error.message}</span>`;
-                elements.mintButton.disabled = false;
-            }
-        }
-
-        // Claim Milestone NFT
-        async function claimMilestone(milestone) {
-            if (gameState.totalTaps >= milestone && !gameState.achievedMilestones.includes(milestone)) {
-                try {
-                    // Show claiming status
-                    const milestoneElement = document.querySelector(`[data-milestone="${milestone}"]`);
-                    const claimButton = milestoneElement.querySelector('.milestone-claim');
-                    claimButton.textContent = '⏳ Claiming...';
-                    claimButton.disabled = true;
-                    
-                    // Check if wallet is connected
-                    if (!window.gameContract || !window.gameContract.account) {
-                        throw new Error('Wallet not connected. Please connect your wallet first.');
-                    }
-                    
-                    // Get reward amount for this milestone
-                    const rewardIndex = MILESTONES.indexOf(milestone);
-                    const reward = REWARD_AMOUNTS[rewardIndex];
-                    
-                    // Claim NFT on blockchain
-                    const result = await window.gameContract.claimNFTMilestone(milestone, reward);
-                    
-                    if (result.success) {
-                        // Mark as achieved
-                        gameState.achievedMilestones.push(milestone);
-                        gameState.nftsMinted++;
-                        
-                        // Update UI
-                        claimButton.textContent = '✅ Claimed!';
-                        claimButton.style.background = 'var(--success)';
-                        milestoneElement.classList.add('achieved');
-                        milestoneElement.classList.remove('claimable');
-                        
-                        // Show success notification with transaction hash
-                        showAchievementNotification(milestone, reward, result.txHash);
-                        
-                        // Update stats
-                        updateStats();
-                        
-                        console.log(`NFT claimed successfully! TX Hash: ${result.txHash}`);
-                    } else {
-                        throw new Error('Blockchain transaction failed');
-                    }
-                    
-                } catch (error) {
-                    claimButton.textContent = '❌ Failed';
-                    claimButton.style.background = 'var(--error)';
-                    console.error('Claim failed:', error);
-                    
-                    // Show error notification
-                    showErrorNotification(error.message);
-                }
-            }
-        }
-
-        // Game Click Handler
-        function setupGameHandlers() {
-            if (elements.tapButton) {
-                elements.tapButton.addEventListener('click', async () => {
-                    gameState.totalTaps++;
-                    
-                    // Enhanced tap animation
-                    elements.tapButton.style.transform = 'scale(0.95)';
-                    setTimeout(() => {
-                        elements.tapButton.style.transform = 'scale(1)';
-                    }, 100);
-                    
-                    // Create fun popup
-                    createTapPopup();
-                    
-                    // Create particle effects
-                    createTapParticles();
-                    
-                    // Haptic feedback for mobile
-                    if (navigator.vibrate) {
-                        navigator.vibrate(10);
-                    }
-                    
-                    // Update blockchain if wallet is connected
-                    if (window.gameContract && window.gameContract.account) {
-                        try {
-                            await window.gameContract.updatePlayerTaps(gameState.totalTaps);
-                            console.log('Taps updated on blockchain');
-                        } catch (error) {
-                            console.error('Failed to update taps on blockchain:', error);
-                        }
-                    }
-                    
-                    checkMilestones();
-                    updateStats();
-                });
-            }
-
-            if (elements.mintButton) {
-                elements.mintButton.addEventListener('click', mintNFT);
-            }
-        }
-
-        // Initialize Game
-        function initializeGame() {
-            initializeElements(); // Initialize DOM elements first
-            initializeMilestones();
-            initializeLeaderboard();
-            setupGameHandlers();
-            setupWalletConnection();
-            updateStats();
-            
-            // Show initial stats immediately
-            if (elements.totalTaps) {
-                elements.totalTaps.textContent = formatNumber(gameState.totalTaps);
-                console.log('Initial total taps set to:', gameState.totalTaps);
-            }
-            if (elements.nftsMinted) {
-                elements.nftsMinted.textContent = formatNumber(gameState.nftsMinted);
-                console.log('Initial NFTs minted set to:', gameState.nftsMinted);
-            }
-        }
-
-        // Setup wallet connection button
-        function setupWalletConnection() {
-            const connectBtn = document.getElementById('connectWalletBtn');
-            if (connectBtn) {
-                connectBtn.addEventListener('click', async () => {
-                    try {
-                        connectBtn.textContent = '⏳ Connecting...';
-                        connectBtn.disabled = true;
-                        
-                        if (window.gameContract) {
-                            await window.gameContract.setupRegularWallet();
-                        } else {
-                            console.error('Game contract not initialized');
-                        }
-                        
-                        connectBtn.textContent = '🔗 Connect Wallet';
-                        connectBtn.disabled = false;
-                    } catch (error) {
-                        console.error('Wallet connection failed:', error);
-                        connectBtn.textContent = '🔗 Connect Wallet';
-                        connectBtn.disabled = false;
-                    }
-                });
-            }
-        }
-
-        // Start the game when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM Content Loaded - Initializing game...');
-            console.log('Game state:', gameState);
-            initializeGame();
-        });
-
-        // Create fun tap popup
+        // Create tap popup
         function createTapPopup() {
             const popup = document.createElement('div');
             popup.className = 'tap-popup';
-            
-            // Random fun messages
-            const messages = ['+1!', 'Boop!', 'Tap!', 'Arbitrum!', '🎯', '💫', '⚡', '🚀', '💎', '🎮'];
-            const randomMessage = messages[Math.floor(Math.random() * messages.length)];
-            popup.textContent = randomMessage;
-            
-            // Play tap sound
-            playTapSound();
-            
-            // Random position around tap button
+            popup.textContent = `+${gameState.tapPower}`;
+
             const buttonRect = elements.tapButton.getBoundingClientRect();
-            const x = buttonRect.left + Math.random() * buttonRect.width;
-            const y = buttonRect.top + Math.random() * buttonRect.height;
-            
+            const x = buttonRect.left + (Math.random() * buttonRect.width);
+            const y = buttonRect.top + (Math.random() * buttonRect.height);
+
             popup.style.left = x + 'px';
             popup.style.top = y + 'px';
-            
+
             document.body.appendChild(popup);
-            
-            // Remove after animation
-            setTimeout(() => {
-                if (popup.parentNode) {
-                    popup.parentNode.removeChild(popup);
-                }
-            }, 1000);
+
+            setTimeout(() => popup.remove(), 1200);
         }
-        
-        // Create particle effects
+
+        // Create tap particles
         function createTapParticles() {
             const buttonRect = elements.tapButton.getBoundingClientRect();
             const centerX = buttonRect.left + buttonRect.width / 2;
             const centerY = buttonRect.top + buttonRect.height / 2;
-            
-            // Create multiple particles
-            for (let i = 0; i < 8; i++) {
+
+            for (let i = 0; i < 6; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'tap-particle';
-                
-                // Random position around center
-                const angle = (i / 8) * 2 * Math.PI;
-                const distance = 30 + Math.random() * 20;
+
+                const angle = (i / 6) * 2 * Math.PI;
+                const distance = 40 + Math.random() * 30;
                 const x = centerX + Math.cos(angle) * distance;
                 const y = centerY + Math.sin(angle) * distance;
-                
+
                 particle.style.left = x + 'px';
                 particle.style.top = y + 'px';
-                
-                // Random Arbitrum-themed colors
-                const colors = ['#ffffff', '#28a0f0', '#7c3aed', '#fad258', '#00d4aa', '#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57'];
-                particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-                
+
                 document.body.appendChild(particle);
-                
-                // Remove after animation
-                setTimeout(() => {
-                    if (particle.parentNode) {
-                        particle.parentNode.removeChild(particle);
-                    }
-                }, 800);
-            }
-        }
-        
-        // Play tap sound effect
-        function playTapSound() {
-            try {
-                // Create audio context for simple beep sound
-                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                const oscillator = audioContext.createOscillator();
-                const gainNode = audioContext.createGain();
-                
-                oscillator.connect(gainNode);
-                gainNode.connect(audioContext.destination);
-                
-                // Random pitch for variety
-                const frequency = 800 + Math.random() * 400;
-                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                
-                // Quick fade in/out
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(0.1, audioContext.currentTime + 0.01);
-                gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
-                
-                oscillator.start(audioContext.currentTime);
-                oscillator.stop(audioContext.currentTime + 0.1);
-                
-            } catch (error) {
-                // Fallback: silent if audio fails
-                console.log('Audio not available:', error);
+
+                setTimeout(() => particle.remove(), 1000);
             }
         }
 
+        // Energy regeneration
+        function startEnergyRegen() {
+            setInterval(() => {
+                if (gameState.energy < gameState.maxEnergy) {
+                    gameState.energy = Math.min(gameState.maxEnergy, gameState.energy + gameState.energyRegenRate);
+                    updateUI();
+                }
+            }, 1000);
+        }
+
+        // Initialize game
+        function initializeGame() {
+            initializeElements();
+
+            // Set up tap button
+            if (elements.tapButton) {
+                elements.tapButton.addEventListener('click', handleTap);
+                elements.tapButton.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    handleTap();
+                });
+            }
+
+            // Start energy regeneration
+            startEnergyRegen();
+
+            // Initial UI update
+            updateUI();
+
+            console.log('Notcoin-style game initialized');
+        }
+
+        // Update wallet status
+        function updateWalletStatus(connected, address) {
+            if (elements.walletStatus) {
+                if (connected && address) {
+                    elements.walletStatus.textContent = `🟢 ${address.slice(0, 6)}...${address.slice(-4)}`;
+                    elements.walletStatus.className = 'wallet-status wallet-connected';
+                    gameState.walletAddress = address;
+                    gameState.isConnected = true;
+                } else {
+                    elements.walletStatus.textContent = '🔴 Wallet Disconnected';
+                    elements.walletStatus.className = 'wallet-status wallet-disconnected';
+                    gameState.walletAddress = null;
+                    gameState.isConnected = false;
+                }
+            }
+        }
+
+        // Initialize when DOM loads
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded - initializing Notcoin-style game...');
+            initializeGame();
+        });
+
+        // Listen for wallet connection updates
+        window.addEventListener('walletConnected', (event) => {
+            updateWalletStatus(true, event.detail.address);
+        });
+
+        window.addEventListener('walletDisconnected', () => {
+            updateWalletStatus(false);
+        });
+
         // Make functions globally available
-        window.updateStats = updateStats;
-        window.claimMilestone = claimMilestone;
+        window.updateWalletStatus = updateWalletStatus;
+        window.gameState = gameState;
     </script>
 </body>
 </html>
