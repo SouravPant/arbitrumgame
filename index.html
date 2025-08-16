@@ -491,6 +491,191 @@
             }
         }
 
+        /* Power-ups Section */
+        .powerups-section {
+            padding: 20px;
+            background: rgba(28, 28, 30, 0.6);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .powerups-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .powerups-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .powerup-item {
+            background: rgba(44, 44, 46, 0.8);
+            border-radius: 16px;
+            padding: 15px 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .powerup-item:hover {
+            background: rgba(0, 122, 255, 0.1);
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+
+        .powerup-item.affordable {
+            border-color: var(--green);
+            box-shadow: 0 0 20px rgba(48, 209, 88, 0.2);
+        }
+
+        .powerup-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+
+        .powerup-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .powerup-level {
+            font-size: 11px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .powerup-cost {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--gold);
+        }
+
+        /* Leaderboard Section */
+        .leaderboard-section {
+            padding: 20px;
+            background: rgba(28, 28, 30, 0.6);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-section h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            text-align: center;
+            color: var(--text-primary);
+        }
+
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            background: rgba(44, 44, 46, 0.6);
+            border-radius: 12px;
+            padding: 12px 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .leaderboard-item.rank-1 {
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.1) 0%, rgba(44, 44, 46, 0.6) 100%);
+            border-color: rgba(255, 215, 0, 0.3);
+        }
+
+        .leaderboard-item.rank-2 {
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.1) 0%, rgba(44, 44, 46, 0.6) 100%);
+            border-color: rgba(192, 192, 192, 0.3);
+        }
+
+        .leaderboard-item.rank-3 {
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.1) 0%, rgba(44, 44, 46, 0.6) 100%);
+            border-color: rgba(205, 127, 50, 0.3);
+        }
+
+        .rank {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-primary);
+            width: 30px;
+            text-align: center;
+        }
+
+        .player-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .player-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .player-score {
+            font-size: 12px;
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .medal {
+            font-size: 20px;
+            margin-left: 15px;
+        }
+
+        @media (max-width: 480px) {
+            .powerups-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 8px;
+            }
+
+            .powerup-item {
+                padding: 12px 8px;
+            }
+
+            .powerup-icon {
+                font-size: 20px;
+                margin-bottom: 6px;
+            }
+
+            .powerup-name {
+                font-size: 11px;
+            }
+
+            .powerup-level, .powerup-cost {
+                font-size: 10px;
+            }
+
+            .leaderboard-item {
+                padding: 10px 12px;
+            }
+
+            .player-name {
+                font-size: 13px;
+            }
+
+            .player-score {
+                font-size: 11px;
+            }
+
+            .medal {
+                font-size: 18px;
+            }
+        }
+
         @media (max-height: 700px) {
             .tap-section {
                 min-height: 200px;
@@ -501,6 +686,10 @@
             }
 
             .bottom-stats {
+                padding: 15px 20px;
+            }
+
+            .powerups-section, .leaderboard-section {
                 padding: 15px 20px;
             }
         }
@@ -552,6 +741,76 @@
             </button>
         </div>
 
+        <!-- Power-ups Section -->
+        <div class="powerups-section">
+            <h3>⚡ Power-ups</h3>
+            <div class="powerups-grid">
+                <div class="powerup-item" id="tapPowerUpgrade">
+                    <div class="powerup-icon">👆</div>
+                    <div class="powerup-info">
+                        <div class="powerup-name">Tap Power</div>
+                        <div class="powerup-level">Level <span id="tapPowerLevel">1</span></div>
+                        <div class="powerup-cost"><span id="tapPowerCost">100</span> taps</div>
+                    </div>
+                </div>
+                <div class="powerup-item" id="energyUpgrade">
+                    <div class="powerup-icon">🔋</div>
+                    <div class="powerup-info">
+                        <div class="powerup-name">Max Energy</div>
+                        <div class="powerup-level">Level <span id="energyLevel">1</span></div>
+                        <div class="powerup-cost"><span id="energyCost">200</span> taps</div>
+                    </div>
+                </div>
+                <div class="powerup-item" id="regenUpgrade">
+                    <div class="powerup-icon">⚡</div>
+                    <div class="powerup-info">
+                        <div class="powerup-name">Energy Regen</div>
+                        <div class="powerup-level">Level <span id="regenLevel">1</span></div>
+                        <div class="powerup-cost"><span id="regenCost">300</span> taps</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Section -->
+        <div class="leaderboard-section">
+            <h3>🏆 Leaderboard</h3>
+            <div class="leaderboard-list" id="leaderboardList">
+                <div class="leaderboard-item rank-1">
+                    <div class="rank">1</div>
+                    <div class="player-info">
+                        <div class="player-name">TapMaster</div>
+                        <div class="player-score">1,234,567</div>
+                    </div>
+                    <div class="medal">🥇</div>
+                </div>
+                <div class="leaderboard-item rank-2">
+                    <div class="rank">2</div>
+                    <div class="player-info">
+                        <div class="player-name">CryptoTapper</div>
+                        <div class="player-score">987,654</div>
+                    </div>
+                    <div class="medal">🥈</div>
+                </div>
+                <div class="leaderboard-item rank-3">
+                    <div class="rank">3</div>
+                    <div class="player-info">
+                        <div class="player-name">ArbiKing</div>
+                        <div class="player-score">765,432</div>
+                    </div>
+                    <div class="medal">🥉</div>
+                </div>
+                <div class="leaderboard-item">
+                    <div class="rank">4</div>
+                    <div class="player-info">
+                        <div class="player-name">You</div>
+                        <div class="player-score" id="yourScore">0</div>
+                    </div>
+                    <div class="medal">🎯</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Bottom Stats -->
         <div class="bottom-stats">
             <div class="stats-grid">
@@ -591,7 +850,15 @@
             energyRegenRate: 1, // per second
             totalEarned: 0,
             walletAddress: null,
-            isConnected: false
+            isConnected: false,
+            // Power-up levels
+            tapPowerLevel: 1,
+            energyLevel: 1,
+            regenLevel: 1,
+            // Power-up costs
+            tapPowerCost: 100,
+            energyCost: 200,
+            regenCost: 300
         };
 
         // DOM Elements
@@ -610,7 +877,19 @@
                 totalEarnedStat: document.getElementById('totalEarnedStat'),
                 energyFill: document.getElementById('energyFill'),
                 energyText: document.getElementById('energyText'),
-                walletStatus: document.getElementById('walletStatus')
+                walletStatus: document.getElementById('walletStatus'),
+                // Power-up elements
+                tapPowerUpgrade: document.getElementById('tapPowerUpgrade'),
+                energyUpgrade: document.getElementById('energyUpgrade'),
+                regenUpgrade: document.getElementById('regenUpgrade'),
+                tapPowerLevel: document.getElementById('tapPowerLevel'),
+                energyLevel: document.getElementById('energyLevel'),
+                regenLevel: document.getElementById('regenLevel'),
+                tapPowerCost: document.getElementById('tapPowerCost'),
+                energyCost: document.getElementById('energyCost'),
+                regenCost: document.getElementById('regenCost'),
+                // Leaderboard
+                yourScore: document.getElementById('yourScore')
             };
         }
 
@@ -693,6 +972,61 @@
             if (elements.energyText) {
                 elements.energyText.textContent = `${gameState.energy}/${gameState.maxEnergy}`;
             }
+
+            // Update power-up UI
+            if (elements.tapPowerLevel) {
+                elements.tapPowerLevel.textContent = gameState.tapPowerLevel;
+            }
+            if (elements.energyLevel) {
+                elements.energyLevel.textContent = gameState.energyLevel;
+            }
+            if (elements.regenLevel) {
+                elements.regenLevel.textContent = gameState.regenLevel;
+            }
+            if (elements.tapPowerCost) {
+                elements.tapPowerCost.textContent = formatNumber(gameState.tapPowerCost);
+            }
+            if (elements.energyCost) {
+                elements.energyCost.textContent = formatNumber(gameState.energyCost);
+            }
+            if (elements.regenCost) {
+                elements.regenCost.textContent = formatNumber(gameState.regenCost);
+            }
+
+            // Update power-up affordability
+            updatePowerUpAffordability();
+
+            // Update leaderboard
+            if (elements.yourScore) {
+                elements.yourScore.textContent = formatNumber(gameState.totalTaps);
+            }
+        }
+
+        // Update power-up affordability visual feedback
+        function updatePowerUpAffordability() {
+            if (elements.tapPowerUpgrade) {
+                if (gameState.totalTaps >= gameState.tapPowerCost) {
+                    elements.tapPowerUpgrade.classList.add('affordable');
+                } else {
+                    elements.tapPowerUpgrade.classList.remove('affordable');
+                }
+            }
+
+            if (elements.energyUpgrade) {
+                if (gameState.totalTaps >= gameState.energyCost) {
+                    elements.energyUpgrade.classList.add('affordable');
+                } else {
+                    elements.energyUpgrade.classList.remove('affordable');
+                }
+            }
+
+            if (elements.regenUpgrade) {
+                if (gameState.totalTaps >= gameState.regenCost) {
+                    elements.regenUpgrade.classList.add('affordable');
+                } else {
+                    elements.regenUpgrade.classList.remove('affordable');
+                }
+            }
         }
 
         // Handle tap
@@ -718,6 +1052,61 @@
             }
 
             updateUI();
+        }
+
+        // Power-up purchase functions
+        function buyTapPowerUpgrade() {
+            if (gameState.totalTaps >= gameState.tapPowerCost) {
+                gameState.totalTaps -= gameState.tapPowerCost;
+                gameState.tapPowerLevel++;
+                gameState.tapPower = gameState.tapPowerLevel;
+                gameState.tapPowerCost = Math.floor(gameState.tapPowerCost * 1.5);
+                
+                showPowerUpNotification('Tap Power', gameState.tapPowerLevel);
+                updateUI();
+            }
+        }
+
+        function buyEnergyUpgrade() {
+            if (gameState.totalTaps >= gameState.energyCost) {
+                gameState.totalTaps -= gameState.energyCost;
+                gameState.energyLevel++;
+                gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
+                gameState.energy = gameState.maxEnergy; // Refill energy
+                gameState.energyCost = Math.floor(gameState.energyCost * 1.5);
+                
+                showPowerUpNotification('Max Energy', gameState.energyLevel);
+                updateUI();
+            }
+        }
+
+        function buyRegenUpgrade() {
+            if (gameState.totalTaps >= gameState.regenCost) {
+                gameState.totalTaps -= gameState.regenCost;
+                gameState.regenLevel++;
+                gameState.energyRegenRate = gameState.regenLevel;
+                gameState.regenCost = Math.floor(gameState.regenCost * 1.5);
+                
+                showPowerUpNotification('Energy Regen', gameState.regenLevel);
+                updateUI();
+            }
+        }
+
+        // Show power-up notification
+        function showPowerUpNotification(powerName, level) {
+            const notification = document.createElement('div');
+            notification.className = 'level-up-notification';
+            notification.innerHTML = `
+                <h3>🚀 Power-up Upgraded!</h3>
+                <p>${powerName} Level ${level}</p>
+            `;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.style.animation = 'fadeOut 0.5s ease-in';
+                setTimeout(() => notification.remove(), 500);
+            }, 2000);
         }
 
         // Show level up notification
@@ -801,6 +1190,17 @@
                     e.preventDefault();
                     handleTap();
                 });
+            }
+
+            // Set up power-up buttons
+            if (elements.tapPowerUpgrade) {
+                elements.tapPowerUpgrade.addEventListener('click', buyTapPowerUpgrade);
+            }
+            if (elements.energyUpgrade) {
+                elements.energyUpgrade.addEventListener('click', buyEnergyUpgrade);
+            }
+            if (elements.regenUpgrade) {
+                elements.regenUpgrade.addEventListener('click', buyRegenUpgrade);
             }
 
             // Start energy regeneration
