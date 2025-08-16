@@ -751,7 +751,7 @@
             tapPowerCost: 100,
             energyCost: 200,
             regenCost: 300,
-            levelUpCost: 1000,
+            levelUpCost: 1000, // This will be dynamically calculated
             walletConnected: false,
             walletAddress: null,
             contractAddress: CURRENT_NETWORK.contractAddress
@@ -805,7 +805,7 @@
                 tapPowerCost: document.getElementById('tapPowerCost'),
                 energyCost: document.getElementById('energyCost'),
                 regenCost: document.getElementById('regenCost'),
-                levelUpCost: document.getElementById('levelUpCost'),
+                levelUpCost: document.getElementById('levelUpCost'), // This is the one to update for display
                 walletStatus: document.getElementById('walletStatus'),
                 connectWalletBtn: document.getElementById('connectWalletBtn'),
                 networkStatus: document.getElementById('networkStatus'),
@@ -895,8 +895,24 @@
             if (elements.tapPowerCost) elements.tapPowerCost.textContent = formatNumber(gameState.tapPowerCost);
             if (elements.energyCost) elements.energyCost.textContent = formatNumber(gameState.energyCost);
             if (elements.regenCost) elements.regenCost.textContent = formatNumber(gameState.regenCost);
-            if (elements.levelUpCost) elements.levelUpCost.textContent = formatNumber(gameState.levelUpCost);
 
+            // Update level up cost display - calculate based on next level requirements
+            const nextLevel = gameState.currentLevel + 1;
+            const requiredTapsForNextLevel = nextLevel * nextLevel * 100; // Match contract formula
+            const remainingTapsNeeded = Math.max(0, requiredTapsForNextLevel - gameState.totalTaps);
+
+            if (elements.levelUpCost) {
+                if (remainingTapsNeeded > 0) {
+                    elements.levelUpCost.textContent = `${formatNumber(remainingTapsNeeded)} more taps`;
+                } else {
+                    elements.levelUpCost.textContent = "Ready!";
+                }
+            }
+
+            // Update next level cost display
+            if (document.getElementById('nextLevelCost')) {
+                document.getElementById('nextLevelCost').textContent = formatNumber(requiredTapsForNextLevel);
+            }
 
             updateLeaderboard();
             saveGameState();
@@ -1013,7 +1029,7 @@
                 gameState.tapPowerCost = Number(gameState.tapPowerCost);
                 gameState.energyCost = Number(gameState.energyCost);
                 gameState.regenCost = Number(gameState.regenCost);
-                gameState.levelUpCost = Number(gameState.levelUpCost);
+                gameState.levelUpCost = Number(gameState.levelUpCost); // This might not be needed if it's always calculated
             }
         }
 
@@ -1069,6 +1085,9 @@
                 // Update game state
                 gameState.walletConnected = true;
                 gameState.walletAddress = address;
+
+                // Update UI to reflect new level costs if wallet is connected
+                updateUI();
 
                 // Save updated game data
                 saveGameState();
@@ -1462,7 +1481,7 @@
             // Add listener for level upgrade if it has a specific function
             document.getElementById('levelUpgrade').addEventListener('click', () => {
                 const cost = gameState.levelUpCost;
-                if (gameState.totalTaps >= cost) {
+                if (gameState.totalTaps >= gameState.levelUpCost) { // Use the calculated cost
                     // Logic for level up - potentially based on a different contract interaction
                     showNotification('Level Up feature not fully implemented yet.', '#ff9900');
                 } else {
