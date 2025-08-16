@@ -632,57 +632,18 @@
 
         /* Leaderboard Section */
         .leaderboard-section {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 20, 0.95);
+            padding: 25px;
+            background: rgba(28, 28, 30, 0.6);
             backdrop-filter: blur(20px);
-            z-index: 2000;
-            padding: 20px;
-            overflow-y: auto;
-        }
-
-        .leaderboard-section.active {
-            display: block;
-        }
-
-        .leaderboard-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            padding: 0 5px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .leaderboard-section h3 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin: 0;
-        }
-
-        .leaderboard-close {
-            width: 40px;
-            height: 40px;
-            background: rgba(44, 44, 46, 0.8);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 50%;
-            color: var(--text-primary);
             font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-        }
-
-        .leaderboard-close:hover {
-            background: rgba(255, 59, 48, 0.2);
-            border-color: var(--red);
-            color: var(--red);
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--text-primary);
         }
 
         .leaderboard-table {
@@ -875,55 +836,6 @@
             }
         }
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(28, 28, 30, 0.95);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            display: flex;
-            justify-content: space-around;
-            padding: 15px 20px 25px;
-            z-index: 100;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 8px 12px;
-            border-radius: 12px;
-        }
-
-        .nav-item:hover {
-            background: rgba(44, 44, 46, 0.6);
-        }
-
-        .nav-item.active {
-            background: rgba(0, 122, 255, 0.2);
-            border: 1px solid rgba(0, 122, 255, 0.3);
-        }
-
-        .nav-icon {
-            font-size: 24px;
-        }
-
-        .nav-label {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 600;
-        }
-
-        .nav-item.active .nav-label {
-            color: var(--primary-blue);
-        }
-
         @media (max-height: 700px) {
             .tap-section {
                 min-height: 200px;
@@ -935,30 +847,10 @@
 
             .bottom-stats {
                 padding: 15px 20px;
-                margin-bottom: 80px;
             }
 
-            .powerups-section {
+            .powerups-section, .leaderboard-section {
                 padding: 15px 20px;
-                margin-bottom: 80px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .bottom-nav {
-                padding: 12px 15px 20px;
-            }
-
-            .nav-item {
-                padding: 6px 8px;
-            }
-
-            .nav-icon {
-                font-size: 20px;
-            }
-
-            .nav-label {
-                font-size: 11px;
             }
         }
     </style>
@@ -1041,11 +933,8 @@
         </div>
 
         <!-- Leaderboard Section -->
-        <div class="leaderboard-section" id="leaderboardSection">
-            <div class="leaderboard-header">
-                <h3>🏆 Global Leaderboard</h3>
-                <button class="leaderboard-close" onclick="closeLeaderboard()">✕</button>
-            </div>
+        <div class="leaderboard-section">
+            <h3>🏆 Global Leaderboard</h3>
             <div class="leaderboard-table">
                 <div class="leaderboard-header">
                     <div class="header-cell">Rank</div>
@@ -1152,22 +1041,6 @@
                     <div class="stat-value" id="totalEarnedStat">0</div>
                     <div class="stat-label">Total Earned</div>
                 </div>
-            </div>
-        </div>
-
-        <!-- Bottom Navigation -->
-        <div class="bottom-nav">
-            <div class="nav-item active" id="tapNav">
-                <div class="nav-icon">⚡</div>
-                <div class="nav-label">Tap</div>
-            </div>
-            <div class="nav-item" id="powerupsNav">
-                <div class="nav-icon">🚀</div>
-                <div class="nav-label">Power-ups</div>
-            </div>
-            <div class="nav-item" id="leaderboardNav">
-                <div class="nav-icon">🏆</div>
-                <div class="nav-label">Leaderboard</div>
             </div>
         </div>
     </div>
@@ -1681,61 +1554,6 @@
             }, 1000);
         }
 
-        // Open leaderboard
-        function openLeaderboard() {
-            const leaderboardSection = document.getElementById('leaderboardSection');
-            if (leaderboardSection) {
-                leaderboardSection.classList.add('active');
-                // Prevent body scroll
-                document.body.style.overflow = 'hidden';
-            }
-        }
-
-        // Close leaderboard
-        function closeLeaderboard() {
-            const leaderboardSection = document.getElementById('leaderboardSection');
-            if (leaderboardSection) {
-                leaderboardSection.classList.remove('active');
-                // Restore body scroll
-                document.body.style.overflow = '';
-            }
-        }
-
-        // Navigation handler
-        function handleNavigation() {
-            const tapNav = document.getElementById('tapNav');
-            const powerupsNav = document.getElementById('powerupsNav');
-            const leaderboardNav = document.getElementById('leaderboardNav');
-
-            // Clear active states
-            [tapNav, powerupsNav, leaderboardNav].forEach(nav => {
-                if (nav) nav.classList.remove('active');
-            });
-
-            // Leaderboard navigation
-            if (leaderboardNav) {
-                leaderboardNav.addEventListener('click', () => {
-                    leaderboardNav.classList.add('active');
-                    openLeaderboard();
-                });
-            }
-
-            // Close leaderboard when tapping other nav items
-            if (tapNav) {
-                tapNav.addEventListener('click', () => {
-                    tapNav.classList.add('active');
-                    closeLeaderboard();
-                });
-            }
-
-            if (powerupsNav) {
-                powerupsNav.addEventListener('click', () => {
-                    powerupsNav.classList.add('active');
-                    closeLeaderboard();
-                });
-            }
-        }
-
         // Initialize game
         function initializeGame() {
             initializeElements();
@@ -1759,9 +1577,6 @@
             if (elements.regenUpgrade) {
                 elements.regenUpgrade.addEventListener('click', buyRegenUpgrade);
             }
-
-            // Set up navigation
-            handleNavigation();
 
             // Start energy regeneration
             startEnergyRegen();
@@ -1807,7 +1622,6 @@
         // Make functions globally available
         window.updateWalletStatus = updateWalletStatus;
         window.gameState = gameState;
-        window.closeLeaderboard = closeLeaderboard;
     </script>
 </body>
 </html>
