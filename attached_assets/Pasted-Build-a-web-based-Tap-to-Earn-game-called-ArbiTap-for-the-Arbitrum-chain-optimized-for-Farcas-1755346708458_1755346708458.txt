@@ -1,0 +1,50 @@
+Build a web-based "Tap-to-Earn" game called **ArbiTap** for the Arbitrum chain, optimized for Farcaster mini-apps.  
+Use **React + TailwindCSS** for the frontend, **Framer Motion** for animations, and mock state management with **localStorage**.  
+
+### Core Game Mechanics:
+- A **large central tap button** with a glowing lightning icon.
+  - Each tap increases the player’s balance and decreases their energy.
+  - Smooth animations: pulse, particle burst, haptic-like feedback.
+- **Energy system**:
+  - Max energy bar (default 1000).
+  - Energy decreases with each tap, regenerates over time.
+  - Show regeneration progress bar with animation.
+- **Leveling system**:
+  - Gain XP with taps.
+  - Progress bar shows level-up progress.
+  - On level-up → play glow/flash animation.
+
+### Power-ups:
+- 3 upgradeable cards:
+  - **Tap Power** (increase taps per click).
+  - **Max Energy** (increase energy cap).
+  - **Energy Regen** (faster recharge).
+- Each upgrade costs taps (balance is spent).
+- Smooth upgrade animation with card scaling/glow.
+
+### Leaderboard:
+- Scrollable leaderboard with the following columns:
+  - Rank, Avatar (placeholder), Player name
+  - Total Taps, Level, Taps/sec
+  - Status (green = online, gray = offline)
+- Animated transitions when leaderboard updates.
+
+### Wallet Integration (mock for now):
+- Show connected wallet address (shortened, e.g. 0x81a5...1f8d).
+- “Claim Rewards” button (mock).
+- Store progress in localStorage to persist across sessions.
+
+### UI/UX Requirements:
+- Dark theme with **neon glow accents** (blue, purple, cyan).
+- Mobile-first responsive design.
+- Leaderboard and power-ups displayed below the main tap button.
+- Smooth transitions between UI states using Framer Motion.
+
+### Tech Stack:
+- React + TailwindCSS
+- Framer Motion (animations)
+- shadcn/ui for clean components
+- localStorage for persistence
+- ethers.js (stubbed, ready for blockchain connection later)
+
+Deliver production-ready, clean, modular code that can be run directly on Replit.
