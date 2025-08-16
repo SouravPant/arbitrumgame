@@ -61,8 +61,7 @@ async function main() {
   console.log("🔗 Explorer:", getExplorerUrl(network.chainId, contractAddress));
   
   // Display milestone information
-  const milestones = await gameContract.milestones();
-  const rewards = await gameContract.rewards();
+  const [milestones, rewards] = await gameContract.getMilestonesAndRewards();
   
   console.log("\n🏆 Milestones and Rewards:");
   for (let i = 0; i < milestones.length; i++) {

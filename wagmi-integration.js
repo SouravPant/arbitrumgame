@@ -3,7 +3,7 @@
 
 class ArbitrumGameContract {
     constructor() {
-        this.contractAddress = localStorage.getItem('gameContractAddress') || '0x742d35Cc6634C0532925a3b8D0B127D2d3b9b123'; // Default deployed contract
+        this.contractAddress = localStorage.getItem('gameContractAddress') || '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De'; // Deployed contract
         this.contractABI = [
             {
                 "inputs": [{"internalType": "uint256", "name": "newLevel", "type": "uint256"}],
