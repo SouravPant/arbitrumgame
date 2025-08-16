@@ -382,34 +382,44 @@
             color: var(--gold);
         }
 
-        /* Leaderboard Section */
+        /* Leaderboard Section - Now positioned below energy */
         .leaderboard-section {
             background: rgba(28, 28, 30, 0.8);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px 16px 0 0;
+            margin: 20px;
+            margin-bottom: 0;
+            height: 50vh;
+            max-height: 400px;
+            display: flex;
+            flex-direction: column;
         }
 
         .leaderboard-toggle {
             width: 100%;
-            background: none;
+            background: rgba(44, 44, 46, 0.8);
             border: none;
             color: var(--text-primary);
-            padding: 20px;
-            font-size: 18px;
+            padding: 16px 20px;
+            font-size: 16px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: background 0.3s ease;
+            transition: all 0.3s ease;
+            border-radius: 16px 16px 0 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .leaderboard-toggle:hover {
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(0, 122, 255, 0.1);
         }
 
         .toggle-icon {
             transition: transform 0.3s ease;
+            font-size: 14px;
         }
 
         .leaderboard-toggle.expanded .toggle-icon {
@@ -417,13 +427,17 @@
         }
 
         .leaderboard-content {
-            max-height: 0;
+            flex: 1;
             overflow: hidden;
-            transition: max-height 0.3s ease;
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(-20px);
         }
 
         .leaderboard-content.expanded {
-            max-height: 400px;
+            opacity: 1;
+            transform: translateY(0);
+            overflow-y: auto;
         }
 
         .leaderboard-list {
@@ -679,37 +693,7 @@
             }
         }
 
-        /* Claim Rewards Button */
-        .claim-rewards {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(45deg, var(--gold), var(--orange));
-            color: #000;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 14px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-            animation: claimPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes claimPulse {
-            0%, 100% {
-                box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
-            }
-            50% {
-                box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
-            }
-        }
-
-        .claim-rewards:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
-        }
+        
 
         /* Badge Notification */
         .badge-notification {
@@ -814,6 +798,19 @@
             </div>
         </div>
 
+        <!-- Leaderboard Section -->
+        <div class="leaderboard-section">
+            <button class="leaderboard-toggle" id="leaderboardToggle">
+                <span>🏆 Global Leaderboard</span>
+                <span class="toggle-icon">▼</span>
+            </button>
+            <div class="leaderboard-content" id="leaderboardContent">
+                <div class="leaderboard-list" id="leaderboardList">
+                    <!-- Leaderboard items will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
         <!-- Central Tap Section -->
         <div class="tap-section">
             <button class="tap-button" id="tapButton">
@@ -852,21 +849,7 @@
             </div>
         </div>
 
-        <!-- Leaderboard Section -->
-        <div class="leaderboard-section">
-            <button class="leaderboard-toggle" id="leaderboardToggle">
-                <span>🏆 Global Leaderboard</span>
-                <span class="toggle-icon">▼</span>
-            </button>
-            <div class="leaderboard-content" id="leaderboardContent">
-                <div class="leaderboard-list" id="leaderboardList">
-                    <!-- Leaderboard items will be populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-
-        <!-- Claim Rewards Button -->
-        <button class="claim-rewards" id="claimRewards">💰 Claim Rewards</button>
+        
     </div>
 
     <!-- Game Script -->
@@ -958,8 +941,7 @@
                 // Leaderboard
                 leaderboardToggle: document.getElementById('leaderboardToggle'),
                 leaderboardContent: document.getElementById('leaderboardContent'),
-                leaderboardList: document.getElementById('leaderboardList'),
-                claimRewards: document.getElementById('claimRewards')
+                leaderboardList: document.getElementById('leaderboardList')
             };
         }
 
@@ -1441,28 +1423,7 @@
             }, 2000);
         }
 
-        // Claim rewards modal
-        function showClaimRewardsModal() {
-            const ethReward = (gameState.totalTaps * 0.000001).toFixed(6);
-            showModal(
-                '💰 Claim Rewards',
-                `You can claim ${ethReward} ETH worth of rewards!\n\nNote: This is a demo transaction.`,
-                [
-                    { text: 'Claim Now', action: 'processClaimRewards()' },
-                    { text: 'Cancel', action: null }
-                ]
-            );
-        }
-
-        function processClaimRewards() {
-            document.querySelector('.modal-overlay').remove();
-            
-            showModal(
-                '✅ Rewards Claimed!',
-                'Your rewards have been processed!\n\nTransaction Hash: 0x1234...abcd',
-                [{ text: 'Awesome!', action: null }]
-            );
-        }
+        
 
         // Initialize game
         function initializeGame() {
@@ -1492,10 +1453,7 @@
                 });
             }
 
-            // Claim rewards
-            if (elements.claimRewards) {
-                elements.claimRewards.addEventListener('click', showClaimRewardsModal);
-            }
+            
 
             // Start systems
             startEnergyRegen();
@@ -1507,8 +1465,7 @@
             console.log('Enhanced ArbiTap game initialized with persistence and new features');
         }
 
-        // Make global functions available
-        window.processClaimRewards = processClaimRewards;
+        
 
         // Initialize when DOM loads
         document.addEventListener('DOMContentLoaded', () => {
