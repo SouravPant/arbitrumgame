@@ -382,69 +382,73 @@
             color: var(--gold);
         }
 
-        /* Leaderboard Section */
+        /* Leaderboard Section - Always Visible at Bottom Right */
         .leaderboard-section {
-            background: rgba(28, 28, 30, 0.8);
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 280px;
+            max-height: 300px;
+            background: rgba(28, 28, 30, 0.95);
             backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 100;
         }
 
-        .leaderboard-toggle {
-            width: 100%;
-            background: none;
-            border: none;
-            color: var(--text-primary);
-            padding: 20px;
-            font-size: 18px;
-            font-weight: 700;
-            cursor: pointer;
+        .leaderboard-header {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            transition: background 0.3s ease;
+            gap: 8px;
+            background: rgba(0, 122, 255, 0.1);
+            border-radius: 16px 16px 0 0;
         }
 
-        .leaderboard-toggle:hover {
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .toggle-icon {
-            transition: transform 0.3s ease;
-        }
-
-        .leaderboard-toggle.expanded .toggle-icon {
-            transform: rotate(180deg);
-        }
-
-        .leaderboard-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .leaderboard-content.expanded {
-            max-height: 400px;
+        .leaderboard-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-blue);
         }
 
         .leaderboard-list {
-            padding: 0 20px 20px;
+            padding: 12px;
+            max-height: 240px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+        }
+
+        .leaderboard-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .leaderboard-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .leaderboard-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
         }
 
         .leaderboard-item {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             background: rgba(44, 44, 46, 0.6);
-            border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 8px;
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin-bottom: 6px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .leaderboard-item:hover {
             background: rgba(44, 44, 46, 0.8);
-            transform: translateX(4px);
+            transform: translateX(2px);
         }
 
         .leaderboard-item.current-player {
@@ -471,50 +475,56 @@
         .rank-info {
             display: flex;
             align-items: center;
-            gap: 8px;
-            min-width: 50px;
+            gap: 6px;
+            min-width: 35px;
         }
 
         .rank {
-            font-size: 16px;
+            font-size: 12px;
             font-weight: 800;
             color: var(--text-primary);
+            min-width: 20px;
         }
 
         .player-avatar {
-            width: 32px;
-            height: 32px;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
             background: linear-gradient(45deg, var(--primary-blue), var(--neon-purple));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 14px;
+            font-size: 10px;
             font-weight: 600;
             color: white;
         }
 
         .player-info {
             flex: 1;
+            min-width: 0;
         }
 
         .player-name {
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 2px;
+            margin-bottom: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .player-stats {
-            font-size: 11px;
+            font-size: 9px;
             color: var(--text-secondary);
         }
 
         .player-score {
-            font-size: 14px;
+            font-size: 11px;
             color: var(--gold);
             font-weight: 700;
             text-align: right;
+            min-width: 45px;
         }
 
         /* Animations for tap effects */
@@ -682,19 +692,20 @@
         /* Claim Rewards Button */
         .claim-rewards {
             position: fixed;
-            bottom: 20px;
+            bottom: 340px;
             right: 20px;
             background: linear-gradient(45deg, var(--gold), var(--orange));
             color: #000;
             border: none;
-            padding: 12px 20px;
-            border-radius: 16px;
+            padding: 10px 16px;
+            border-radius: 12px;
             font-weight: 700;
-            font-size: 14px;
+            font-size: 12px;
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
             animation: claimPulse 2s ease-in-out infinite;
+            z-index: 99;
         }
 
         @keyframes claimPulse {
@@ -777,6 +788,20 @@
                 min-width: 100px;
                 padding: 12px 8px;
             }
+
+            /* Mobile leaderboard adjustments */
+            .leaderboard-section {
+                width: 240px;
+                right: 10px;
+                bottom: 10px;
+            }
+
+            .claim-rewards {
+                bottom: 270px;
+                right: 10px;
+                padding: 8px 12px;
+                font-size: 11px;
+            }
         }
     </style>
 </head>
@@ -852,16 +877,14 @@
             </div>
         </div>
 
-        <!-- Leaderboard Section -->
+        <!-- Leaderboard Section - Fixed Position -->
         <div class="leaderboard-section">
-            <button class="leaderboard-toggle" id="leaderboardToggle">
-                <span>🏆 Global Leaderboard</span>
-                <span class="toggle-icon">▼</span>
-            </button>
-            <div class="leaderboard-content" id="leaderboardContent">
-                <div class="leaderboard-list" id="leaderboardList">
-                    <!-- Leaderboard items will be populated by JavaScript -->
-                </div>
+            <div class="leaderboard-header">
+                <span>🏆</span>
+                <span class="leaderboard-title">Global Leaderboard</span>
+            </div>
+            <div class="leaderboard-list" id="leaderboardList">
+                <!-- Leaderboard items will be populated by JavaScript -->
             </div>
         </div>
 
@@ -1484,13 +1507,7 @@
             if (elements.regenUpgrade) elements.regenUpgrade.addEventListener('click', buyRegenUpgrade);
             if (elements.autoTapUpgrade) elements.autoTapUpgrade.addEventListener('click', buyAutoTapUpgrade);
 
-            // Leaderboard toggle
-            if (elements.leaderboardToggle) {
-                elements.leaderboardToggle.addEventListener('click', () => {
-                    elements.leaderboardToggle.classList.toggle('expanded');
-                    elements.leaderboardContent.classList.toggle('expanded');
-                });
-            }
+            // Leaderboard is now always visible - no toggle needed
 
             // Claim rewards
             if (elements.claimRewards) {
