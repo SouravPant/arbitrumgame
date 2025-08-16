@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -40,6 +39,8 @@
             --green: #30D158;
             --red: #FF3B30;
             --orange: #FF9500;
+            /* Added for new styles */
+            --notcoin-yellow: #FFD60A;
         }
 
         * {
@@ -240,7 +241,7 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 
+            box-shadow:
                 0 20px 60px rgba(0, 122, 255, 0.4),
                 0 0 0 4px rgba(255, 255, 255, 0.1),
                 inset 0 2px 0 rgba(255, 255, 255, 0.2);
@@ -268,13 +269,13 @@
 
         @keyframes tapButtonGlow {
             0%, 100% {
-                box-shadow: 
+                box-shadow:
                     0 20px 60px rgba(0, 122, 255, 0.4),
                     0 0 0 4px rgba(255, 255, 255, 0.1),
                     inset 0 2px 0 rgba(255, 255, 255, 0.2);
             }
             50% {
-                box-shadow: 
+                box-shadow:
                     0 25px 80px rgba(0, 255, 255, 0.6),
                     0 0 0 6px rgba(0, 255, 255, 0.3),
                     inset 0 2px 0 rgba(255, 255, 255, 0.3);
@@ -289,12 +290,12 @@
 
         @keyframes challengeGlow {
             from {
-                box-shadow: 
+                box-shadow:
                     0 20px 60px rgba(255, 165, 0, 0.6),
                     0 0 0 6px rgba(255, 165, 0, 0.4);
             }
             to {
-                box-shadow: 
+                box-shadow:
                     0 25px 80px rgba(255, 215, 0, 0.8),
                     0 0 0 8px rgba(255, 215, 0, 0.6);
             }
@@ -701,21 +702,21 @@
             }
         }
 
-        
+
 
         /* Badge Notification */
         .badge-notification {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%) scale(0.5) rotateY(90deg);
             background: linear-gradient(135deg, var(--neon-purple), var(--primary-blue));
             color: white;
             padding: 30px;
             border-radius: 20px;
             text-align: center;
             z-index: 1001;
-            animation: badgePopup 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: badgePopup 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
             box-shadow: 0 20px 60px rgba(138, 43, 226, 0.5);
         }
 
@@ -732,6 +733,209 @@
                 transform: translate(-50%, -50%) scale(1) rotateY(0deg);
                 opacity: 1;
             }
+        }
+
+        /* Added Styles for Secrets Section */
+        .content-section {
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .content-section h2 {
+            text-align: center;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+            font-size: 22px;
+            font-weight: 800;
+        }
+
+        .content-section p {
+            text-align: center;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
+        }
+
+        .env-setup {
+            background: rgba(255,255,255,0.05);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 30px;
+        }
+
+        .env-item {
+            margin-bottom: 20px;
+        }
+
+        .env-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--notcoin-yellow);
+        }
+
+        .env-item input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .env-item input:focus {
+            outline: none;
+            border-color: var(--notcoin-yellow);
+        }
+
+        .env-item small {
+            display: block;
+            margin-top: 4px;
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+        }
+
+        .env-status {
+            margin: 20px 0;
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .env-status #envStatus {
+            color: var(--notcoin-yellow);
+            font-weight: 600;
+        }
+
+        .mint-button {
+            background: var(--notcoin-yellow);
+            color: #1f1f1f;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(255, 214, 10, 0.3);
+        }
+
+        .mint-button:hover {
+            background: #f0c400;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 214, 10, 0.4);
+        }
+
+        .mint-button.secondary {
+            background: rgba(255,255,255,0.1);
+            margin-left: 10px;
+        }
+
+        .mint-button.secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .github-setup {
+            background: rgba(0,123,255,0.05);
+            padding: 24px;
+            border-radius: 16px;
+            border: 1px solid rgba(0,123,255,0.2);
+        }
+
+        .github-setup h3 {
+            color: #00d4ff;
+            margin-bottom: 20px;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .deployment-steps {
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .step-number {
+            background: var(--notcoin-yellow);
+            color: #1f1f1f;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+
+        .step-content strong {
+            color: var(--notcoin-yellow);
+            display: block;
+            margin-bottom: 4px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .terminal-commands h4 {
+            color: #00d4ff;
+            margin-bottom: 16px;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .command-block {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .command-block code {
+            flex-grow: 1;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            hyphens: auto;
+        }
+
+        .command-block button {
+            background: var(--notcoin-yellow);
+            color: #1f1f1f;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 12px;
+            transition: transform 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .command-block button:hover {
+            transform: scale(1.05);
         }
 
         /* Responsive Design */
@@ -768,6 +972,36 @@
             .powerup-card {
                 min-width: 100px;
                 padding: 12px 8px;
+            }
+
+            /* Responsive adjustments for secrets section */
+            .env-setup, .github-setup {
+                padding: 16px;
+            }
+
+            .step {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .step-number {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+
+            .command-block {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .command-block code {
+                margin-bottom: 10px;
+                text-align: center;
+            }
+
+            .command-block button {
+                margin-left: 0;
             }
         }
     </style>
@@ -844,6 +1078,87 @@
             </div>
         </div>
 
+        <!-- Secrets Section -->
+        <div id="secrets" class="content-section">
+            <h2>🔐 Environment Setup</h2>
+            <p>Configure your environment variables for blockchain integration.</p>
+
+            <div class="env-setup">
+                <div class="env-item">
+                    <label>Private Key:</label>
+                    <input type="password" id="privateKey" placeholder="Enter MetaMask private key" maxlength="64">
+                    <small>Your MetaMask private key (without 0x prefix)</small>
+                </div>
+                <div class="env-item">
+                    <label>Alchemy API Key:</label>
+                    <input type="text" id="alchemyKey" placeholder="Enter Alchemy API key" maxlength="32">
+                    <small>Get from alchemy.com for Arbitrum access</small>
+                </div>
+                <div class="env-item">
+                    <label>Contract Address:</label>
+                    <input type="text" id="contractAddress" placeholder="Enter deployed contract address" maxlength="42">
+                    <small>Will be set after contract deployment</small>
+                </div>
+                <div class="env-status">
+                    <div id="envStatus">Not configured</div>
+                </div>
+                <button class="mint-button" id="saveEnvBtn" onclick="saveEnvironment()">💾 Save Configuration</button>
+                <button class="mint-button secondary" onclick="loadEnvironment()">📂 Load Saved</button>
+                <button class="mint-button secondary" onclick="deployContract()">🚀 Deploy Contract</button>
+            </div>
+
+            <div class="github-setup">
+                <h3>📱 GitHub Deployment</h3>
+                <div class="deployment-steps">
+                    <div class="step">
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+                            <strong>Create GitHub Repository</strong>
+                            <p>Create a new repository on GitHub for your ArbiTap game</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+                            <strong>Push Code</strong>
+                            <p>Use the terminal commands below to push your code</p>
+                        </div>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <strong>Deploy on Vercel/Netlify</strong>
+                            <p>Connect your GitHub repo to Vercel or Netlify for deployment</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="terminal-commands">
+                    <h4>🔧 Git Commands</h4>
+                    <div class="command-block">
+                        <code>git init</code>
+                        <button onclick="copyCommand('git init')">📋</button>
+                    </div>
+                    <div class="command-block">
+                        <code>git add .</code>
+                        <button onclick="copyCommand('git add .')">📋</button>
+                    </div>
+                    <div class="command-block">
+                        <code>git commit -m "Initial commit: ArbiTap game"</code>
+                        <button onclick="copyCommand('git commit -m \"Initial commit: ArbiTap game\"')">📋</button>
+                    </div>
+                    <div class="command-block">
+                        <code>git remote add origin https://github.com/yourusername/arbitap-game.git</code>
+                        <button onclick="copyCommand('git remote add origin https://github.com/yourusername/arbitap-game.git')">📋</button>
+                    </div>
+                    <div class="command-block">
+                        <code>git push -u origin main</code>
+                        <button onclick="copyCommand('git push -u origin main')">📋</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Leaderboard Section - Moved to bottom -->
         <div class="leaderboard-section">
             <button class="leaderboard-toggle" id="leaderboardToggle">
@@ -857,7 +1172,7 @@
             </div>
         </div>
 
-        
+
     </div>
 
     <!-- Game Script -->
@@ -948,7 +1263,13 @@
                 // Leaderboard
                 leaderboardToggle: document.getElementById('leaderboardToggle'),
                 leaderboardContent: document.getElementById('leaderboardContent'),
-                leaderboardList: document.getElementById('leaderboardList')
+                leaderboardList: document.getElementById('leaderboardList'),
+                // Secrets section elements
+                privateKeyInput: document.getElementById('privateKey'),
+                alchemyKeyInput: document.getElementById('alchemyKey'),
+                contractAddressInput: document.getElementById('contractAddress'),
+                envStatusElement: document.getElementById('envStatus'),
+                saveEnvBtn: document.getElementById('saveEnvBtn'),
             };
         }
 
@@ -962,21 +1283,21 @@
             if (saved) {
                 const parsedState = JSON.parse(saved);
                 gameState = { ...gameState, ...parsedState };
-                
+
                 // Check daily streak
                 const today = new Date().toDateString();
                 if (gameState.lastLoginDate !== today) {
                     const lastLogin = new Date(gameState.lastLoginDate);
                     const todayDate = new Date(today);
                     const dayDiff = Math.floor((todayDate - lastLogin) / (1000 * 60 * 60 * 24));
-                    
+
                     if (dayDiff === 1) {
                         gameState.dailyStreak++;
                         showDailyStreakBonus();
                     } else if (dayDiff > 1) {
                         gameState.dailyStreak = 1;
                     }
-                    
+
                     gameState.lastLoginDate = today;
                     saveGameState();
                 }
@@ -985,6 +1306,7 @@
 
         // Format numbers
         function formatNumber(num) {
+            if (num === null || num === undefined) return '0';
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
@@ -1020,7 +1342,7 @@
                 gameState.currentLevel = newLevel;
                 gameState.tapPower = Math.max(gameState.tapPowerLevel, Math.floor(newLevel / 5) + 1);
                 showLevelUpNotification(newLevel);
-                
+
                 // Check for milestone badges
                 if (MILESTONE_BADGES.includes(newLevel) && !gameState.unlockedBadges.includes(newLevel)) {
                     gameState.unlockedBadges.push(newLevel);
@@ -1054,7 +1376,7 @@
             }
 
             if (elements.energyText) {
-                elements.energyText.textContent = `${gameState.energy}/${gameState.maxEnergy}`;
+                elements.energyText.textContent = `${Math.floor(gameState.energy)}/${gameState.maxEnergy}`;
             }
 
             // Update streak
@@ -1066,7 +1388,7 @@
             updatePowerUpUI();
             updatePowerUpAffordability();
             updateLeaderboard();
-            
+
             saveGameState();
         }
 
@@ -1075,7 +1397,7 @@
             if (elements.tapPowerLevel) elements.tapPowerLevel.textContent = gameState.tapPowerLevel;
             if (elements.energyLevel) elements.energyLevel.textContent = gameState.energyLevel;
             if (elements.regenLevel) elements.regenLevel.textContent = gameState.regenLevel;
-            if (elements.nextLevelCost) elements.nextLevelCost.textContent = gameState.currentLevel + 1;
+            if (elements.nextLevelCost) elements.nextLevelCost.textContent = formatNumber(gameState.currentLevel + 1);
             if (elements.tapPowerCost) elements.tapPowerCost.textContent = formatNumber(gameState.tapPowerCost);
             if (elements.energyCost) elements.energyCost.textContent = formatNumber(gameState.energyCost);
             if (elements.regenCost) elements.regenCost.textContent = formatNumber(gameState.regenCost);
@@ -1140,7 +1462,7 @@
                 gameState.tapPowerLevel++;
                 gameState.tapPower = gameState.tapPowerLevel;
                 gameState.tapPowerCost = Math.floor(gameState.tapPowerCost * 1.5);
-                
+
                 showPowerUpNotification('Tap Power', gameState.tapPowerLevel);
                 updateUI();
             }
@@ -1153,7 +1475,7 @@
                 gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
                 gameState.energy = gameState.maxEnergy;
                 gameState.energyCost = Math.floor(gameState.energyCost * 1.5);
-                
+
                 showPowerUpNotification('Max Energy', gameState.energyLevel);
                 updateUI();
             }
@@ -1165,7 +1487,7 @@
                 gameState.regenLevel++;
                 gameState.energyRegenRate = gameState.regenLevel;
                 gameState.regenCost = Math.floor(gameState.regenCost * 1.5);
-                
+
                 showPowerUpNotification('Energy Regen', gameState.regenLevel);
                 updateUI();
             }
@@ -1176,19 +1498,19 @@
                 try {
                     // Show loading state
                     showModal('⏳ Processing Level Up...', 'Interacting with smart contract...');
-                    
+
                     // Call smart contract to update level
                     const result = await window.gameContract.updatePlayerLevel(gameState.currentLevel + 1, gameState.totalTaps);
-                    
+
                     if (result.success) {
                         gameState.totalTaps -= gameState.levelUpCost;
                         gameState.currentLevel++;
                         gameState.levelUpCost = Math.floor(gameState.levelUpCost * 1.8);
-                        
+
                         // Close loading modal
                         const modal = document.querySelector('.modal-overlay');
                         if (modal) modal.remove();
-                        
+
                         showPowerUpNotification('Level Up', gameState.currentLevel);
                         updateUI();
                     }
@@ -1207,7 +1529,7 @@
             gameState.currentChallenge = challenge;
             gameState.challengeTaps = 0;
             gameState.challengeStartTime = Date.now();
-            
+
             elements.tapButton.classList.add('challenge-active');
             showChallengeTimer(challenge);
         }
@@ -1227,7 +1549,7 @@
                 const elapsed = (Date.now() - gameState.challengeStartTime) / 1000;
                 const remaining = Math.max(0, challenge.time - elapsed);
                 countdown.textContent = `${remaining.toFixed(1)}s`;
-                
+
                 if (remaining <= 0) {
                     clearInterval(interval);
                     endChallenge(timer, false);
@@ -1237,7 +1559,7 @@
 
         function updateChallengeProgress() {
             if (!gameState.currentChallenge) return;
-            
+
             const challenge = gameState.currentChallenge;
             if (gameState.challengeTaps >= challenge.target) {
                 endChallenge(document.querySelector('.challenge-timer'), true);
@@ -1249,16 +1571,16 @@
                 gameState.totalTaps += gameState.currentChallenge.reward;
                 showModal('🎉 Challenge Complete!', `You earned ${gameState.currentChallenge.reward} bonus taps!`);
             }
-            
+
             gameState.currentChallenge = null;
             gameState.challengeTaps = 0;
             gameState.challengeStartTime = null;
             elements.tapButton.classList.remove('challenge-active');
-            
+
             if (timerElement) {
                 timerElement.remove();
             }
-            
+
             updateUI();
         }
 
@@ -1277,7 +1599,7 @@
                 </div>
             `;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 if (notification.parentElement) {
                     notification.remove();
@@ -1298,7 +1620,7 @@
                 </div>
             `;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 if (notification.parentElement) {
                     notification.remove();
@@ -1314,7 +1636,7 @@
                 <p>Level ${level} Achievement</p>
             `;
             document.body.appendChild(notification);
-            
+
             setTimeout(() => {
                 if (notification.parentElement) {
                     notification.style.animation = 'fadeOut 0.5s ease-in';
@@ -1326,18 +1648,18 @@
         function showDailyStreakBonus() {
             const bonus = gameState.dailyStreak * 10;
             gameState.totalTaps += bonus;
-            
+
             showModal('🔥 Daily Streak Bonus!', `${gameState.dailyStreak} day streak! You earned ${bonus} bonus taps!`);
         }
 
         function showModal(title, message, buttons = [{ text: 'OK', action: null }]) {
             const modal = document.createElement('div');
             modal.className = 'modal-overlay';
-            
-            const buttonHtml = buttons.map(btn => 
+
+            const buttonHtml = buttons.map(btn =>
                 `<button class="modal-button" onclick="${btn.action || 'this.closest(\'.modal-overlay\').remove()'}">${btn.text}</button>`
             ).join('');
-            
+
             modal.innerHTML = `
                 <div class="modal">
                     <h3>${title}</h3>
@@ -1393,7 +1715,7 @@
         // Update leaderboard
         function updateLeaderboard() {
             if (!elements.leaderboardList) return;
-            
+
             // Add current player to leaderboard
             const playerData = {
                 name: 'You',
@@ -1402,19 +1724,19 @@
                 avatar: 'Y',
                 isCurrentPlayer: true
             };
-            
+
             const allPlayers = [...leaderboardData, playerData].sort((a, b) => b.score - a.score);
-            
+
             elements.leaderboardList.innerHTML = allPlayers.map((player, index) => {
                 const rank = index + 1;
                 const rankClass = rank <= 3 ? `rank-${rank}` : '';
                 const currentPlayerClass = player.isCurrentPlayer ? 'current-player' : '';
-                
+
                 return `
                     <div class="leaderboard-item ${rankClass} ${currentPlayerClass}">
                         <div class="rank-info">
                             <div class="rank">${rank}</div>
-                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '⚡'}
+                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ''}
                         </div>
                         <div class="player-avatar">${player.avatar}</div>
                         <div class="player-info">
@@ -1437,9 +1759,98 @@
             }, 1000);
         }
 
-        
+        // Secrets management functions
+        function saveEnvironment() {
+            const privateKey = elements.privateKeyInput.value;
+            const alchemyKey = elements.alchemyKeyInput.value;
+            const contractAddress = elements.contractAddressInput.value;
 
-        
+            if (!privateKey || !alchemyKey) {
+                showNotification('Please fill in all required fields!', 'error');
+                return;
+            }
+
+            // Validate private key format (simple check for common lengths)
+            if (privateKey.length !== 64 && privateKey.length !== 66) {
+                showNotification('Invalid private key format! Ensure it is 64 or 66 characters long.', 'error');
+                return;
+            }
+
+            // Save to localStorage (for demo purposes)
+            localStorage.setItem('gamePrivateKey', privateKey);
+            localStorage.setItem('gameAlchemyKey', alchemyKey);
+            localStorage.setItem('gameContractAddress', contractAddress);
+
+            updateEnvStatus();
+            showNotification('✅ Environment variables saved successfully!', 'success');
+        }
+
+        function loadEnvironment() {
+            const privateKey = localStorage.getItem('gamePrivateKey');
+            const alchemyKey = localStorage.getItem('gameAlchemyKey');
+            const contractAddress = localStorage.getItem('gameContractAddress');
+
+            if (privateKey) elements.privateKeyInput.value = privateKey;
+            if (alchemyKey) elements.alchemyKeyInput.value = alchemyKey;
+            if (contractAddress) elements.contractAddressInput.value = contractAddress;
+
+            updateEnvStatus();
+            showNotification('Environment variables loaded!', 'success');
+        }
+
+        function updateEnvStatus() {
+            const privateKey = localStorage.getItem('gamePrivateKey');
+            const alchemyKey = localStorage.getItem('gameAlchemyKey');
+
+            if (privateKey && alchemyKey) {
+                elements.envStatusElement.textContent = '✅ Configured and ready for deployment';
+                elements.envStatusElement.style.color = '#10b981';
+            } else {
+                elements.envStatusElement.textContent = '❌ Not configured';
+                elements.envStatusElement.style.color = '#ef4444';
+            }
+        }
+
+        function deployContract() {
+            const privateKey = localStorage.getItem('gamePrivateKey');
+            const alchemyKey = localStorage.getItem('gameAlchemyKey');
+
+            if (!privateKey || !alchemyKey) {
+                showNotification('Please configure environment variables first!', 'error');
+                return;
+            }
+
+            showNotification('🚀 Contract deployment initiated! Check console for details.', 'success');
+            console.log('Contract deployment would start with:');
+            console.log('- Private Key:', privateKey ? 'Set' : 'Not set');
+            console.log('- Alchemy Key:', alchemyKey ? 'Set' : 'Not set');
+            console.log('To deploy, you would typically run:');
+            console.log('npx hardhat run scripts/deploy.js --network arbitrumSepolia');
+            console.log('Make sure your contract is in the `scripts/deploy.js` file and configured for Arbitrum Sepolia.');
+        }
+
+        function copyCommand(command) {
+            navigator.clipboard.writeText(command).then(() => {
+                showNotification('📋 Command copied to clipboard!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy command', 'error');
+            });
+        }
+
+        // Helper for showing generic notifications (e.g., for copy command, save env)
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
 
         // Initialize game
         function initializeGame() {
@@ -1471,7 +1882,8 @@
                 });
             }
 
-            
+            // Secrets section event listeners are handled by inline onclick for now
+            // If more complex logic is needed, add them here.
 
             // Start systems
             startEnergyRegen();
@@ -1482,9 +1894,7 @@
             console.log('Enhanced ArbiTap game initialized with persistence and new features');
         }
 
-        
-
-        // Initialize when DOM loads
+        // Initialize environment status on page load
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM loaded - initializing enhanced ArbiTap game...');
             initializeGame();
