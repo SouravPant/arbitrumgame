@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -24,11 +25,12 @@
     <!-- Wagmi Integration -->
     <script src="wagmi-integration.js"></script>
 
-    <!-- Notcoin-Inspired Modern Styling -->
     <style>
         :root {
             --primary-blue: #007AFF;
             --secondary-blue: #5AC8FA;
+            --neon-cyan: #00FFFF;
+            --neon-purple: #8A2BE2;
             --background: #000014;
             --surface: #1C1C1E;
             --surface-light: #2C2C2E;
@@ -63,82 +65,98 @@
             display: flex;
             flex-direction: column;
             position: relative;
+            max-width: 480px;
+            margin: 0 auto;
         }
 
-        /* Header */
+        /* Header with Balance and Level */
         .header {
-            padding: 20px 20px 10px;
-            text-align: center;
-            background: rgba(28, 28, 30, 0.8);
+            padding: 20px 20px 15px;
+            background: rgba(28, 28, 30, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 10;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .header h1 {
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .app-title {
             font-size: 24px;
             font-weight: 800;
-            margin-bottom: 5px;
-            background: linear-gradient(45deg, var(--primary-blue), var(--secondary-blue));
+            background: linear-gradient(45deg, var(--primary-blue), var(--neon-cyan));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .header p {
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .wallet-address {
+            font-size: 12px;
+            color: var(--green);
+            background: rgba(48, 209, 88, 0.1);
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid rgba(48, 209, 88, 0.3);
+        }
+
+        .streak-indicator {
+            font-size: 12px;
+            background: var(--orange);
+            color: #000;
+            padding: 4px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+
+        .balance-display {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .balance-value {
+            font-size: 36px;
+            font-weight: 800;
+            color: var(--gold);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            margin-bottom: 5px;
+        }
+
+        .balance-label {
             font-size: 14px;
             color: var(--text-secondary);
             font-weight: 500;
         }
 
-        /* Balance Section */
-        .balance-section {
-            padding: 30px 20px 20px;
-            text-align: center;
-        }
-
-        .balance-container {
-            background: rgba(28, 28, 30, 0.6);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 25px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
-        }
-
-        .balance-label {
-            font-size: 16px;
-            color: var(--text-secondary);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .balance-value {
-            font-size: 48px;
-            font-weight: 800;
-            color: var(--gold);
-            margin-bottom: 15px;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-
-        .level-info {
+        .level-section {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 12px;
             background: rgba(0, 122, 255, 0.1);
             border-radius: 16px;
-            padding: 15px 20px;
+            padding: 12px 16px;
             border: 1px solid rgba(0, 122, 255, 0.2);
         }
 
         .level-text {
             font-size: 16px;
-            font-weight: 600;
+            font-weight: 700;
             color: var(--primary-blue);
+            min-width: 70px;
         }
 
         .level-progress {
             flex: 1;
-            margin: 0 15px;
             height: 8px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
@@ -147,291 +165,34 @@
 
         .progress-bar {
             height: 100%;
-            background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
+            background: linear-gradient(90deg, var(--primary-blue), var(--neon-cyan));
             border-radius: 4px;
-            transition: width 0.3s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
             width: 0%;
         }
 
         .next-level {
-            font-size: 14px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        /* Tap Section */
-        .tap-section {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            position: relative;
-            min-height: 300px;
-        }
-
-        .tap-button {
-            width: 200px;
-            height: 200px;
-            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.1s ease;
-            box-shadow: 
-                0 20px 60px rgba(0, 122, 255, 0.4),
-                0 0 0 8px rgba(255, 255, 255, 0.1),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            position: relative;
-            overflow: hidden;
-            border: none;
-            outline: none;
-        }
-
-        .tap-button:active {
-            transform: scale(0.95);
-            box-shadow: 
-                0 15px 40px rgba(0, 122, 255, 0.5),
-                0 0 0 4px rgba(255, 255, 255, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.3);
-        }
-
-        .tap-icon {
-            font-size: 80px;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
-        }
-
-        /* Bottom Stats */
-        .bottom-stats {
-            padding: 20px;
-            background: rgba(28, 28, 30, 0.8);
-            backdrop-filter: blur(20px);
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .stat-item {
-            text-align: center;
-            padding: 15px 10px;
-            background: rgba(44, 44, 46, 0.6);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .stat-value {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--text-primary);
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
             font-size: 12px;
             color: var(--text-secondary);
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        /* Animations */
-        .tap-popup {
-            position: absolute;
-            font-size: 28px;
-            font-weight: 800;
-            color: var(--gold);
-            pointer-events: none;
-            animation: popupFloat 1.2s ease-out forwards;
-            z-index: 1000;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-        }
-
-        @keyframes popupFloat {
-            0% {
-                opacity: 0;
-                transform: translateY(0) scale(0.5);
-            }
-            20% {
-                opacity: 1;
-                transform: translateY(-30px) scale(1.2);
-            }
-            100% {
-                opacity: 0;
-                transform: translateY(-80px) scale(1);
-            }
-        }
-
-        .tap-particle {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background: var(--gold);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: particleExplode 1s ease-out forwards;
-        }
-
-        @keyframes particleExplode {
-            0% {
-                opacity: 1;
-                transform: scale(0) translateY(0);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1) translateY(-30px);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(0) translateY(-60px);
-            }
-        }
-
-        /* Contract Interaction Notifications */
-        .contract-notification {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-light) 100%);
-            border: 2px solid var(--primary-blue);
-            color: var(--text-primary);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 1002;
-            animation: contractPulse 0.5s ease-out;
-            min-width: 300px;
-            max-width: 400px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        @keyframes contractPulse {
-            0% { 
-                transform: translate(-50%, -50%) scale(0.8); 
-                opacity: 0; 
-            }
-            50% { 
-                transform: translate(-50%, -50%) scale(1.1); 
-                opacity: 1; 
-            }
-            100% { 
-                transform: translate(-50%, -50%) scale(1); 
-                opacity: 1; 
-            }
-        }
-
-        .contract-notification h3 {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            color: var(--text-primary);
-        }
-
-        .contract-notification p {
-            font-size: 16px;
-            margin-bottom: 15px;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .contract-close {
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 12px;
-            font-size: 14px;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .contract-close:hover {
-            background: var(--secondary-blue);
-            transform: translateY(-2px);
-        }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
-        }
-
-        .level-up-notification {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: linear-gradient(135deg, var(--gold) 0%, var(--orange) 100%);
-            color: #000;
-            padding: 30px 40px;
-            border-radius: 24px;
-            text-align: center;
-            z-index: 1001;
-            animation: levelUpPulse 0.6s ease-out;
-            box-shadow: 0 20px 60px rgba(255, 215, 0, 0.5);
-        }
-
-        @keyframes levelUpPulse {
-            0% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-
-        .level-up-notification h3 {
-            font-size: 24px;
-            font-weight: 800;
-            margin-bottom: 10px;
-        }
-
-        .level-up-notification p {
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        /* Wallet Status */
-        .wallet-status {
-            position: fixed;
-            top: 60px;
-            right: 20px;
-            background: rgba(28, 28, 30, 0.9);
-            padding: 8px 12px;
-            border-radius: 12px;
-            font-size: 12px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            z-index: 100;
-        }
-
-        .wallet-connected {
-            color: var(--green);
-        }
-
-        .wallet-disconnected {
-            color: var(--red);
         }
 
         /* Energy System */
-        .energy-container {
+        .energy-section {
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-top: 15px;
-            gap: 8px;
+            gap: 10px;
+            margin-top: 12px;
         }
 
         .energy-icon {
-            font-size: 20px;
+            font-size: 18px;
+            animation: energyPulse 2s ease-in-out infinite;
         }
 
         .energy-bar {
-            width: 120px;
+            width: 140px;
             height: 8px;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
@@ -440,138 +201,114 @@
 
         .energy-fill {
             height: 100%;
-            background: linear-gradient(90deg, var(--green), var(--secondary-blue));
+            background: linear-gradient(90deg, var(--green), var(--neon-cyan));
             border-radius: 4px;
             transition: width 0.3s ease;
             width: 100%;
         }
 
         .energy-text {
-            font-size: 14px;
+            font-size: 12px;
             color: var(--text-secondary);
             font-weight: 600;
+            min-width: 60px;
         }
 
-        /* Responsive Design */
-        @media (max-width: 480px) {
-            .header {
-                padding: 15px 15px 8px;
-            }
+        @keyframes energyPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
 
-            .header h1 {
-                font-size: 22px;
-            }
+        /* Central Tap Section */
+        .tap-section {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+            position: relative;
+            min-height: 250px;
+        }
 
-            .balance-section {
-                padding: 20px 15px 15px;
-            }
+        .tap-button {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--neon-cyan) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 
+                0 20px 60px rgba(0, 122, 255, 0.4),
+                0 0 0 4px rgba(255, 255, 255, 0.1),
+                inset 0 2px 0 rgba(255, 255, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+            border: none;
+            outline: none;
+            animation: tapButtonGlow 3s ease-in-out infinite;
+        }
 
-            .balance-value {
-                font-size: 40px;
-            }
+        .tap-button:active {
+            transform: scale(0.95);
+            animation: tapPulse 0.6s ease-out;
+        }
 
-            .tap-section {
-                padding: 15px;
-                min-height: 250px;
-            }
+        .tap-button.challenge-active {
+            animation: challengeGlow 0.5s ease-in-out infinite alternate;
+        }
 
-            .tap-button {
-                width: 180px;
-                height: 180px;
-            }
+        .tap-icon {
+            font-size: 70px;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
+            transition: transform 0.2s ease;
+        }
 
-            .tap-icon {
-                font-size: 70px;
+        @keyframes tapButtonGlow {
+            0%, 100% {
+                box-shadow: 
+                    0 20px 60px rgba(0, 122, 255, 0.4),
+                    0 0 0 4px rgba(255, 255, 255, 0.1),
+                    inset 0 2px 0 rgba(255, 255, 255, 0.2);
             }
-
-            .bottom-stats {
-                padding: 15px;
-            }
-
-            .stats-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 10px;
-            }
-
-            .stat-item {
-                padding: 12px 8px;
-            }
-
-            .stat-value {
-                font-size: 18px;
-            }
-
-            .balance-container {
-                padding: 20px 15px;
-            }
-
-            .level-info {
-                padding: 12px 15px;
+            50% {
+                box-shadow: 
+                    0 25px 80px rgba(0, 255, 255, 0.6),
+                    0 0 0 6px rgba(0, 255, 255, 0.3),
+                    inset 0 2px 0 rgba(255, 255, 255, 0.3);
             }
         }
 
-        @media (max-width: 360px) {
-            .header {
-                padding: 12px;
-            }
+        @keyframes tapPulse {
+            0% { transform: scale(0.95); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
 
-            .header h1 {
-                font-size: 20px;
+        @keyframes challengeGlow {
+            from {
+                box-shadow: 
+                    0 20px 60px rgba(255, 165, 0, 0.6),
+                    0 0 0 6px rgba(255, 165, 0, 0.4);
             }
-
-            .balance-section {
-                padding: 15px 12px;
-            }
-
-            .balance-value {
-                font-size: 36px;
-            }
-
-            .tap-section {
-                padding: 12px;
-                min-height: 220px;
-            }
-
-            .tap-button {
-                width: 160px;
-                height: 160px;
-            }
-
-            .tap-icon {
-                font-size: 60px;
-            }
-
-            .bottom-stats {
-                padding: 12px;
-            }
-
-            .balance-container {
-                padding: 18px 12px;
-            }
-
-            .level-info {
-                padding: 10px 12px;
-            }
-
-            .energy-container {
-                margin-top: 12px;
-            }
-
-            .energy-bar {
-                width: 100px;
+            to {
+                box-shadow: 
+                    0 25px 80px rgba(255, 215, 0, 0.8),
+                    0 0 0 8px rgba(255, 215, 0, 0.6);
             }
         }
 
         /* Power-ups Section */
         .powerups-section {
             padding: 20px;
-            background: rgba(28, 28, 30, 0.6);
+            background: rgba(28, 28, 30, 0.8);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .powerups-section h3 {
+        .section-title {
             font-size: 18px;
             font-weight: 700;
             margin-bottom: 15px;
@@ -579,35 +316,50 @@
             color: var(--text-primary);
         }
 
-        .powerups-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .powerups-scroll {
+            display: flex;
             gap: 12px;
+            overflow-x: auto;
+            padding: 5px 0;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
 
-        .powerup-item {
+        .powerups-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .powerup-card {
+            min-width: 120px;
             background: rgba(44, 44, 46, 0.8);
             border-radius: 16px;
-            padding: 15px 10px;
+            padding: 16px 12px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
         }
 
-        .powerup-item:hover {
+        .powerup-card:hover {
+            transform: translateY(-4px);
             background: rgba(0, 122, 255, 0.1);
             border-color: var(--primary-blue);
-            transform: translateY(-2px);
         }
 
-        .powerup-item.affordable {
+        .powerup-card.affordable {
             border-color: var(--green);
-            box-shadow: 0 0 20px rgba(48, 209, 88, 0.2);
+            box-shadow: 0 0 20px rgba(48, 209, 88, 0.3);
+            animation: affordableGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes affordableGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(48, 209, 88, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(48, 209, 88, 0.5); }
         }
 
         .powerup-icon {
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 8px;
         }
 
@@ -619,9 +371,9 @@
         }
 
         .powerup-level {
-            font-size: 11px;
+            font-size: 10px;
             color: var(--text-secondary);
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
         .powerup-cost {
@@ -632,269 +384,437 @@
 
         /* Leaderboard Section */
         .leaderboard-section {
-            padding: 25px;
-            background: rgba(28, 28, 30, 0.6);
+            background: rgba(28, 28, 30, 0.8);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .leaderboard-section h3 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-            color: var(--text-primary);
-        }
-
-        .leaderboard-table {
+        .leaderboard-toggle {
             width: 100%;
-            background: rgba(44, 44, 46, 0.4);
-            border-radius: 16px;
+            background: none;
+            border: none;
+            color: var(--text-primary);
             padding: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .leaderboard-header {
-            display: grid;
-            grid-template-columns: 60px 1fr 120px 100px 120px 80px;
-            gap: 15px;
-            padding: 15px 20px;
-            background: rgba(0, 122, 255, 0.1);
-            border-radius: 12px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(0, 122, 255, 0.2);
-        }
-
-        .header-cell {
-            font-size: 14px;
+            font-size: 18px;
             font-weight: 700;
-            color: var(--primary-blue);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s ease;
+        }
+
+        .leaderboard-toggle:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .toggle-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .leaderboard-toggle.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .leaderboard-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .leaderboard-content.expanded {
+            max-height: 400px;
         }
 
         .leaderboard-list {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            padding: 0 20px 20px;
         }
 
         .leaderboard-item {
-            display: grid;
-            grid-template-columns: 60px 1fr 120px 100px 120px 80px;
-            gap: 15px;
+            display: flex;
             align-items: center;
+            gap: 12px;
             background: rgba(44, 44, 46, 0.6);
             border-radius: 12px;
-            padding: 15px 20px;
+            padding: 12px 16px;
+            margin-bottom: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .leaderboard-item:hover {
             background: rgba(44, 44, 46, 0.8);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateX(4px);
+        }
+
+        .leaderboard-item.current-player {
+            background: linear-gradient(90deg, rgba(0, 122, 255, 0.2) 0%, rgba(44, 44, 46, 0.8) 100%);
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 20px rgba(0, 122, 255, 0.3);
         }
 
         .leaderboard-item.rank-1 {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.15) 0%, rgba(44, 44, 46, 0.8) 100%);
-            border-color: rgba(255, 215, 0, 0.4);
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(44, 44, 46, 0.8) 100%);
+            border-color: var(--gold);
         }
 
         .leaderboard-item.rank-2 {
-            background: linear-gradient(90deg, rgba(192, 192, 192, 0.15) 0%, rgba(44, 44, 46, 0.8) 100%);
-            border-color: rgba(192, 192, 192, 0.4);
+            background: linear-gradient(90deg, rgba(192, 192, 192, 0.2) 0%, rgba(44, 44, 46, 0.8) 100%);
+            border-color: #C0C0C0;
         }
 
         .leaderboard-item.rank-3 {
-            background: linear-gradient(90deg, rgba(205, 127, 50, 0.15) 0%, rgba(44, 44, 46, 0.8) 100%);
-            border-color: rgba(205, 127, 50, 0.4);
+            background: linear-gradient(90deg, rgba(205, 127, 50, 0.2) 0%, rgba(44, 44, 46, 0.8) 100%);
+            border-color: #CD7F32;
         }
 
-        .rank-cell {
+        .rank-info {
             display: flex;
             align-items: center;
             gap: 8px;
+            min-width: 50px;
         }
 
         .rank {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 800;
             color: var(--text-primary);
-            width: 25px;
-            text-align: center;
         }
 
-        .medal {
-            font-size: 18px;
+        .player-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-blue), var(--neon-purple));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: white;
+        }
+
+        .player-info {
+            flex: 1;
         }
 
         .player-name {
-            font-size: 15px;
+            font-size: 14px;
             font-weight: 600;
             color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .player-stats {
+            font-size: 11px;
+            color: var(--text-secondary);
         }
 
         .player-score {
-            font-size: 16px;
+            font-size: 14px;
             color: var(--gold);
             font-weight: 700;
+            text-align: right;
         }
 
-        .player-level {
-            font-size: 14px;
-            color: var(--primary-blue);
-            font-weight: 600;
+        /* Animations for tap effects */
+        .tap-popup {
+            position: absolute;
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--gold);
+            pointer-events: none;
+            animation: popupFloat 1.5s ease-out forwards;
+            z-index: 1000;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
         }
 
-        .player-taps-per-sec {
-            font-size: 13px;
-            color: var(--green);
-            font-weight: 500;
+        @keyframes popupFloat {
+            0% {
+                opacity: 0;
+                transform: translateY(0) scale(0.5);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(-40px) scale(1.2);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(1);
+            }
         }
 
-        .player-status {
-            font-size: 12px;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-weight: 600;
+        .tap-particle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--neon-cyan);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particleExplode 1.2s ease-out forwards;
+            box-shadow: 0 0 6px var(--neon-cyan);
+        }
+
+        @keyframes particleExplode {
+            0% {
+                opacity: 1;
+                transform: scale(0) translateY(0);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1) translateY(-50px);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0) translateY(-80px);
+            }
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        .modal {
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-light) 100%);
+            border: 2px solid var(--primary-blue);
+            border-radius: 20px;
+            padding: 30px;
             text-align: center;
+            max-width: 320px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            transform: scale(0.8);
+            animation: modalScale 0.3s ease forwards;
         }
 
-        .status-online {
-            background: rgba(48, 209, 88, 0.2);
-            color: var(--green);
-            border: 1px solid rgba(48, 209, 88, 0.3);
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text-primary);
         }
 
-        .status-offline {
-            background: rgba(142, 142, 147, 0.2);
+        .modal p {
+            font-size: 14px;
+            margin-bottom: 20px;
             color: var(--text-secondary);
-            border: 1px solid rgba(142, 142, 147, 0.3);
+            line-height: 1.4;
         }
 
-        @media (max-width: 480px) {
-            .powerups-grid {
-                grid-template-columns: repeat(3, 1fr);
-                gap: 8px;
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-button {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-button:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        .modal-button.secondary {
+            background: var(--surface-light);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes modalScale {
+            to { transform: scale(1); }
+        }
+
+        /* Challenge Timer */
+        .challenge-timer {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--orange);
+            color: #000;
+            padding: 12px 20px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 14px;
+            z-index: 200;
+            animation: challengeEnter 0.5s ease;
+            box-shadow: 0 8px 25px rgba(255, 165, 0, 0.4);
+        }
+
+        @keyframes challengeEnter {
+            from {
+                transform: translateX(-50%) translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        /* Claim Rewards Button */
+        .claim-rewards {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(45deg, var(--gold), var(--orange));
+            color: #000;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 16px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            animation: claimPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes claimPulse {
+            0%, 100% {
+                box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+            }
+            50% {
+                box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
+            }
+        }
+
+        .claim-rewards:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(255, 215, 0, 0.6);
+        }
+
+        /* Badge Notification */
+        .badge-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, var(--neon-purple), var(--primary-blue));
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1001;
+            animation: badgePopup 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 20px 60px rgba(138, 43, 226, 0.5);
+        }
+
+        @keyframes badgePopup {
+            0% {
+                transform: translate(-50%, -50%) scale(0.5) rotateY(90deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1) rotateY(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotateY(0deg);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 360px) {
+            .container {
+                max-width: 100%;
             }
 
-            .powerup-item {
-                padding: 12px 8px;
-            }
-
-            .powerup-icon {
-                font-size: 20px;
-                margin-bottom: 6px;
-            }
-
-            .powerup-name {
-                font-size: 11px;
-            }
-
-            .powerup-level, .powerup-cost {
-                font-size: 10px;
-            }
-
-            .leaderboard-table {
+            .header {
                 padding: 15px;
             }
 
-            .leaderboard-header {
-                display: none; /* Hide header on mobile */
+            .app-title {
+                font-size: 20px;
             }
 
-            .leaderboard-item {
-                display: flex;
-                align-items: center;
-                padding: 12px 15px;
-                grid-template-columns: none;
-                gap: 10px;
+            .balance-value {
+                font-size: 28px;
             }
 
-            .rank-cell {
-                flex-shrink: 0;
+            .tap-button {
+                width: 160px;
+                height: 160px;
             }
 
-            .player-name {
-                font-size: 13px;
-                flex: 1;
+            .tap-icon {
+                font-size: 60px;
             }
 
-            .player-score {
-                font-size: 12px;
-                font-weight: 700;
+            .powerups-scroll {
+                gap: 8px;
             }
 
-            .player-level, .player-taps-per-sec, .player-status {
-                display: none; /* Hide on mobile */
-            }
-
-            .medal {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-height: 700px) {
-            .tap-section {
-                min-height: 200px;
-            }
-
-            .balance-section {
-                padding: 15px 20px 10px;
-            }
-
-            .bottom-stats {
-                padding: 15px 20px;
-            }
-
-            .powerups-section, .leaderboard-section {
-                padding: 15px 20px;
+            .powerup-card {
+                min-width: 100px;
+                padding: 12px 8px;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Wallet Status -->
-        <div class="wallet-status wallet-disconnected" id="walletStatus">
-            🔴 Wallet Disconnected
-        </div>
-
-        <!-- Header -->
+        <!-- Header with Balance and Level -->
         <div class="header">
-            <h1>ARBITAP</h1>
-            <p>Tap to Earn on Arbitrum</p>
-        </div>
+            <div class="header-top">
+                <div class="app-title">ARBITAP</div>
+                <div class="wallet-info">
+                    <div class="streak-indicator">🔥 <span id="streakCount">1</span></div>
+                    <div class="wallet-address" id="walletAddress">0x81a5...1f8d</div>
+                </div>
+            </div>
 
-        <!-- Balance Section -->
-        <div class="balance-section">
-            <div class="balance-container">
-                <div class="balance-label">Your Balance</div>
+            <div class="balance-display">
                 <div class="balance-value" id="totalTaps">0</div>
+                <div class="balance-label">Total Taps</div>
+            </div>
 
-                <!-- Level System -->
-                <div class="level-info">
-                    <div class="level-text" id="currentLevel">Level 1</div>
-                    <div class="level-progress">
-                        <div class="progress-bar" id="progressBar"></div>
-                    </div>
-                    <div class="next-level" id="nextLevel">Level 2</div>
+            <div class="level-section">
+                <div class="level-text" id="currentLevel">Level 1</div>
+                <div class="level-progress">
+                    <div class="progress-bar" id="progressBar"></div>
                 </div>
+                <div class="next-level" id="nextLevel">Level 2</div>
+            </div>
 
-                <!-- Energy System -->
-                <div class="energy-container">
-                    <span class="energy-icon">⚡</span>
-                    <div class="energy-bar">
-                        <div class="energy-fill" id="energyFill"></div>
-                    </div>
-                    <span class="energy-text" id="energyText">1000/1000</span>
+            <div class="energy-section">
+                <span class="energy-icon">⚡</span>
+                <div class="energy-bar">
+                    <div class="energy-fill" id="energyFill"></div>
                 </div>
+                <span class="energy-text" id="energyText">1000/1000</span>
             </div>
         </div>
 
-        <!-- Tap Section -->
+        <!-- Central Tap Section -->
         <div class="tap-section">
             <button class="tap-button" id="tapButton">
                 <div class="tap-icon">⚡</div>
@@ -903,151 +823,55 @@
 
         <!-- Power-ups Section -->
         <div class="powerups-section">
-            <h3>⚡ Power-ups</h3>
-            <div class="powerups-grid">
-                <div class="powerup-item" id="tapPowerUpgrade">
+            <div class="section-title">⚡ Power-ups</div>
+            <div class="powerups-scroll">
+                <div class="powerup-card" id="tapPowerUpgrade">
                     <div class="powerup-icon">👆</div>
-                    <div class="powerup-info">
-                        <div class="powerup-name">Tap Power</div>
-                        <div class="powerup-level">Level <span id="tapPowerLevel">1</span></div>
-                        <div class="powerup-cost"><span id="tapPowerCost">100</span> taps</div>
-                    </div>
+                    <div class="powerup-name">Tap Power</div>
+                    <div class="powerup-level">Level <span id="tapPowerLevel">1</span></div>
+                    <div class="powerup-cost"><span id="tapPowerCost">100</span> taps</div>
                 </div>
-                <div class="powerup-item" id="energyUpgrade">
+                <div class="powerup-card" id="energyUpgrade">
                     <div class="powerup-icon">🔋</div>
-                    <div class="powerup-info">
-                        <div class="powerup-name">Max Energy</div>
-                        <div class="powerup-level">Level <span id="energyLevel">1</span></div>
-                        <div class="powerup-cost"><span id="energyCost">200</span> taps</div>
-                    </div>
+                    <div class="powerup-name">Max Energy</div>
+                    <div class="powerup-level">Level <span id="energyLevel">1</span></div>
+                    <div class="powerup-cost"><span id="energyCost">200</span> taps</div>
                 </div>
-                <div class="powerup-item" id="regenUpgrade">
+                <div class="powerup-card" id="regenUpgrade">
                     <div class="powerup-icon">⚡</div>
-                    <div class="powerup-info">
-                        <div class="powerup-name">Energy Regen</div>
-                        <div class="powerup-level">Level <span id="regenLevel">1</span></div>
-                        <div class="powerup-cost"><span id="regenCost">300</span> taps</div>
-                    </div>
+                    <div class="powerup-name">Energy Regen</div>
+                    <div class="powerup-level">Level <span id="regenLevel">1</span></div>
+                    <div class="powerup-cost"><span id="regenCost">300</span> taps</div>
+                </div>
+                <div class="powerup-card" id="autoTapUpgrade">
+                    <div class="powerup-icon">🤖</div>
+                    <div class="powerup-name">Auto Tap</div>
+                    <div class="powerup-level">Level <span id="autoTapLevel">0</span></div>
+                    <div class="powerup-cost"><span id="autoTapCost">500</span> taps</div>
                 </div>
             </div>
         </div>
 
         <!-- Leaderboard Section -->
         <div class="leaderboard-section">
-            <h3>🏆 Global Leaderboard</h3>
-            <div class="leaderboard-table">
-                <div class="leaderboard-header">
-                    <div class="header-cell">Rank</div>
-                    <div class="header-cell">Player</div>
-                    <div class="header-cell">Total Taps</div>
-                    <div class="header-cell">Level</div>
-                    <div class="header-cell">Taps/Sec</div>
-                    <div class="header-cell">Status</div>
-                </div>
+            <button class="leaderboard-toggle" id="leaderboardToggle">
+                <span>🏆 Global Leaderboard</span>
+                <span class="toggle-icon">▼</span>
+            </button>
+            <div class="leaderboard-content" id="leaderboardContent">
                 <div class="leaderboard-list" id="leaderboardList">
-                    <div class="leaderboard-item rank-1">
-                        <div class="rank-cell">
-                            <div class="rank">1</div>
-                            <div class="medal">🥇</div>
-                        </div>
-                        <div class="player-name">TapMaster_Pro</div>
-                        <div class="player-score">1,234,567</div>
-                        <div class="player-level">Level 25</div>
-                        <div class="player-taps-per-sec">156.2</div>
-                        <div class="player-status status-online">Online</div>
-                    </div>
-                    <div class="leaderboard-item rank-2">
-                        <div class="rank-cell">
-                            <div class="rank">2</div>
-                            <div class="medal">🥈</div>
-                        </div>
-                        <div class="player-name">CryptoTapper</div>
-                        <div class="player-score">987,654</div>
-                        <div class="player-level">Level 22</div>
-                        <div class="player-taps-per-sec">142.8</div>
-                        <div class="player-status status-online">Online</div>
-                    </div>
-                    <div class="leaderboard-item rank-3">
-                        <div class="rank-cell">
-                            <div class="rank">3</div>
-                            <div class="medal">🥉</div>
-                        </div>
-                        <div class="player-name">ArbiKing</div>
-                        <div class="player-score">765,432</div>
-                        <div class="player-level">Level 19</div>
-                        <div class="player-taps-per-sec">98.5</div>
-                        <div class="player-status status-offline">Offline</div>
-                    </div>
-                    <div class="leaderboard-item">
-                        <div class="rank-cell">
-                            <div class="rank">4</div>
-                            <div class="medal">⚡</div>
-                        </div>
-                        <div class="player-name">Web3_Wizard</div>
-                        <div class="player-score">542,109</div>
-                        <div class="player-level">Level 16</div>
-                        <div class="player-taps-per-sec">87.3</div>
-                        <div class="player-status status-online">Online</div>
-                    </div>
-                    <div class="leaderboard-item">
-                        <div class="rank-cell">
-                            <div class="rank">5</div>
-                            <div class="medal">🎯</div>
-                        </div>
-                        <div class="player-name">You</div>
-                        <div class="player-score" id="yourScore">0</div>
-                        <div class="player-level" id="yourLevel">Level 1</div>
-                        <div class="player-taps-per-sec" id="yourTapsPerSec">0.0</div>
-                        <div class="player-status status-online">Online</div>
-                    </div>
-                    <div class="leaderboard-item">
-                        <div class="rank-cell">
-                            <div class="rank">6</div>
-                            <div class="medal">💎</div>
-                        </div>
-                        <div class="player-name">DiamondHands</div>
-                        <div class="player-score">298,765</div>
-                        <div class="player-level">Level 13</div>
-                        <div class="player-taps-per-sec">65.4</div>
-                        <div class="player-status status-offline">Offline</div>
-                    </div>
-                    <div class="leaderboard-item">
-                        <div class="rank-cell">
-                            <div class="rank">7</div>
-                            <div class="medal">🚀</div>
-                        </div>
-                        <div class="player-name">MoonTapper</div>
-                        <div class="player-score">187,432</div>
-                        <div class="player-level">Level 11</div>
-                        <div class="player-taps-per-sec">45.2</div>
-                        <div class="player-status status-online">Online</div>
-                    </div>
+                    <!-- Leaderboard items will be populated by JavaScript -->
                 </div>
             </div>
         </div>
 
-        <!-- Bottom Stats -->
-        <div class="bottom-stats">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-value" id="tapsPowerStat">1</div>
-                    <div class="stat-label">Tap Power</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="currentLevelStat">1</div>
-                    <div class="stat-label">Level</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="totalEarnedStat">0</div>
-                    <div class="stat-label">Total Earned</div>
-                </div>
-            </div>
-        </div>
+        <!-- Claim Rewards Button -->
+        <button class="claim-rewards" id="claimRewards">💰 Claim Rewards</button>
     </div>
 
     <!-- Game Script -->
     <script>
-        // Game Configuration - Notcoin-style progression
+        // Game Configuration
         const LEVEL_REQUIREMENTS = [
             0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500,
             5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000,
@@ -1055,26 +879,53 @@
             46500, 49600, 52800, 56100, 59500, 63000, 66600, 70300, 74100, 78000
         ];
 
-        // Game State
+        const MILESTONE_BADGES = [10, 25, 50, 100, 200, 500, 1000];
+        const TAP_MESSAGES = ['Boop!', 'Tap!', 'Arbitrum!', 'Zap!', '⚡', '💫', '🚀'];
+        const CHALLENGE_TYPES = [
+            { type: 'speed', target: 50, time: 10, reward: 100, message: 'Tap 50 times in 10 seconds!' },
+            { type: 'speed', target: 30, time: 8, reward: 75, message: 'Tap 30 times in 8 seconds!' },
+            { type: 'speed', target: 100, time: 15, reward: 200, message: 'Tap 100 times in 15 seconds!' }
+        ];
+
+        // Game State with localStorage persistence
         let gameState = {
             totalTaps: 0,
             currentLevel: 1,
             tapPower: 1,
             energy: 1000,
             maxEnergy: 1000,
-            energyRegenRate: 1, // per second
+            energyRegenRate: 1,
             totalEarned: 0,
-            walletAddress: null,
-            isConnected: false,
             // Power-up levels
             tapPowerLevel: 1,
             energyLevel: 1,
             regenLevel: 1,
+            autoTapLevel: 0,
             // Power-up costs
             tapPowerCost: 100,
             energyCost: 200,
-            regenCost: 300
+            regenCost: 300,
+            autoTapCost: 500,
+            // Daily streak
+            dailyStreak: 1,
+            lastLoginDate: new Date().toDateString(),
+            // Achievements
+            unlockedBadges: [],
+            // Current challenge
+            currentChallenge: null,
+            challengeTaps: 0,
+            challengeStartTime: null
         };
+
+        // Leaderboard data
+        let leaderboardData = [
+            { name: 'TapMaster_Pro', score: 1234567, level: 25, avatar: 'T' },
+            { name: 'CryptoTapper', score: 987654, level: 22, avatar: 'C' },
+            { name: 'ArbiKing', score: 765432, level: 19, avatar: 'A' },
+            { name: 'Web3_Wizard', score: 542109, level: 16, avatar: 'W' },
+            { name: 'DiamondHands', score: 298765, level: 13, avatar: 'D' },
+            { name: 'MoonTapper', score: 187432, level: 11, avatar: 'M' }
+        ];
 
         // DOM Elements
         let elements = {};
@@ -1084,30 +935,63 @@
             elements = {
                 totalTaps: document.getElementById('totalTaps'),
                 currentLevel: document.getElementById('currentLevel'),
-                currentLevelStat: document.getElementById('currentLevelStat'),
                 nextLevel: document.getElementById('nextLevel'),
                 progressBar: document.getElementById('progressBar'),
                 tapButton: document.getElementById('tapButton'),
-                tapsPowerStat: document.getElementById('tapsPowerStat'),
-                totalEarnedStat: document.getElementById('totalEarnedStat'),
                 energyFill: document.getElementById('energyFill'),
                 energyText: document.getElementById('energyText'),
-                walletStatus: document.getElementById('walletStatus'),
+                streakCount: document.getElementById('streakCount'),
+                walletAddress: document.getElementById('walletAddress'),
                 // Power-up elements
                 tapPowerUpgrade: document.getElementById('tapPowerUpgrade'),
                 energyUpgrade: document.getElementById('energyUpgrade'),
                 regenUpgrade: document.getElementById('regenUpgrade'),
+                autoTapUpgrade: document.getElementById('autoTapUpgrade'),
                 tapPowerLevel: document.getElementById('tapPowerLevel'),
                 energyLevel: document.getElementById('energyLevel'),
                 regenLevel: document.getElementById('regenLevel'),
+                autoTapLevel: document.getElementById('autoTapLevel'),
                 tapPowerCost: document.getElementById('tapPowerCost'),
                 energyCost: document.getElementById('energyCost'),
                 regenCost: document.getElementById('regenCost'),
+                autoTapCost: document.getElementById('autoTapCost'),
                 // Leaderboard
-                yourScore: document.getElementById('yourScore'),
-                yourLevel: document.getElementById('yourLevel'),
-                yourTapsPerSec: document.getElementById('yourTapsPerSec')
+                leaderboardToggle: document.getElementById('leaderboardToggle'),
+                leaderboardContent: document.getElementById('leaderboardContent'),
+                leaderboardList: document.getElementById('leaderboardList'),
+                claimRewards: document.getElementById('claimRewards')
             };
+        }
+
+        // LocalStorage functions
+        function saveGameState() {
+            localStorage.setItem('arbitapGameState', JSON.stringify(gameState));
+        }
+
+        function loadGameState() {
+            const saved = localStorage.getItem('arbitapGameState');
+            if (saved) {
+                const parsedState = JSON.parse(saved);
+                gameState = { ...gameState, ...parsedState };
+                
+                // Check daily streak
+                const today = new Date().toDateString();
+                if (gameState.lastLoginDate !== today) {
+                    const lastLogin = new Date(gameState.lastLoginDate);
+                    const todayDate = new Date(today);
+                    const dayDiff = Math.floor((todayDate - lastLogin) / (1000 * 60 * 60 * 24));
+                    
+                    if (dayDiff === 1) {
+                        gameState.dailyStreak++;
+                        showDailyStreakBonus();
+                    } else if (dayDiff > 1) {
+                        gameState.dailyStreak = 1;
+                    }
+                    
+                    gameState.lastLoginDate = today;
+                    saveGameState();
+                }
+            }
         }
 
         // Format numbers
@@ -1145,8 +1029,14 @@
 
             if (leveledUp) {
                 gameState.currentLevel = newLevel;
-                gameState.tapPower = Math.floor(newLevel / 5) + 1;
+                gameState.tapPower = Math.max(gameState.tapPowerLevel, Math.floor(newLevel / 5) + 1);
                 showLevelUpNotification(newLevel);
+                
+                // Check for milestone badges
+                if (MILESTONE_BADGES.includes(newLevel) && !gameState.unlockedBadges.includes(newLevel)) {
+                    gameState.unlockedBadges.push(newLevel);
+                    showBadgeNotification(newLevel);
+                }
             }
 
             // Update display elements
@@ -1156,10 +1046,6 @@
 
             if (elements.currentLevel) {
                 elements.currentLevel.textContent = `Level ${gameState.currentLevel}`;
-            }
-
-            if (elements.currentLevelStat) {
-                elements.currentLevelStat.textContent = gameState.currentLevel;
             }
 
             if (elements.nextLevel) {
@@ -1172,14 +1058,6 @@
                 elements.progressBar.style.width = progress + '%';
             }
 
-            if (elements.tapsPowerStat) {
-                elements.tapsPowerStat.textContent = gameState.tapPower;
-            }
-
-            if (elements.totalEarnedStat) {
-                elements.totalEarnedStat.textContent = formatNumber(gameState.totalEarned);
-            }
-
             // Update energy
             if (elements.energyFill) {
                 const energyPercent = (gameState.energy / gameState.maxEnergy) * 100;
@@ -1190,68 +1068,49 @@
                 elements.energyText.textContent = `${gameState.energy}/${gameState.maxEnergy}`;
             }
 
+            // Update streak
+            if (elements.streakCount) {
+                elements.streakCount.textContent = gameState.dailyStreak;
+            }
+
             // Update power-up UI
-            if (elements.tapPowerLevel) {
-                elements.tapPowerLevel.textContent = gameState.tapPowerLevel;
-            }
-            if (elements.energyLevel) {
-                elements.energyLevel.textContent = gameState.energyLevel;
-            }
-            if (elements.regenLevel) {
-                elements.regenLevel.textContent = gameState.regenLevel;
-            }
-            if (elements.tapPowerCost) {
-                elements.tapPowerCost.textContent = formatNumber(gameState.tapPowerCost);
-            }
-            if (elements.energyCost) {
-                elements.energyCost.textContent = formatNumber(gameState.energyCost);
-            }
-            if (elements.regenCost) {
-                elements.regenCost.textContent = formatNumber(gameState.regenCost);
-            }
-
-            // Update power-up affordability
+            updatePowerUpUI();
             updatePowerUpAffordability();
+            updateLeaderboard();
+            
+            saveGameState();
+        }
 
-            // Update leaderboard
-            if (elements.yourScore) {
-                elements.yourScore.textContent = formatNumber(gameState.totalTaps);
-            }
-            if (elements.yourLevel) {
-                elements.yourLevel.textContent = `Level ${gameState.currentLevel}`;
-            }
-            if (elements.yourTapsPerSec) {
-                // Calculate simple taps per second based on recent activity
-                const tapsPerSec = gameState.tapPower * (gameState.energy > 0 ? 1.2 : 0);
-                elements.yourTapsPerSec.textContent = tapsPerSec.toFixed(1);
-            }
+        // Update power-up UI
+        function updatePowerUpUI() {
+            if (elements.tapPowerLevel) elements.tapPowerLevel.textContent = gameState.tapPowerLevel;
+            if (elements.energyLevel) elements.energyLevel.textContent = gameState.energyLevel;
+            if (elements.regenLevel) elements.regenLevel.textContent = gameState.regenLevel;
+            if (elements.autoTapLevel) elements.autoTapLevel.textContent = gameState.autoTapLevel;
+            if (elements.tapPowerCost) elements.tapPowerCost.textContent = formatNumber(gameState.tapPowerCost);
+            if (elements.energyCost) elements.energyCost.textContent = formatNumber(gameState.energyCost);
+            if (elements.regenCost) elements.regenCost.textContent = formatNumber(gameState.regenCost);
+            if (elements.autoTapCost) elements.autoTapCost.textContent = formatNumber(gameState.autoTapCost);
         }
 
         // Update power-up affordability visual feedback
         function updatePowerUpAffordability() {
-            if (elements.tapPowerUpgrade) {
-                if (gameState.totalTaps >= gameState.tapPowerCost) {
-                    elements.tapPowerUpgrade.classList.add('affordable');
-                } else {
-                    elements.tapPowerUpgrade.classList.remove('affordable');
-                }
-            }
+            const powerups = [
+                { element: elements.tapPowerUpgrade, cost: gameState.tapPowerCost },
+                { element: elements.energyUpgrade, cost: gameState.energyCost },
+                { element: elements.regenUpgrade, cost: gameState.regenCost },
+                { element: elements.autoTapUpgrade, cost: gameState.autoTapCost }
+            ];
 
-            if (elements.energyUpgrade) {
-                if (gameState.totalTaps >= gameState.energyCost) {
-                    elements.energyUpgrade.classList.add('affordable');
-                } else {
-                    elements.energyUpgrade.classList.remove('affordable');
+            powerups.forEach(({ element, cost }) => {
+                if (element) {
+                    if (gameState.totalTaps >= cost) {
+                        element.classList.add('affordable');
+                    } else {
+                        element.classList.remove('affordable');
+                    }
                 }
-            }
-
-            if (elements.regenUpgrade) {
-                if (gameState.totalTaps >= gameState.regenCost) {
-                    elements.regenUpgrade.classList.add('affordable');
-                } else {
-                    elements.regenUpgrade.classList.remove('affordable');
-                }
-            }
+            });
         }
 
         // Handle tap
@@ -1262,6 +1121,12 @@
             gameState.totalTaps += gameState.tapPower;
             gameState.totalEarned += gameState.tapPower;
 
+            // Challenge progress
+            if (gameState.currentChallenge) {
+                gameState.challengeTaps += gameState.tapPower;
+                updateChallengeProgress();
+            }
+
             // Tap animations
             createTapPopup();
             createTapParticles();
@@ -1271,54 +1136,21 @@
                 navigator.vibrate(50);
             }
 
-            // Update blockchain if connected
-            if (window.gameContract && window.gameContract.account) {
-                window.gameContract.updatePlayerTaps(gameState.totalTaps).catch(console.error);
-            }
-
             updateUI();
+
+            // Random challenge trigger (5% chance)
+            if (!gameState.currentChallenge && Math.random() < 0.05 && gameState.totalTaps > 100) {
+                startRandomChallenge();
+            }
         }
 
-        // Power-up purchase functions with contract interactions
+        // Power-up purchase functions
         async function buyTapPowerUpgrade() {
             if (gameState.totalTaps >= gameState.tapPowerCost) {
-                const oldCost = gameState.tapPowerCost;
-                const oldLevel = gameState.tapPowerLevel;
-                
-                // Update local state
                 gameState.totalTaps -= gameState.tapPowerCost;
                 gameState.tapPowerLevel++;
                 gameState.tapPower = gameState.tapPowerLevel;
                 gameState.tapPowerCost = Math.floor(gameState.tapPowerCost * 1.5);
-                
-                // Contract interaction
-                if (window.gameContract && window.gameContract.account) {
-                    try {
-                        showContractNotification('Processing Tap Power Upgrade...', 'Sending transaction to blockchain');
-                        
-                        // Simulate contract call for power-up purchase
-                        await window.gameContract.updatePlayerTaps(gameState.totalTaps);
-                        
-                        // You would call a real contract method like:
-                        // await window.gameContract.purchasePowerUp('tapPower', oldLevel + 1, oldCost);
-                        
-                        showContractNotification('Tap Power Upgraded!', `Level ${gameState.tapPowerLevel} activated on blockchain`, true);
-                        console.log(`Tap Power upgraded to level ${gameState.tapPowerLevel} on contract`);
-                        
-                    } catch (error) {
-                        console.error('Contract interaction failed:', error);
-                        
-                        // Revert local state on contract failure
-                        gameState.totalTaps += oldCost;
-                        gameState.tapPowerLevel = oldLevel;
-                        gameState.tapPower = oldLevel;
-                        gameState.tapPowerCost = oldCost;
-                        
-                        showContractNotification('Transaction Failed', 'Power-up purchase reverted', false);
-                        updateUI();
-                        return;
-                    }
-                }
                 
                 showPowerUpNotification('Tap Power', gameState.tapPowerLevel);
                 updateUI();
@@ -1327,45 +1159,11 @@
 
         async function buyEnergyUpgrade() {
             if (gameState.totalTaps >= gameState.energyCost) {
-                const oldCost = gameState.energyCost;
-                const oldLevel = gameState.energyLevel;
-                const oldMaxEnergy = gameState.maxEnergy;
-                
-                // Update local state
                 gameState.totalTaps -= gameState.energyCost;
                 gameState.energyLevel++;
                 gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
-                gameState.energy = gameState.maxEnergy; // Refill energy
+                gameState.energy = gameState.maxEnergy;
                 gameState.energyCost = Math.floor(gameState.energyCost * 1.5);
-                
-                // Contract interaction
-                if (window.gameContract && window.gameContract.account) {
-                    try {
-                        showContractNotification('Processing Energy Upgrade...', 'Sending transaction to blockchain');
-                        
-                        // Simulate contract call for energy upgrade
-                        await window.gameContract.updatePlayerTaps(gameState.totalTaps);
-                        
-                        // You would call a real contract method like:
-                        // await window.gameContract.purchasePowerUp('maxEnergy', oldLevel + 1, oldCost);
-                        
-                        showContractNotification('Energy Upgraded!', `Max Energy: ${gameState.maxEnergy} activated on blockchain`, true);
-                        console.log(`Max Energy upgraded to level ${gameState.energyLevel} on contract`);
-                        
-                    } catch (error) {
-                        console.error('Contract interaction failed:', error);
-                        
-                        // Revert local state on contract failure
-                        gameState.totalTaps += oldCost;
-                        gameState.energyLevel = oldLevel;
-                        gameState.maxEnergy = oldMaxEnergy;
-                        gameState.energyCost = oldCost;
-                        
-                        showContractNotification('Transaction Failed', 'Energy upgrade reverted', false);
-                        updateUI();
-                        return;
-                    }
-                }
                 
                 showPowerUpNotification('Max Energy', gameState.energyLevel);
                 updateUI();
@@ -1374,139 +1172,181 @@
 
         async function buyRegenUpgrade() {
             if (gameState.totalTaps >= gameState.regenCost) {
-                const oldCost = gameState.regenCost;
-                const oldLevel = gameState.regenLevel;
-                const oldRegenRate = gameState.energyRegenRate;
-                
-                // Update local state
                 gameState.totalTaps -= gameState.regenCost;
                 gameState.regenLevel++;
                 gameState.energyRegenRate = gameState.regenLevel;
                 gameState.regenCost = Math.floor(gameState.regenCost * 1.5);
-                
-                // Contract interaction
-                if (window.gameContract && window.gameContract.account) {
-                    try {
-                        showContractNotification('Processing Regen Upgrade...', 'Sending transaction to blockchain');
-                        
-                        // Simulate contract call for regen upgrade
-                        await window.gameContract.updatePlayerTaps(gameState.totalTaps);
-                        
-                        // You would call a real contract method like:
-                        // await window.gameContract.purchasePowerUp('energyRegen', oldLevel + 1, oldCost);
-                        
-                        showContractNotification('Energy Regen Upgraded!', `Level ${gameState.regenLevel} activated on blockchain`, true);
-                        console.log(`Energy Regen upgraded to level ${gameState.regenLevel} on contract`);
-                        
-                    } catch (error) {
-                        console.error('Contract interaction failed:', error);
-                        
-                        // Revert local state on contract failure
-                        gameState.totalTaps += oldCost;
-                        gameState.regenLevel = oldLevel;
-                        gameState.energyRegenRate = oldRegenRate;
-                        gameState.regenCost = oldCost;
-                        
-                        showContractNotification('Transaction Failed', 'Regen upgrade reverted', false);
-                        updateUI();
-                        return;
-                    }
-                }
                 
                 showPowerUpNotification('Energy Regen', gameState.regenLevel);
                 updateUI();
             }
         }
 
-        // Show contract interaction notification
-        function showContractNotification(title, message, success = null) {
-            // Remove any existing contract notifications
-            const existing = document.querySelector('.contract-notification');
-            if (existing) {
-                existing.remove();
-            }
-
-            const notification = document.createElement('div');
-            notification.className = 'contract-notification';
-            
-            let icon = '⏳'; // Default loading
-            let color = 'var(--primary-blue)';
-            
-            if (success === true) {
-                icon = '✅';
-                color = 'var(--green)';
-            } else if (success === false) {
-                icon = '❌';
-                color = 'var(--red)';
-            }
-            
-            notification.innerHTML = `
-                <h3>${icon} ${title}</h3>
-                <p>${message}</p>
-                ${success !== null ? '<button class="contract-close" onclick="this.parentElement.remove()">Close</button>' : ''}
-            `;
-
-            if (success !== null) {
-                notification.style.borderColor = color;
-            }
-
-            document.body.appendChild(notification);
-
-            // Auto-remove after delay if it's a final state
-            if (success !== null) {
-                setTimeout(() => {
-                    if (notification.parentElement) {
-                        notification.style.animation = 'fadeOut 0.5s ease-in';
-                        setTimeout(() => {
-                            if (notification.parentElement) {
-                                notification.remove();
-                            }
-                        }, 500);
-                    }
-                }, 3000);
+        async function buyAutoTapUpgrade() {
+            if (gameState.totalTaps >= gameState.autoTapCost) {
+                gameState.totalTaps -= gameState.autoTapCost;
+                gameState.autoTapLevel++;
+                gameState.autoTapCost = Math.floor(gameState.autoTapCost * 2);
+                
+                showPowerUpNotification('Auto Tap', gameState.autoTapLevel);
+                updateUI();
             }
         }
 
-        // Show power-up notification
+        // Challenge system
+        function startRandomChallenge() {
+            const challenge = CHALLENGE_TYPES[Math.floor(Math.random() * CHALLENGE_TYPES.length)];
+            gameState.currentChallenge = challenge;
+            gameState.challengeTaps = 0;
+            gameState.challengeStartTime = Date.now();
+            
+            elements.tapButton.classList.add('challenge-active');
+            showChallengeTimer(challenge);
+        }
+
+        function showChallengeTimer(challenge) {
+            const timer = document.createElement('div');
+            timer.className = 'challenge-timer';
+            timer.innerHTML = `
+                <div>${challenge.message}</div>
+                <div>Reward: ${challenge.reward} taps</div>
+                <div id="challengeCountdown">${challenge.time}s</div>
+            `;
+            document.body.appendChild(timer);
+
+            const countdown = document.getElementById('challengeCountdown');
+            const interval = setInterval(() => {
+                const elapsed = (Date.now() - gameState.challengeStartTime) / 1000;
+                const remaining = Math.max(0, challenge.time - elapsed);
+                countdown.textContent = `${remaining.toFixed(1)}s`;
+                
+                if (remaining <= 0) {
+                    clearInterval(interval);
+                    endChallenge(timer, false);
+                }
+            }, 100);
+        }
+
+        function updateChallengeProgress() {
+            if (!gameState.currentChallenge) return;
+            
+            const challenge = gameState.currentChallenge;
+            if (gameState.challengeTaps >= challenge.target) {
+                endChallenge(document.querySelector('.challenge-timer'), true);
+            }
+        }
+
+        function endChallenge(timerElement, success) {
+            if (success) {
+                gameState.totalTaps += gameState.currentChallenge.reward;
+                showModal('🎉 Challenge Complete!', `You earned ${gameState.currentChallenge.reward} bonus taps!`);
+            }
+            
+            gameState.currentChallenge = null;
+            gameState.challengeTaps = 0;
+            gameState.challengeStartTime = null;
+            elements.tapButton.classList.remove('challenge-active');
+            
+            if (timerElement) {
+                timerElement.remove();
+            }
+            
+            updateUI();
+        }
+
+        // Notification functions
+        function showLevelUpNotification(level) {
+            const notification = document.createElement('div');
+            notification.className = 'modal-overlay';
+            notification.innerHTML = `
+                <div class="modal">
+                    <h3>🎉 Level Up!</h3>
+                    <p>Welcome to Level ${level}</p>
+                    <p>Tap Power: ${gameState.tapPower}</p>
+                    <div class="modal-buttons">
+                        <button class="modal-button" onclick="this.closest('.modal-overlay').remove()">Awesome!</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
         function showPowerUpNotification(powerName, level) {
             const notification = document.createElement('div');
-            notification.className = 'level-up-notification';
+            notification.className = 'modal-overlay';
             notification.innerHTML = `
-                <h3>🚀 Power-up Upgraded!</h3>
-                <p>${powerName} Level ${level}</p>
+                <div class="modal">
+                    <h3>🚀 Power-up Upgraded!</h3>
+                    <p>${powerName} Level ${level}</p>
+                    <div class="modal-buttons">
+                        <button class="modal-button" onclick="this.closest('.modal-overlay').remove()">Great!</button>
+                    </div>
+                </div>
             `;
-
             document.body.appendChild(notification);
-
+            
             setTimeout(() => {
-                notification.style.animation = 'fadeOut 0.5s ease-in';
-                setTimeout(() => notification.remove(), 500);
+                if (notification.parentElement) {
+                    notification.remove();
+                }
             }, 2000);
         }
 
-        // Show level up notification
-        function showLevelUpNotification(level) {
+        function showBadgeNotification(level) {
             const notification = document.createElement('div');
-            notification.className = 'level-up-notification';
+            notification.className = 'badge-notification';
             notification.innerHTML = `
-                <h3>🎉 Level Up!</h3>
-                <p>Welcome to Level ${level}</p>
-                <p>Tap Power: ${gameState.tapPower}</p>
+                <h3>🏆 Milestone Badge Unlocked!</h3>
+                <p>Level ${level} Achievement</p>
             `;
-
             document.body.appendChild(notification);
-
+            
             setTimeout(() => {
-                notification.style.animation = 'fadeOut 0.5s ease-in';
-                setTimeout(() => notification.remove(), 500);
+                if (notification.parentElement) {
+                    notification.style.animation = 'fadeOut 0.5s ease-in';
+                    setTimeout(() => notification.remove(), 500);
+                }
             }, 3000);
+        }
+
+        function showDailyStreakBonus() {
+            const bonus = gameState.dailyStreak * 10;
+            gameState.totalTaps += bonus;
+            
+            showModal('🔥 Daily Streak Bonus!', `${gameState.dailyStreak} day streak! You earned ${bonus} bonus taps!`);
+        }
+
+        function showModal(title, message, buttons = [{ text: 'OK', action: null }]) {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            
+            const buttonHtml = buttons.map(btn => 
+                `<button class="modal-button" onclick="${btn.action || 'this.closest(\'.modal-overlay\').remove()'}">${btn.text}</button>`
+            ).join('');
+            
+            modal.innerHTML = `
+                <div class="modal">
+                    <h3>${title}</h3>
+                    <p>${message}</p>
+                    <div class="modal-buttons">
+                        ${buttonHtml}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         // Create tap popup
         function createTapPopup() {
             const popup = document.createElement('div');
             popup.className = 'tap-popup';
-            popup.textContent = `+${gameState.tapPower}`;
+            popup.textContent = TAP_MESSAGES[Math.floor(Math.random() * TAP_MESSAGES.length)];
 
             const buttonRect = elements.tapButton.getBoundingClientRect();
             const x = buttonRect.left + (Math.random() * buttonRect.width);
@@ -1516,8 +1356,7 @@
             popup.style.top = y + 'px';
 
             document.body.appendChild(popup);
-
-            setTimeout(() => popup.remove(), 1200);
+            setTimeout(() => popup.remove(), 1500);
         }
 
         // Create tap particles
@@ -1526,12 +1365,12 @@
             const centerX = buttonRect.left + buttonRect.width / 2;
             const centerY = buttonRect.top + buttonRect.height / 2;
 
-            for (let i = 0; i < 6; i++) {
+            for (let i = 0; i < 8; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'tap-particle';
 
-                const angle = (i / 6) * 2 * Math.PI;
-                const distance = 40 + Math.random() * 30;
+                const angle = (i / 8) * 2 * Math.PI;
+                const distance = 50 + Math.random() * 40;
                 const x = centerX + Math.cos(angle) * distance;
                 const y = centerY + Math.sin(angle) * distance;
 
@@ -1539,9 +1378,45 @@
                 particle.style.top = y + 'px';
 
                 document.body.appendChild(particle);
-
-                setTimeout(() => particle.remove(), 1000);
+                setTimeout(() => particle.remove(), 1200);
             }
+        }
+
+        // Update leaderboard
+        function updateLeaderboard() {
+            if (!elements.leaderboardList) return;
+            
+            // Add current player to leaderboard
+            const playerData = {
+                name: 'You',
+                score: gameState.totalTaps,
+                level: gameState.currentLevel,
+                avatar: 'Y',
+                isCurrentPlayer: true
+            };
+            
+            const allPlayers = [...leaderboardData, playerData].sort((a, b) => b.score - a.score);
+            
+            elements.leaderboardList.innerHTML = allPlayers.map((player, index) => {
+                const rank = index + 1;
+                const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                const currentPlayerClass = player.isCurrentPlayer ? 'current-player' : '';
+                
+                return `
+                    <div class="leaderboard-item ${rankClass} ${currentPlayerClass}">
+                        <div class="rank-info">
+                            <div class="rank">${rank}</div>
+                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : '⚡'}
+                        </div>
+                        <div class="player-avatar">${player.avatar}</div>
+                        <div class="player-info">
+                            <div class="player-name">${player.name}</div>
+                            <div class="player-stats">Level ${player.level}</div>
+                        </div>
+                        <div class="player-score">${formatNumber(player.score)}</div>
+                    </div>
+                `;
+            }).join('');
         }
 
         // Energy regeneration
@@ -1554,11 +1429,47 @@
             }, 1000);
         }
 
+        // Auto tap system
+        function startAutoTap() {
+            setInterval(() => {
+                if (gameState.autoTapLevel > 0 && gameState.energy >= gameState.autoTapLevel) {
+                    gameState.energy -= gameState.autoTapLevel;
+                    gameState.totalTaps += gameState.autoTapLevel;
+                    gameState.totalEarned += gameState.autoTapLevel;
+                    updateUI();
+                }
+            }, 2000);
+        }
+
+        // Claim rewards modal
+        function showClaimRewardsModal() {
+            const ethReward = (gameState.totalTaps * 0.000001).toFixed(6);
+            showModal(
+                '💰 Claim Rewards',
+                `You can claim ${ethReward} ETH worth of rewards!\n\nNote: This is a demo transaction.`,
+                [
+                    { text: 'Claim Now', action: 'processClaimRewards()' },
+                    { text: 'Cancel', action: null }
+                ]
+            );
+        }
+
+        function processClaimRewards() {
+            document.querySelector('.modal-overlay').remove();
+            
+            showModal(
+                '✅ Rewards Claimed!',
+                'Your rewards have been processed!\n\nTransaction Hash: 0x1234...abcd',
+                [{ text: 'Awesome!', action: null }]
+            );
+        }
+
         // Initialize game
         function initializeGame() {
+            loadGameState();
             initializeElements();
 
-            // Set up tap button
+            // Set up event listeners
             if (elements.tapButton) {
                 elements.tapButton.addEventListener('click', handleTap);
                 elements.tapButton.addEventListener('touchstart', (e) => {
@@ -1567,61 +1478,60 @@
                 });
             }
 
-            // Set up power-up buttons
-            if (elements.tapPowerUpgrade) {
-                elements.tapPowerUpgrade.addEventListener('click', buyTapPowerUpgrade);
-            }
-            if (elements.energyUpgrade) {
-                elements.energyUpgrade.addEventListener('click', buyEnergyUpgrade);
-            }
-            if (elements.regenUpgrade) {
-                elements.regenUpgrade.addEventListener('click', buyRegenUpgrade);
+            // Power-up event listeners
+            if (elements.tapPowerUpgrade) elements.tapPowerUpgrade.addEventListener('click', buyTapPowerUpgrade);
+            if (elements.energyUpgrade) elements.energyUpgrade.addEventListener('click', buyEnergyUpgrade);
+            if (elements.regenUpgrade) elements.regenUpgrade.addEventListener('click', buyRegenUpgrade);
+            if (elements.autoTapUpgrade) elements.autoTapUpgrade.addEventListener('click', buyAutoTapUpgrade);
+
+            // Leaderboard toggle
+            if (elements.leaderboardToggle) {
+                elements.leaderboardToggle.addEventListener('click', () => {
+                    elements.leaderboardToggle.classList.toggle('expanded');
+                    elements.leaderboardContent.classList.toggle('expanded');
+                });
             }
 
-            // Start energy regeneration
+            // Claim rewards
+            if (elements.claimRewards) {
+                elements.claimRewards.addEventListener('click', showClaimRewardsModal);
+            }
+
+            // Start systems
             startEnergyRegen();
+            startAutoTap();
 
             // Initial UI update
             updateUI();
 
-            console.log('Notcoin-style game initialized');
+            console.log('Enhanced ArbiTap game initialized with persistence and new features');
         }
 
-        // Update wallet status
-        function updateWalletStatus(connected, address) {
-            if (elements.walletStatus) {
-                if (connected && address) {
-                    elements.walletStatus.textContent = `🟢 ${address.slice(0, 6)}...${address.slice(-4)}`;
-                    elements.walletStatus.className = 'wallet-status wallet-connected';
-                    gameState.walletAddress = address;
-                    gameState.isConnected = true;
-                } else {
-                    elements.walletStatus.textContent = '🔴 Wallet Disconnected';
-                    elements.walletStatus.className = 'wallet-status wallet-disconnected';
-                    gameState.walletAddress = null;
-                    gameState.isConnected = false;
-                }
-            }
-        }
+        // Make global functions available
+        window.processClaimRewards = processClaimRewards;
 
         // Initialize when DOM loads
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded - initializing Notcoin-style game...');
+            console.log('DOM loaded - initializing enhanced ArbiTap game...');
             initializeGame();
         });
 
         // Listen for wallet connection updates
         window.addEventListener('walletConnected', (event) => {
-            updateWalletStatus(true, event.detail.address);
+            if (elements.walletAddress) {
+                elements.walletAddress.textContent = `${event.detail.address.slice(0, 6)}...${event.detail.address.slice(-4)}`;
+            }
         });
 
-        window.addEventListener('walletDisconnected', () => {
-            updateWalletStatus(false);
-        });
+        // Auto-save every 30 seconds
+        setInterval(() => {
+            saveGameState();
+        }, 30000);
 
-        // Make functions globally available
-        window.updateWalletStatus = updateWalletStatus;
-        window.gameState = gameState;
+        // Save on page unload
+        window.addEventListener('beforeunload', () => {
+            saveGameState();
+        });
     </script>
 </body>
 </html>
