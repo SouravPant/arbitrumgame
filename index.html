@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -21,9 +22,6 @@
       }
     }' />
 
-    <!-- Wagmi Integration -->
-    <script src="wagmi-integration.js"></script>
-
     <style>
         :root {
             --primary-blue: #007AFF;
@@ -39,7 +37,6 @@
             --green: #30D158;
             --red: #FF3B30;
             --orange: #FF9500;
-            /* Added for new styles */
             --notcoin-yellow: #FFD60A;
         }
 
@@ -98,26 +95,19 @@
 
         .wallet-info {
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            align-items: flex-end;
             gap: 8px;
         }
 
-        .wallet-address {
+        .wallet-status {
             font-size: 12px;
             color: var(--green);
             background: rgba(48, 209, 88, 0.1);
             padding: 4px 8px;
             border-radius: 8px;
             border: 1px solid rgba(48, 209, 88, 0.3);
-        }
-
-        .streak-indicator {
-            font-size: 12px;
-            background: var(--orange);
-            color: #000;
-            padding: 4px 8px;
-            border-radius: 8px;
-            font-weight: 600;
+            cursor: pointer;
         }
 
         .balance-display {
@@ -257,10 +247,6 @@
             animation: tapPulse 0.6s ease-out;
         }
 
-        .tap-button.challenge-active {
-            animation: challengeGlow 0.5s ease-in-out infinite alternate;
-        }
-
         .tap-icon {
             font-size: 70px;
             filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.3));
@@ -286,19 +272,6 @@
             0% { transform: scale(0.95); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
-        }
-
-        @keyframes challengeGlow {
-            from {
-                box-shadow:
-                    0 20px 60px rgba(255, 165, 0, 0.6),
-                    0 0 0 6px rgba(255, 165, 0, 0.4);
-            }
-            to {
-                box-shadow:
-                    0 25px 80px rgba(255, 215, 0, 0.8),
-                    0 0 0 8px rgba(255, 215, 0, 0.6);
-            }
         }
 
         /* Power-ups Section */
@@ -339,24 +312,12 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
         }
 
         .powerup-card:hover {
             transform: translateY(-4px);
             background: rgba(0, 122, 255, 0.1);
             border-color: var(--primary-blue);
-        }
-
-        .powerup-card.affordable {
-            border-color: var(--green);
-            box-shadow: 0 0 20px rgba(48, 209, 88, 0.3);
-            animation: affordableGlow 2s ease-in-out infinite;
-        }
-
-        @keyframes affordableGlow {
-            0%, 100% { box-shadow: 0 0 20px rgba(48, 209, 88, 0.3); }
-            50% { box-shadow: 0 0 30px rgba(48, 209, 88, 0.5); }
         }
 
         .powerup-icon {
@@ -383,31 +344,20 @@
             color: var(--gold);
         }
 
-        /* Leaderboard Section - Positioned at bottom */
+        /* Leaderboard Section */
         .leaderboard-section {
             background: rgba(28, 28, 30, 0.8);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px 16px 0 0;
-            margin: 0;
             margin-top: 20px;
-            height: auto;
-            max-height: 60px;
-            display: flex;
-            flex-direction: column;
-            position: sticky;
-            bottom: 0;
-            transition: max-height 0.3s ease;
             overflow: hidden;
-        }
-
-        .leaderboard-section.expanded {
-            max-height: 300px;
+            transition: all 0.3s ease;
         }
 
         .leaderboard-toggle {
             width: 100%;
-            background: rgba(44, 44, 46, 0.8);
+            background: transparent;
             border: none;
             color: var(--text-primary);
             padding: 16px 20px;
@@ -418,8 +368,6 @@
             justify-content: space-between;
             align-items: center;
             transition: all 0.3s ease;
-            border-radius: 16px 16px 0 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .leaderboard-toggle:hover {
@@ -436,17 +384,13 @@
         }
 
         .leaderboard-content {
-            flex: 1;
-            height: 0;
+            max-height: 0;
             overflow: hidden;
-            transition: all 0.3s ease;
-            opacity: 0;
+            transition: max-height 0.3s ease;
         }
 
         .leaderboard-content.expanded {
-            height: 240px;
-            opacity: 1;
-            overflow-y: auto;
+            max-height: 400px;
         }
 
         .leaderboard-list {
@@ -462,46 +406,18 @@
             padding: 12px 16px;
             margin-bottom: 8px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .leaderboard-item:hover {
-            background: rgba(44, 44, 46, 0.8);
-            transform: translateX(4px);
         }
 
         .leaderboard-item.current-player {
             background: linear-gradient(90deg, rgba(0, 122, 255, 0.2) 0%, rgba(44, 44, 46, 0.8) 100%);
             border-color: var(--primary-blue);
-            box-shadow: 0 0 20px rgba(0, 122, 255, 0.3);
-        }
-
-        .leaderboard-item.rank-1 {
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2) 0%, rgba(44, 44, 46, 0.8) 100%);
-            border-color: var(--gold);
-        }
-
-        .leaderboard-item.rank-2 {
-            background: linear-gradient(90deg, rgba(192, 192, 192, 0.2) 0%, rgba(44, 44, 46, 0.8) 100%);
-            border-color: #C0C0C0;
-        }
-
-        .leaderboard-item.rank-3 {
-            background: linear-gradient(90deg, rgba(205, 127, 50, 0.2) 0%, rgba(44, 44, 46, 0.8) 100%);
-            border-color: #CD7F32;
-        }
-
-        .rank-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 50px;
         }
 
         .rank {
             font-size: 16px;
             font-weight: 800;
             color: var(--text-primary);
+            min-width: 30px;
         }
 
         .player-avatar {
@@ -537,7 +453,6 @@
             font-size: 14px;
             color: var(--gold);
             font-weight: 700;
-            text-align: right;
         }
 
         /* Animations for tap effects */
@@ -567,377 +482,6 @@
             }
         }
 
-        .tap-particle {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            background: var(--neon-cyan);
-            border-radius: 50%;
-            pointer-events: none;
-            animation: particleExplode 1.2s ease-out forwards;
-            box-shadow: 0 0 6px var(--neon-cyan);
-        }
-
-        @keyframes particleExplode {
-            0% {
-                opacity: 1;
-                transform: scale(0) translateY(0);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1) translateY(-50px);
-            }
-            100% {
-                opacity: 0;
-                transform: scale(0) translateY(-80px);
-            }
-        }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            opacity: 0;
-            animation: fadeIn 0.3s ease forwards;
-        }
-
-        .modal {
-            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-light) 100%);
-            border: 2px solid var(--primary-blue);
-            border-radius: 20px;
-            padding: 30px;
-            text-align: center;
-            max-width: 320px;
-            width: 90%;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-            transform: scale(0.8);
-            animation: modalScale 0.3s ease forwards;
-        }
-
-        .modal h3 {
-            font-size: 20px;
-            font-weight: 800;
-            margin-bottom: 15px;
-            color: var(--text-primary);
-        }
-
-        .modal p {
-            font-size: 14px;
-            margin-bottom: 20px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-        }
-
-        .modal-button {
-            background: var(--primary-blue);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .modal-button:hover {
-            background: var(--secondary-blue);
-            transform: translateY(-2px);
-        }
-
-        .modal-button.secondary {
-            background: var(--surface-light);
-            color: var(--text-primary);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        @keyframes modalScale {
-            to { transform: scale(1); }
-        }
-
-        /* Challenge Timer */
-        .challenge-timer {
-            position: fixed;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--orange);
-            color: #000;
-            padding: 12px 20px;
-            border-radius: 16px;
-            font-weight: 700;
-            font-size: 14px;
-            z-index: 200;
-            animation: challengeEnter 0.5s ease;
-            box-shadow: 0 8px 25px rgba(255, 165, 0, 0.4);
-        }
-
-        @keyframes challengeEnter {
-            from {
-                transform: translateX(-50%) translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(-50%) translateY(0);
-                opacity: 1;
-            }
-        }
-
-
-
-        /* Badge Notification */
-        .badge-notification {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) scale(0.5) rotateY(90deg);
-            background: linear-gradient(135deg, var(--neon-purple), var(--primary-blue));
-            color: white;
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 1001;
-            animation: badgePopup 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-            box-shadow: 0 20px 60px rgba(138, 43, 226, 0.5);
-        }
-
-        @keyframes badgePopup {
-            0% {
-                transform: translate(-50%, -50%) scale(0.5) rotateY(90deg);
-                opacity: 0;
-            }
-            50% {
-                transform: translate(-50%, -50%) scale(1.1) rotateY(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1) rotateY(0deg);
-                opacity: 1;
-            }
-        }
-
-        /* Added Styles for Secrets Section */
-        .content-section {
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-
-        .content-section h2 {
-            text-align: center;
-            margin-bottom: 15px;
-            color: var(--text-primary);
-            font-size: 22px;
-            font-weight: 800;
-        }
-
-        .content-section p {
-            text-align: center;
-            color: var(--text-secondary);
-            margin-bottom: 25px;
-        }
-
-        .env-setup {
-            background: rgba(255,255,255,0.05);
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 30px;
-        }
-
-        .env-item {
-            margin-bottom: 20px;
-        }
-
-        .env-item label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--notcoin-yellow);
-        }
-
-        .env-item input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 8px;
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-
-        .env-item input:focus {
-            outline: none;
-            border-color: var(--notcoin-yellow);
-        }
-
-        .env-item small {
-            display: block;
-            margin-top: 4px;
-            color: rgba(255,255,255,0.6);
-            font-size: 12px;
-        }
-
-        .env-status {
-            margin: 20px 0;
-            padding: 12px;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .env-status #envStatus {
-            color: var(--notcoin-yellow);
-            font-weight: 600;
-        }
-
-        .mint-button {
-            background: var(--notcoin-yellow);
-            color: #1f1f1f;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 12px rgba(255, 214, 10, 0.3);
-        }
-
-        .mint-button:hover {
-            background: #f0c400;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(255, 214, 10, 0.4);
-        }
-
-        .mint-button.secondary {
-            background: rgba(255,255,255,0.1);
-            margin-left: 10px;
-        }
-
-        .mint-button.secondary:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .github-setup {
-            background: rgba(0,123,255,0.05);
-            padding: 24px;
-            border-radius: 16px;
-            border: 1px solid rgba(0,123,255,0.2);
-        }
-
-        .github-setup h3 {
-            color: #00d4ff;
-            margin-bottom: 20px;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .deployment-steps {
-            margin-bottom: 30px;
-        }
-
-        .step {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 20px;
-            padding: 16px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .step-number {
-            background: var(--notcoin-yellow);
-            color: #1f1f1f;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            margin-right: 16px;
-            flex-shrink: 0;
-        }
-
-        .step-content strong {
-            color: var(--notcoin-yellow);
-            display: block;
-            margin-bottom: 4px;
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .step-content p {
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.4;
-        }
-
-        .terminal-commands h4 {
-            color: #00d4ff;
-            margin-bottom: 16px;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .command-block {
-            display: flex;
-            align-items: center;
-            margin-bottom: 12px;
-            background: rgba(0,0,0,0.4);
-            border-radius: 8px;
-            padding: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .command-block code {
-            flex-grow: 1;
-            color: #00ff88;
-            font-family: 'Courier New', monospace;
-            font-size: 14px;
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            hyphens: auto;
-        }
-
-        .command-block button {
-            background: var(--notcoin-yellow);
-            color: #1f1f1f;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 12px;
-            margin-left: 12px;
-            transition: transform 0.2s ease;
-            flex-shrink: 0;
-        }
-
-        .command-block button:hover {
-            transform: scale(1.05);
-        }
-
         /* Responsive Design */
         @media (max-width: 360px) {
             .container {
@@ -964,86 +508,6 @@
             .tap-icon {
                 font-size: 60px;
             }
-
-            .powerups-scroll {
-                gap: 8px;
-            }
-
-            .powerup-card {
-                min-width: 100px;
-                padding: 12px 8px;
-            }
-
-            /* Responsive adjustments for secrets section */
-            .env-setup, .github-setup {
-                padding: 16px;
-            }
-
-            .step {
-                flex-direction: column;
-                align-items: center;
-                text-align: center;
-            }
-
-            .step-number {
-                margin-right: 0;
-                margin-bottom: 10px;
-            }
-
-            .command-block {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .command-block code {
-                margin-bottom: 10px;
-                text-align: center;
-            }
-
-            .command-block button {
-                margin-left: 0;
-            }
-        }
-
-        /* Added Contract Status Styles */
-        .wallet-info .contract-status {
-            margin-top: 10px;
-            text-align: center;
-        }
-
-        .wallet-info #deployBtn {
-            background: linear-gradient(135deg, #FF6B35, #F7931E);
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .wallet-info #deployBtn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
-        }
-
-        .wallet-info #deployBtn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .wallet-info #contractAddress {
-            display: block;
-            font-size: 10px;
-            color: #666;
-            margin-top: 5px;
-        }
-
-        /* Loading indicator within power-up cards */
-        .powerup-card .loading {
-            font-size: 12px;
-            color: var(--text-secondary);
-            font-weight: 600;
         }
     </style>
 </head>
@@ -1054,12 +518,7 @@
             <div class="header-top">
                 <div class="app-title">ARBITAP</div>
                 <div class="wallet-info">
-                    <div id="farcasterStatus" class="farcaster-status">🔵 Running in Browser</div>
-                    <div id="walletStatus" class="wallet-status">Connect Wallet</div>
-                    <div id="contractStatus" class="contract-status">
-                        <button onclick="deployContract()" id="deployBtn">Deploy Contract</button>
-                        <span id="contractAddress"></span>
-                    </div>
+                    <div class="wallet-status" id="walletStatus">Connect Wallet</div>
                 </div>
             </div>
 
@@ -1123,7 +582,7 @@
             </div>
         </div>
 
-        <!-- Leaderboard Section - Moved to bottom -->
+        <!-- Leaderboard Section -->
         <div class="leaderboard-section">
             <button class="leaderboard-toggle" id="leaderboardToggle">
                 <span>🏆 Global Leaderboard</span>
@@ -1135,8 +594,6 @@
                 </div>
             </div>
         </div>
-
-
     </div>
 
     <!-- Game Script -->
@@ -1144,20 +601,10 @@
         // Game Configuration
         const LEVEL_REQUIREMENTS = [
             0, 100, 300, 600, 1000, 1500, 2100, 2800, 3600, 4500,
-            5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000,
-            21000, 23100, 25300, 27600, 30000, 32500, 35100, 37800, 40600, 43500,
-            46500, 49600, 52800, 56100, 59500, 63000, 66600, 70300, 74100, 78000
+            5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000
         ];
 
-        const MILESTONE_BADGES = [10, 25, 50, 100, 200, 500, 1000];
-        const TAP_MESSAGES = ['Boop!', 'Tap!', 'Arbitrum!', 'Zap!', '⚡', '💫', '🚀'];
-        const CHALLENGE_TYPES = [
-            { type: 'speed', target: 50, time: 10, reward: 100, message: 'Tap 50 times in 10 seconds!' },
-            { type: 'speed', target: 30, time: 8, reward: 75, message: 'Tap 30 times in 8 seconds!' },
-            { type: 'speed', target: 100, time: 15, reward: 200, message: 'Tap 100 times in 15 seconds!' }
-        ];
-
-        // Game State with localStorage persistence
+        // Game State
         let gameState = {
             totalTaps: 0,
             currentLevel: 1,
@@ -1165,28 +612,16 @@
             energy: 1000,
             maxEnergy: 1000,
             energyRegenRate: 1,
-            totalEarned: 0,
-            // Power-up levels
             tapPowerLevel: 1,
             energyLevel: 1,
             regenLevel: 1,
-            // Power-up costs
             tapPowerCost: 100,
             energyCost: 200,
             regenCost: 300,
-            levelUpCost: 1000,
-            // Daily streak
-            dailyStreak: 1,
-            lastLoginDate: new Date().toDateString(),
-            // Achievements
-            unlockedBadges: [],
-            // Current challenge
-            currentChallenge: null,
-            challengeTaps: 0,
-            challengeStartTime: null
+            levelUpCost: 1000
         };
 
-        // Leaderboard data
+        // Sample leaderboard data
         let leaderboardData = [
             { name: 'TapMaster_Pro', score: 1234567, level: 25, avatar: 'T' },
             { name: 'CryptoTapper', score: 987654, level: 22, avatar: 'C' },
@@ -1209,73 +644,27 @@
                 tapButton: document.getElementById('tapButton'),
                 energyFill: document.getElementById('energyFill'),
                 energyText: document.getElementById('energyText'),
-                streakCount: document.getElementById('streakCount'),
-                walletAddress: document.getElementById('walletAddress'),
-                // Power-up elements
-                tapPowerUpgrade: document.getElementById('tapPowerUpgrade'),
-                energyUpgrade: document.getElementById('energyUpgrade'),
-                regenUpgrade: document.getElementById('regenUpgrade'),
-                levelUpgrade: document.getElementById('levelUpgrade'),
-                tapPowerLevel: document.getElementById('tapPowerLevel'),
-                energyLevel: document.getElementById('energyLevel'),
-                regenLevel: document.getElementById('regenLevel'),
-                nextLevelCost: document.getElementById('nextLevelCost'),
-                tapPowerCost: document.getElementById('tapPowerCost'),
-                energyCost: document.getElementById('energyCost'),
-                regenCost: document.getElementById('regenCost'),
-                levelUpCost: document.getElementById('levelUpCost'),
-                // Leaderboard
                 leaderboardToggle: document.getElementById('leaderboardToggle'),
                 leaderboardContent: document.getElementById('leaderboardContent'),
                 leaderboardList: document.getElementById('leaderboardList'),
-                // Contract elements
-                deployBtn: document.getElementById('deployBtn'),
-                contractAddressDisplay: document.getElementById('contractAddress')
+                tapPowerLevel: document.getElementById('tapPowerLevel'),
+                energyLevel: document.getElementById('energyLevel'),
+                regenLevel: document.getElementById('regenLevel'),
+                tapPowerCost: document.getElementById('tapPowerCost'),
+                energyCost: document.getElementById('energyCost'),
+                regenCost: document.getElementById('regenCost'),
+                levelUpCost: document.getElementById('levelUpCost')
             };
 
-            // Debug: Check which elements are found
             console.log('Elements initialized:', {
                 tapButton: !!elements.tapButton,
                 totalTaps: !!elements.totalTaps,
-                leaderboardToggle: !!elements.leaderboardToggle,
-                leaderboardContent: !!elements.leaderboardContent
+                leaderboardToggle: !!elements.leaderboardToggle
             });
-        }
-
-        // LocalStorage functions
-        function saveGameState() {
-            localStorage.setItem('arbitapGameState', JSON.stringify(gameState));
-        }
-
-        function loadGameState() {
-            const saved = localStorage.getItem('arbitapGameState');
-            if (saved) {
-                const parsedState = JSON.parse(saved);
-                gameState = { ...gameState, ...parsedState };
-
-                // Check daily streak
-                const today = new Date().toDateString();
-                if (gameState.lastLoginDate !== today) {
-                    const lastLogin = new Date(gameState.lastLoginDate);
-                    const todayDate = new Date(today);
-                    const dayDiff = Math.floor((todayDate - lastLogin) / (1000 * 60 * 60 * 24));
-
-                    if (dayDiff === 1) {
-                        gameState.dailyStreak++;
-                        showDailyStreakBonus();
-                    } else if (dayDiff > 1) {
-                        gameState.dailyStreak = 1;
-                    }
-
-                    gameState.lastLoginDate = today;
-                    saveGameState();
-                }
-            }
         }
 
         // Format numbers
         function formatNumber(num) {
-            if (num === null || num === undefined) return '0';
             if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
             if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
             return num.toString();
@@ -1302,29 +691,18 @@
             return Math.min(100, Math.max(0, progress));
         }
 
-        // Update all UI elements
+        // Update UI
         function updateUI() {
             const newLevel = calculateLevel(gameState.totalTaps);
-            const leveledUp = newLevel > gameState.currentLevel;
-
-            if (leveledUp) {
+            if (newLevel > gameState.currentLevel) {
                 gameState.currentLevel = newLevel;
                 gameState.tapPower = Math.max(gameState.tapPowerLevel, Math.floor(newLevel / 5) + 1);
-                showLevelUpNotification(newLevel);
-
-                // Check for milestone badges
-                if (MILESTONE_BADGES.includes(newLevel) && !gameState.unlockedBadges.includes(newLevel)) {
-                    gameState.unlockedBadges.push(newLevel);
-                    showBadgeNotification(newLevel);
-                }
+                showNotification(`🎉 Level Up! Welcome to Level ${newLevel}`);
             }
 
-            // Update display elements with null checks
+            // Update display elements
             if (elements.totalTaps) {
                 elements.totalTaps.textContent = formatNumber(gameState.totalTaps);
-                console.log('Updated total taps display:', gameState.totalTaps);
-            } else {
-                console.warn('totalTaps element not found');
             }
 
             if (elements.currentLevel) {
@@ -1351,54 +729,12 @@
                 elements.energyText.textContent = `${Math.floor(gameState.energy)}/${gameState.maxEnergy}`;
             }
 
-            // Update streak
-            if (elements.streakCount) {
-                elements.streakCount.textContent = gameState.dailyStreak;
-            }
-
-            // Update power-up UI
-            updatePowerUpUI();
-            updatePowerUpAffordability();
             updateLeaderboard();
-
             saveGameState();
-        }
-
-        // Update power-up UI
-        function updatePowerUpUI() {
-            if (elements.tapPowerLevel) elements.tapPowerLevel.textContent = gameState.tapPowerLevel;
-            if (elements.energyLevel) elements.energyLevel.textContent = gameState.energyLevel;
-            if (elements.regenLevel) elements.regenLevel.textContent = gameState.regenLevel;
-            if (elements.nextLevelCost) elements.nextLevelCost.textContent = formatNumber(gameState.currentLevel + 1);
-            if (elements.tapPowerCost) elements.tapPowerCost.textContent = formatNumber(gameState.tapPowerCost);
-            if (elements.energyCost) elements.energyCost.textContent = formatNumber(gameState.energyCost);
-            if (elements.regenCost) elements.regenCost.textContent = formatNumber(gameState.regenCost);
-            if (elements.levelUpCost) elements.levelUpCost.textContent = formatNumber(gameState.levelUpCost);
-        }
-
-        // Update power-up affordability visual feedback
-        function updatePowerUpAffordability() {
-            const powerups = [
-                { element: elements.tapPowerUpgrade, cost: gameState.tapPowerCost },
-                { element: elements.energyUpgrade, cost: gameState.energyCost },
-                { element: elements.regenUpgrade, cost: gameState.regenCost },
-                { element: elements.levelUpgrade, cost: gameState.levelUpCost }
-            ];
-
-            powerups.forEach(({ element, cost }) => {
-                if (element) {
-                    if (gameState.totalTaps >= cost) {
-                        element.classList.add('affordable');
-                    } else {
-                        element.classList.remove('affordable');
-                    }
-                }
-            });
         }
 
         // Handle tap
         function handleTap(event) {
-            // Prevent default behavior
             if (event) {
                 event.preventDefault();
                 event.stopPropagation();
@@ -1406,395 +742,33 @@
 
             // Check if enough energy
             if (gameState.energy < gameState.tapPower) {
-                console.log('Not enough energy to tap');
+                showNotification('⚡ Not enough energy!');
                 return;
             }
 
             // Update game state
             gameState.energy -= gameState.tapPower;
             gameState.totalTaps += gameState.tapPower;
-            gameState.totalEarned += gameState.tapPower;
 
             console.log('Tap! Total taps:', gameState.totalTaps, 'Energy:', gameState.energy);
 
-            // Challenge progress
-            if (gameState.currentChallenge) {
-                gameState.challengeTaps += gameState.tapPower;
-                updateChallengeProgress();
-            }
-
-            // Tap animations
+            // Visual feedback
             createTapPopup();
-            createTapParticles();
-
+            
             // Haptic feedback
             if (navigator.vibrate) {
                 navigator.vibrate(50);
             }
 
-            // Update UI immediately
+            // Update UI
             updateUI();
-
-            // Random challenge trigger (5% chance)
-            if (!gameState.currentChallenge && Math.random() < 0.05 && gameState.totalTaps > 100) {
-                startRandomChallenge();
-            }
-        }
-
-        // Power-up purchase functions
-        async function buyTapPowerUpgrade() {
-            if (gameState.totalTaps >= gameState.tapPowerCost) {
-                try {
-                    // Show loading state
-                    const upgradeBtn = document.querySelector('#tapPowerUpgrade');
-                    const originalContent = upgradeBtn.innerHTML;
-                    upgradeBtn.innerHTML = '<div class="loading">Confirming on Arbitrum...</div>';
-                    upgradeBtn.style.pointerEvents = 'none';
-
-                    // Call smart contract to update level
-                    if (window.gameContract && window.gameContract.account) {
-                        const result = await window.gameContract.updatePlayerLevel(
-                            gameState.tapPowerLevel + 1,
-                            gameState.totalTaps
-                        );
-
-                        if (result.success) {
-                            // Only update game state after blockchain confirmation
-                            gameState.totalTaps -= gameState.tapPowerCost;
-                            gameState.tapPowerLevel++;
-                            gameState.tapPower = gameState.tapPowerLevel;
-                            gameState.tapPowerCost = Math.floor(gameState.tapPowerCost * 1.5);
-
-                            showPowerUpNotification(`Level ${gameState.tapPowerLevel} Confirmed on Arbitrum!`);
-                            showPowerUpNotification(`TX: ${result.txHash.substring(0, 10)}...`);
-                            updateUI();
-                            saveGameState();
-                        } else {
-                            throw new Error('Transaction failed');
-                        }
-                    } else {
-                        throw new Error('Please connect your wallet first');
-                    }
-
-                    // Restore button
-                    upgradeBtn.innerHTML = originalContent;
-                    upgradeBtn.style.pointerEvents = 'auto';
-
-                } catch (error) {
-                    console.error('Upgrade failed:', error);
-
-                    // Show error notification
-                    showPowerUpNotification(`Upgrade failed: ${error.message}`);
-
-                    // Restore button
-                    const upgradeBtn = document.querySelector('#tapPowerUpgrade');
-                    if (upgradeBtn) {
-                         const loadingDiv = upgradeBtn.querySelector('.loading');
-                         if (loadingDiv) loadingDiv.remove();
-                    }
-                    if(upgradeBtn) upgradeBtn.style.pointerEvents = 'auto';
-                }
-            } else {
-                showPowerUpNotification('Not enough taps!');
-            }
-        }
-
-        async function buyEnergyUpgrade() {
-            if (gameState.totalTaps >= gameState.energyCost) {
-                gameState.totalTaps -= gameState.energyCost;
-                gameState.energyLevel++;
-                gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
-                gameState.energy = gameState.maxEnergy;
-                gameState.energyCost = Math.floor(gameState.energyCost * 1.5);
-
-                showPowerUpNotification('Max Energy', gameState.energyLevel);
-                updateUI();
-            }
-        }
-
-        async function buyRegenUpgrade() {
-            if (gameState.totalTaps >= gameState.regenCost) {
-                gameState.totalTaps -= gameState.regenCost;
-                gameState.regenLevel++;
-                gameState.energyRegenRate = gameState.regenLevel;
-                gameState.regenCost = Math.floor(gameState.regenCost * 1.5);
-
-                showPowerUpNotification('Energy Regen', gameState.regenLevel);
-                updateUI();
-            }
-        }
-
-        async function buyLevelUpgrade() {
-            // Check if user has enough taps
-            if (gameState.totalTaps < gameState.levelUpCost) {
-                showModal('❌ Insufficient Taps', `You need ${formatNumber(gameState.levelUpCost)} taps to upgrade to level ${gameState.currentLevel + 1}.`);
-                return;
-            }
-
-            // Check wallet connection
-            if (!window.gameContract || !window.gameContract.account) {
-                showModal('🔗 Wallet Required', 'Please connect your MetaMask wallet to upgrade levels on Arbitrum blockchain.', [
-                    { text: 'Connect Wallet', action: 'connectWallet()' },
-                    { text: 'Cancel', action: null }
-                ]);
-                return;
-            }
-
-            // Check contract address
-            if (!window.gameContract.contractAddress) {
-                showModal('⚙️ Contract Not Configured', 'Please configure the game contract address in the Environment Setup section.', [
-                    { text: 'Go to Setup', action: 'scrollToSetup()' },
-                    { text: 'Cancel', action: null }
-                ]);
-                return;
-            }
-
-            const nextLevel = gameState.currentLevel + 1;
-
-            try {
-                // Show confirmation modal first
-                showModal(
-                    '🚀 Confirm Level Upgrade',
-                    `This will upgrade you to Level ${nextLevel} and cost ${formatNumber(gameState.levelUpCost)} taps. You will need to approve this transaction in your wallet.`,
-                    [
-                        { text: 'Confirm & Upgrade', action: 'confirmLevelUpgrade()' },
-                        { text: 'Cancel', action: null }
-                    ]
-                );
-            } catch (error) {
-                console.error('Level upgrade initiation failed:', error);
-                showModal('❌ Level Up Failed', 'Failed to initiate level upgrade. Please try again.');
-            }
-        }
-
-        async function confirmLevelUpgrade() {
-            const nextLevel = gameState.currentLevel + 1;
-
-            try {
-                // Close confirmation modal
-                const modal = document.querySelector('.modal-overlay');
-                if (modal) modal.remove();
-
-                // Show processing state
-                showModal('⏳ Processing Level Up...', 'Please approve the transaction in your wallet. This may take a few moments...', []);
-
-                // Call smart contract to update level
-                const result = await window.gameContract.updatePlayerLevel(nextLevel, gameState.totalTaps);
-
-                if (result.success) {
-                    // Deduct taps and update level
-                    gameState.totalTaps -= gameState.levelUpCost;
-                    gameState.currentLevel = nextLevel;
-                    gameState.levelUpCost = Math.floor(gameState.levelUpCost * 1.8);
-
-                    // Close processing modal
-                    const processingModal = document.querySelector('.modal-overlay');
-                    if (processingModal) processingModal.remove();
-
-                    // Show success modal with transaction details
-                    showModal(
-                        '🎉 Level Up Successful!',
-                        `Congratulations! You are now Level ${nextLevel}.<br><br>Transaction Hash: <br><small>${result.txHash}</small><br><br>Gas Used: ${result.gasUsed || 'N/A'}`,
-                        [
-                            { text: 'View on Arbiscan', action: `window.open('https://arbiscan.io/tx/${result.txHash}', '_blank')` },
-                            { text: 'Continue', action: null }
-                        ]
-                    );
-
-                    updateUI();
-                    saveGameState();
-                }
-            } catch (error) {
-                console.error('Level upgrade failed:', error);
-
-                // Close any existing modals
-                const existingModal = document.querySelector('.modal-overlay');
-                if (existingModal) existingModal.remove();
-
-                // Show specific error message
-                let errorMessage = 'Transaction failed. Please try again.';
-                if (error.message.includes('rejected')) {
-                    errorMessage = 'Transaction was rejected. Level upgrade cancelled.';
-                } else if (error.message.includes('insufficient funds')) {
-                    errorMessage = 'Insufficient ETH for gas fees. Please add more ETH to your wallet.';
-                } else if (error.message.includes('Contract address not configured')) {
-                    errorMessage = 'Game contract not configured. Please set up the contract address.';
-                }
-
-                showModal('❌ Level Up Failed', errorMessage, [
-                    { text: 'Try Again', action: 'buyLevelUpgrade()' },
-                    { text: 'Cancel', action: null }
-                ]);
-            }
-        }
-
-        // Helper functions
-        function connectWallet() {
-            if (window.gameContract) {
-                window.gameContract.setupRegularWallet();
-            }
-        }
-
-        function scrollToSetup() {
-            const modal = document.querySelector('.modal-overlay');
-            if (modal) modal.remove();
-            document.getElementById('secrets').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Challenge system
-        function startRandomChallenge() {
-            const challenge = CHALLENGE_TYPES[Math.floor(Math.random() * CHALLENGE_TYPES.length)];
-            gameState.currentChallenge = challenge;
-            gameState.challengeTaps = 0;
-            gameState.challengeStartTime = Date.now();
-
-            elements.tapButton.classList.add('challenge-active');
-            showChallengeTimer(challenge);
-        }
-
-        function showChallengeTimer(challenge) {
-            const timer = document.createElement('div');
-            timer.className = 'challenge-timer';
-            timer.innerHTML = `
-                <div>${challenge.message}</div>
-                <div>Reward: ${challenge.reward} taps</div>
-                <div id="challengeCountdown">${challenge.time}s</div>
-            `;
-            document.body.appendChild(timer);
-
-            const countdown = document.getElementById('challengeCountdown');
-            const interval = setInterval(() => {
-                const elapsed = (Date.now() - gameState.challengeStartTime) / 1000;
-                const remaining = Math.max(0, challenge.time - elapsed);
-                countdown.textContent = `${remaining.toFixed(1)}s`;
-
-                if (remaining <= 0) {
-                    clearInterval(interval);
-                    endChallenge(timer, false);
-                }
-            }, 100);
-        }
-
-        function updateChallengeProgress() {
-            if (!gameState.currentChallenge) return;
-
-            const challenge = gameState.currentChallenge;
-            if (gameState.challengeTaps >= challenge.target) {
-                endChallenge(document.querySelector('.challenge-timer'), true);
-            }
-        }
-
-        function endChallenge(timerElement, success) {
-            if (success) {
-                gameState.totalTaps += gameState.currentChallenge.reward;
-                showModal('🎉 Challenge Complete!', `You earned ${gameState.currentChallenge.reward} bonus taps!`);
-            }
-
-            gameState.currentChallenge = null;
-            gameState.challengeTaps = 0;
-            gameState.challengeStartTime = null;
-            elements.tapButton.classList.remove('challenge-active');
-
-            if (timerElement) {
-                timerElement.remove();
-            }
-
-            updateUI();
-        }
-
-        // Notification functions
-        function showLevelUpNotification(level) {
-            const notification = document.createElement('div');
-            notification.className = 'modal-overlay';
-            notification.innerHTML = `
-                <div class="modal">
-                    <h3>🎉 Level Up!</h3>
-                    <p>Welcome to Level ${level}</p>
-                    <p>Tap Power: ${gameState.tapPower}</p>
-                    <div class="modal-buttons">
-                        <button class="modal-button" onclick="this.closest('.modal-overlay').remove()">Awesome!</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 3000);
-        }
-
-        function showPowerUpNotification(powerName, level) {
-            const notification = document.createElement('div');
-            notification.className = 'modal-overlay';
-            notification.innerHTML = `
-                <div class="modal">
-                    <h3>🚀 Power-up Upgraded!</h3>
-                    <p>${powerName} ${level ? `Level ${level}` : ''}</p>
-                    <div class="modal-buttons">
-                        <button class="modal-button" onclick="this.closest('.modal-overlay').remove()">Great!</button>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 2000);
-        }
-
-        function showBadgeNotification(level) {
-            const notification = document.createElement('div');
-            notification.className = 'badge-notification';
-            notification.innerHTML = `
-                <h3>🏆 Milestone Badge Unlocked!</h3>
-                <p>Level ${level} Achievement</p>
-            `;
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.style.animation = 'fadeOut 0.5s ease-in';
-                    setTimeout(() => notification.remove(), 500);
-                }
-            }, 3000);
-        }
-
-        function showDailyStreakBonus() {
-            const bonus = gameState.dailyStreak * 10;
-            gameState.totalTaps += bonus;
-
-            showModal('🔥 Daily Streak Bonus!', `${gameState.dailyStreak} day streak! You earned ${bonus} bonus taps!`);
-        }
-
-        function showModal(title, message, buttons = [{ text: 'OK', action: null }]) {
-            const modal = document.createElement('div');
-            modal.className = 'modal-overlay';
-
-            const buttonHtml = buttons.map(btn =>
-                `<button class="modal-button" onclick="${btn.action || 'this.closest(\'.modal-overlay\').remove()'}">${btn.text}</button>`
-            ).join('');
-
-            modal.innerHTML = `
-                <div class="modal">
-                    <h3>${title}</h3>
-                    <p>${message}</p>
-                    <div class="modal-buttons">
-                        ${buttonHtml}
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
         }
 
         // Create tap popup
         function createTapPopup() {
             const popup = document.createElement('div');
             popup.className = 'tap-popup';
-            popup.textContent = TAP_MESSAGES[Math.floor(Math.random() * TAP_MESSAGES.length)];
+            popup.textContent = `+${gameState.tapPower}`;
 
             const buttonRect = elements.tapButton.getBoundingClientRect();
             const x = buttonRect.left + (Math.random() * buttonRect.width);
@@ -1805,29 +779,6 @@
 
             document.body.appendChild(popup);
             setTimeout(() => popup.remove(), 1500);
-        }
-
-        // Create tap particles
-        function createTapParticles() {
-            const buttonRect = elements.tapButton.getBoundingClientRect();
-            const centerX = buttonRect.left + buttonRect.width / 2;
-            const centerY = buttonRect.top + buttonRect.height / 2;
-
-            for (let i = 0; i < 8; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'tap-particle';
-
-                const angle = (i / 8) * 2 * Math.PI;
-                const distance = 50 + Math.random() * 40;
-                const x = centerX + Math.cos(angle) * distance;
-                const y = centerY + Math.sin(angle) * distance;
-
-                particle.style.left = x + 'px';
-                particle.style.top = y + 'px';
-
-                document.body.appendChild(particle);
-                setTimeout(() => particle.remove(), 1200);
-            }
         }
 
         // Update leaderboard
@@ -1847,15 +798,11 @@
 
             elements.leaderboardList.innerHTML = allPlayers.map((player, index) => {
                 const rank = index + 1;
-                const rankClass = rank <= 3 ? `rank-${rank}` : '';
                 const currentPlayerClass = player.isCurrentPlayer ? 'current-player' : '';
 
                 return `
-                    <div class="leaderboard-item ${rankClass} ${currentPlayerClass}">
-                        <div class="rank-info">
-                            <div class="rank">${rank}</div>
-                            ${rank === 1 ? '🥇' : rank === 2 ? '🥈' : rank === 3 ? '🥉' : ''}
-                        </div>
+                    <div class="leaderboard-item ${currentPlayerClass}">
+                        <div class="rank">${rank}</div>
                         <div class="player-avatar">${player.avatar}</div>
                         <div class="player-info">
                             <div class="player-name">${player.name}</div>
@@ -1877,202 +824,49 @@
             }, 1000);
         }
 
-        // Secrets management functions
-        function saveEnvironment() {
-            const privateKey = elements.privateKeyInput.value;
-            const alchemyKey = elements.alchemyKeyInput.value;
-            const contractAddress = elements.contractAddressInput.value;
-
-            if (!privateKey || !alchemyKey) {
-                showNotification('Please fill in all required fields!', 'error');
-                return;
-            }
-
-            // Validate private key format (simple check for common lengths)
-            if (privateKey.length !== 64 && privateKey.length !== 66) {
-                showNotification('Invalid private key format! Ensure it is 64 or 66 characters long.', 'error');
-                return;
-            }
-
-            // Validate contract address format
-            if (contractAddress && (!contractAddress.startsWith('0x') || contractAddress.length !== 42)) {
-                showNotification('Invalid contract address format! Should be 42 characters starting with 0x.', 'error');
-                return;
-            }
-
-            // Save to localStorage (for demo purposes)
-            localStorage.setItem('gamePrivateKey', privateKey);
-            localStorage.setItem('gameAlchemyKey', alchemyKey);
-            localStorage.setItem('gameContractAddress', contractAddress);
-
-            // Update contract address in gameContract instance
-            if (window.gameContract && contractAddress) {
-                window.gameContract.contractAddress = contractAddress;
-                updateContractStatusDisplay();
-            }
-
-            updateEnvStatus();
-            showNotification('✅ Environment variables saved successfully!', 'success');
+        // Save game state
+        function saveGameState() {
+            localStorage.setItem('arbitapGameState', JSON.stringify(gameState));
         }
 
-        function loadEnvironment() {
-            const privateKey = localStorage.getItem('gamePrivateKey');
-            const alchemyKey = localStorage.getItem('gameAlchemyKey');
-            const contractAddress = localStorage.getItem('gameContractAddress');
-
-            if (privateKey) elements.privateKeyInput.value = privateKey;
-            if (alchemyKey) elements.alchemyKeyInput.value = alchemyKey;
-            if (contractAddress) {
-                elements.contractAddressInput.value = contractAddress;
-                if (window.gameContract) {
-                    window.gameContract.contractAddress = contractAddress;
-                    updateContractStatusDisplay();
-                }
-            }
-
-            updateEnvStatus();
-            showNotification('Environment variables loaded!', 'success');
-        }
-
-        function updateEnvStatus() {
-            const privateKey = localStorage.getItem('gamePrivateKey');
-            const alchemyKey = localStorage.getItem('gameAlchemyKey');
-
-            if (privateKey && alchemyKey) {
-                elements.envStatusElement.textContent = '✅ Configured and ready for deployment';
-                elements.envStatusElement.style.color = '#10b981';
-            } else {
-                elements.envStatusElement.textContent = '❌ Not configured';
-                elements.envStatusElement.style.color = '#ef4444';
+        // Load game state
+        function loadGameState() {
+            const saved = localStorage.getItem('arbitapGameState');
+            if (saved) {
+                const parsedState = JSON.parse(saved);
+                gameState = { ...gameState, ...parsedState };
             }
         }
 
-        function deployContract() {
-            const privateKey = localStorage.getItem('gamePrivateKey');
-            const alchemyKey = localStorage.getItem('gameAlchemyKey');
-
-            if (!privateKey || !alchemyKey) {
-                showNotification('Please configure environment variables first!', 'error');
-                return;
-            }
-
-            // Show confirmation modal before deployment
-            showModal('Confirm Deployment', 'Are you sure you want to deploy the contract? This will cost gas fees.', [
-                { text: 'Deploy', action: 'startContractDeployment()' },
-                { text: 'Cancel', action: null }
-            ]);
-        }
-
-        async function startContractDeployment() {
-            const modal = document.querySelector('.modal-overlay');
-            if (modal) modal.remove();
-
-            if (!window.gameContract || !window.gameContract.account) {
-                showPowerUpNotification('Please connect wallet first');
-                return;
-            }
-
-            try {
-                const deployBtn = document.getElementById('deployBtn');
-                deployBtn.textContent = 'Deploying...';
-                deployBtn.disabled = true;
-
-                // Deploy contract using ethers.js
-                await window.gameContract.loadEthersLibrary();
-
-                const contractABI = [
-                    {
-                        "inputs": [],
-                        "stateMutability": "nonpayable",
-                        "type": "constructor"
-                    },
-                    {
-                        "inputs": [{"internalType": "uint256", "name": "newLevel", "type": "uint256"}],
-                        "name": "updateLevel",
-                        "outputs": [],
-                        "stateMutability": "nonpayable",
-                        "type": "function"
-                    }
-                ];
-
-                const contractBytecode = "0x608060405234801561001057600080fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550610c1f806100606000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80633a9b1cbe1461003b578063893d20e814610057575b600080fd5b61005560048036038101906100509190610175565b610075565b005b61005f6100d8565b60405161006c91906101b1565b60405180910390f35b6000546100889060019060a0900460ff16565b156100c8576040517f08c379a00000000000000000000000000000000000000000000000000081526004016100bf90610219565b60405180910390fd5b8060018190555050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000808fd5b6000819050919050565b61011281610108565b811461011d57600080fd5b50565b60008135905061012f81610109565b92915050565b60006020828403121561014b5761014a610103565b5b600061015984828501610120565b91505092915050565b61016b81610108565b82525050565b6000602082019050610186600083018461016262565b92915050565b60006101b78261018c565b9050919050565b6101c7816101ac565b82525050565b60006101d8826101e8565b9050919050565b60006101ea826101f9565b9050919050565b6000819050919050565b7f4e6f7420617574686f72697a656400000000000000000000000000000000000600008201525050565b6000610233600f836101f9565b915061023e82610213565b602082019050919050565b6000602082019050818103600083015261026281610226565b9050919050565b60006101b78261018c565b9050919050565b6101c7816101ac565b82525050565b60006101d8826101e8565b9050919050565b60006101ea826101f9565b9050919050565b6000819050919050565b7f4e6f7420617574686f72697a656400000000000000000000000000000000000600008201525050565b6000610233600f836101f9565b915061023e82610213565b602082019050919050565b6000602082019050818103600083015261026281610226565b905091905056fea26469706673582212209d5e7f1c8b9c5a2d4e6f7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f90064736f6c63430008140033";
-
-                const signer = new window.ethers.providers.Web3Provider(window.ethereum).getSigner();
-                const contractFactory = new window.ethers.ContractFactory(contractABI, contractBytecode, signer);
-
-                const contract = await contractFactory.deploy();
-                await contract.deployed();
-
-                const contractAddress = contract.address;
-                console.log('Contract deployed to:', contractAddress);
-
-                // Save contract address
-                localStorage.setItem('gameContractAddress', contractAddress);
-                window.gameContract.contractAddress = contractAddress;
-
-                // Update UI
-                updateContractStatusDisplay();
-                deployBtn.textContent = 'Deployed!';
-                deployBtn.disabled = true;
-                deployBtn.style.backgroundColor = '#4CAF50';
-
-                showPowerUpNotification(`Contract deployed! ${contractAddress.substring(0, 10)}...`);
-
-            } catch (error) {
-                console.error('Deployment failed:', error);
-                showPowerUpNotification(`Deployment failed: ${error.message}`);
-
-                const deployBtn = document.getElementById('deployBtn');
-                deployBtn.textContent = 'Deploy Contract';
-                deployBtn.disabled = false;
-            }
-        }
-
-        function updateContractStatusDisplay() {
-            const contractAddress = localStorage.getItem('gameContractAddress');
-            if (contractAddress) {
-                elements.contractAddressDisplay.textContent = `Contract: ${contractAddress.substring(0, 8)}...`;
-                elements.deployBtn.textContent = 'Deployed';
-                elements.deployBtn.disabled = true;
-                elements.deployBtn.style.backgroundColor = '#4CAF50';
-            } else {
-                elements.contractAddressDisplay.textContent = '';
-                elements.deployBtn.textContent = 'Deploy Contract';
-                elements.deployBtn.disabled = false;
-                elements.deployBtn.style.backgroundColor = '';
-            }
-        }
-
-        function copyCommand(command) {
-            navigator.clipboard.writeText(command).then(() => {
-                showNotification('📋 Command copied to clipboard!', 'success');
-            }).catch(() => {
-                showNotification('Failed to copy command', 'error');
-            });
-        }
-
-        // Helper for showing generic notifications (e.g., for copy command, save env)
-        function showNotification(message, type = 'info') {
+        // Show notification
+        function showNotification(message) {
             const notification = document.createElement('div');
-            notification.className = `notification notification-${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--primary-blue);
+                color: white;
+                padding: 12px 20px;
+                border-radius: 12px;
+                z-index: 1000;
+                font-weight: 600;
+                animation: slideDown 0.3s ease;
+            `;
             notification.textContent = message;
             document.body.appendChild(notification);
 
             setTimeout(() => {
-                if (notification.parentElement) {
-                    notification.remove();
-                }
-            }, 3000);
+                notification.style.animation = 'slideUp 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 2000);
         }
-
 
         // Initialize game
         function initializeGame() {
             loadGameState();
             initializeElements();
-
-            // Load environment variables and update UI
-            loadEnvironment();
 
             // Set up event listeners
             if (elements.tapButton) {
@@ -2081,37 +875,22 @@
                     e.preventDefault();
                     handleTap(e);
                 }, { passive: false });
-                elements.tapButton.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                }, { passive: false });
             }
 
-            // Power-up event listeners
-            if (elements.tapPowerUpgrade) elements.tapPowerUpgrade.addEventListener('click', buyTapPowerUpgrade);
-            if (elements.energyUpgrade) elements.energyUpgrade.addEventListener('click', buyEnergyUpgrade);
-            if (elements.regenUpgrade) elements.regenUpgrade.addEventListener('click', buyRegenUpgrade);
-            if (elements.levelUpgrade) elements.levelUpgrade.addEventListener('click', buyLevelUpgrade);
-
-            // Leaderboard toggle - Fixed
+            // Leaderboard toggle
             if (elements.leaderboardToggle) {
                 elements.leaderboardToggle.addEventListener('click', (e) => {
                     e.preventDefault();
                     console.log('Leaderboard toggle clicked');
                     
-                    const leaderboardSection = document.querySelector('.leaderboard-section');
-                    const toggleIcon = elements.leaderboardToggle.querySelector('.toggle-icon');
-                    
-                    // Toggle classes
                     elements.leaderboardToggle.classList.toggle('expanded');
                     elements.leaderboardContent.classList.toggle('expanded');
-                    leaderboardSection.classList.toggle('expanded');
                     
-                    // Update icon
+                    const toggleIcon = elements.leaderboardToggle.querySelector('.toggle-icon');
                     if (toggleIcon) {
-                        toggleIcon.textContent = leaderboardSection.classList.contains('expanded') ? '▲' : '▼';
+                        const isExpanded = elements.leaderboardContent.classList.contains('expanded');
+                        toggleIcon.textContent = isExpanded ? '▲' : '▼';
                     }
-                    
-                    console.log('Leaderboard expanded:', leaderboardSection.classList.contains('expanded'));
                 });
             }
 
@@ -2121,36 +900,13 @@
             // Initial UI update
             updateUI();
 
-            console.log('Enhanced ArbiTap game initialized with persistence and new features');
+            console.log('ArbiTap game initialized successfully');
         }
 
-        // Initialize environment status on page load
+        // Initialize on DOM load
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded - initializing enhanced ArbiTap game...');
+            console.log('DOM loaded - initializing game...');
             initializeGame();
-        });
-
-        // Listen for wallet connection updates
-        window.addEventListener('walletConnected', (event) => {
-            if (elements.walletAddress) {
-                elements.walletAddress.textContent = `${event.detail.address.slice(0, 6)}...${event.detail.address.slice(-4)}`;
-                elements.walletAddress.className = 'wallet-address wallet-connected';
-            }
-            // Enable deploy button if wallet is connected
-            if (elements.deployBtn) {
-                elements.deployBtn.disabled = false;
-            }
-        });
-
-        window.addEventListener('walletDisconnected', () => {
-            if (elements.walletAddress) {
-                elements.walletAddress.textContent = 'Connect Wallet';
-                elements.walletAddress.className = 'wallet-address';
-            }
-            // Disable deploy button if wallet is disconnected
-            if (elements.deployBtn) {
-                elements.deployBtn.disabled = true;
-            }
         });
 
         // Auto-save every 30 seconds
@@ -2162,6 +918,20 @@
         window.addEventListener('beforeunload', () => {
             saveGameState();
         });
+
+        // Add keyframes for animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideDown {
+                from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(0); opacity: 1; }
+            }
+            @keyframes slideUp {
+                from { transform: translateX(-50%) translateY(0); opacity: 1; }
+                to { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
     </script>
 </body>
 </html>
