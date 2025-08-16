@@ -3,8 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/utils/Counters.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title Arbitrum Tap Tap Game NFT Contract
@@ -12,8 +11,6 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
  * @author Arbitrum Community
  */
 contract ArbitrumTapGame is ERC721, Ownable, ReentrancyGuard {
-    using Counters for Counters.Counter;
-    
     // Milestone thresholds and rewards
     uint256[] public milestones = [100, 500, 1000, 5000, 10000, 50000, 100000, 200000, 300000];
     uint256[] public rewards = [0.001 ether, 0.005 ether, 0.01 ether, 0.05 ether, 0.1 ether, 0.5 ether, 1 ether, 2 ether, 3 ether];
@@ -29,7 +26,7 @@ contract ArbitrumTapGame is ERC721, Ownable, ReentrancyGuard {
     }
     
     // Game state
-    Counters.Counter private _tokenIds;
+    uint256 private _tokenIds;
     mapping(address => Player) public players;
     mapping(uint256 => uint256) public leaderboard; // score => player count
     address[] public topPlayers;
@@ -137,8 +134,8 @@ contract ArbitrumTapGame is ERC721, Ownable, ReentrancyGuard {
         players[msg.sender].lastMintTimestamp = block.timestamp;
         
         // Mint the NFT
-        _tokenIds.increment();
-        uint256 newTokenId = _tokenIds.current();
+        _tokenIds++;
+        uint256 newTokenId = _tokenIds;
         _safeMint(msg.sender, newTokenId);
         
         // Find reward amount for this milestone
