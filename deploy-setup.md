@@ -1,4 +1,3 @@
-
 # 🚀 ArbiTap GitHub Deployment Setup
 
 ## Quick Start
@@ -7,16 +6,16 @@
    ```bash
    # Initialize git (if not already done)
    git init
-   
+
    # Add all files
    git add .
-   
+
    # Make initial commit
    git commit -m "Initial commit: ArbiTap game"
-   
+
    # Add your GitHub repository as origin
    git remote add origin https://github.com/YOUR_USERNAME/arbitap-game.git
-   
+
    # Push to GitHub
    git push -u origin main
    ```

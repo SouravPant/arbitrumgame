@@ -13,7 +13,7 @@ module.exports = {
     }
   },
   networks: {
-    arbitrum: {
+    arbitrumOne: {
       url: process.env.ARBITRUM_RPC_URL || `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
       chainId: 42161
