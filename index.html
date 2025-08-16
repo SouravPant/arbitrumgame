@@ -1123,38 +1123,6 @@
             </div>
         </div>
 
-        <!-- Secrets Section -->
-        <div id="secrets" class="content-section">
-            <h2>🔐 Environment Setup</h2>
-            <p>Configure your environment variables for blockchain integration.</p>
-
-            <div class="env-setup">
-                <div class="env-item">
-                    <label>Private Key:</label>
-                    <input type="password" id="privateKey" placeholder="Enter MetaMask private key" maxlength="64">
-                    <small>Your MetaMask private key (without 0x prefix)</small>
-                </div>
-                <div class="env-item">
-                    <label>Alchemy API Key:</label>
-                    <input type="text" id="alchemyKey" placeholder="Enter Alchemy API key" maxlength="32">
-                    <small>Get from alchemy.com for Arbitrum access</small>
-                </div>
-                <div class="env-item">
-                    <label>Contract Address:</label>
-                    <input type="text" id="contractAddress" placeholder="Enter deployed contract address" maxlength="42">
-                    <small>Will be set after contract deployment</small>
-                </div>
-                <div class="env-status">
-                    <div id="envStatus">Not configured</div>
-                </div>
-                <button class="mint-button" id="saveEnvBtn" onclick="saveEnvironment()">💾 Save Configuration</button>
-                <button class="mint-button secondary" onclick="loadEnvironment()">📂 Load Saved</button>
-                <button class="mint-button secondary" onclick="deployContract()">🚀 Deploy Contract</button>
-            </div>
-
-
-        </div>
-
         <!-- Leaderboard Section - Moved to bottom -->
         <div class="leaderboard-section">
             <button class="leaderboard-toggle" id="leaderboardToggle">
@@ -2025,6 +1993,7 @@
                 // Update UI
                 updateContractStatusDisplay();
                 deployBtn.textContent = 'Deployed!';
+                deployBtn.disabled = true;
                 deployBtn.style.backgroundColor = '#4CAF50';
 
                 showPowerUpNotification(`Contract deployed! ${contractAddress.substring(0, 10)}...`);
