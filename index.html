@@ -382,18 +382,20 @@
             color: var(--gold);
         }
 
-        /* Leaderboard Section - Now positioned below energy */
+        /* Leaderboard Section - Positioned at bottom */
         .leaderboard-section {
             background: rgba(28, 28, 30, 0.8);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 16px 16px 0 0;
-            margin: 20px;
-            margin-bottom: 0;
-            height: 50vh;
-            max-height: 400px;
+            margin: 0;
+            margin-top: 20px;
+            height: 40vh;
+            max-height: 300px;
             display: flex;
             flex-direction: column;
+            position: sticky;
+            bottom: 0;
         }
 
         .leaderboard-toggle {
@@ -798,19 +800,6 @@
             </div>
         </div>
 
-        <!-- Leaderboard Section -->
-        <div class="leaderboard-section">
-            <button class="leaderboard-toggle" id="leaderboardToggle">
-                <span>🏆 Global Leaderboard</span>
-                <span class="toggle-icon">▼</span>
-            </button>
-            <div class="leaderboard-content" id="leaderboardContent">
-                <div class="leaderboard-list" id="leaderboardList">
-                    <!-- Leaderboard items will be populated by JavaScript -->
-                </div>
-            </div>
-        </div>
-
         <!-- Central Tap Section -->
         <div class="tap-section">
             <button class="tap-button" id="tapButton">
@@ -845,6 +834,19 @@
                     <div class="powerup-name">Auto Tap</div>
                     <div class="powerup-level">Level <span id="autoTapLevel">0</span></div>
                     <div class="powerup-cost"><span id="autoTapCost">500</span> taps</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Leaderboard Section - Moved to bottom -->
+        <div class="leaderboard-section">
+            <button class="leaderboard-toggle" id="leaderboardToggle">
+                <span>🏆 Global Leaderboard</span>
+                <span class="toggle-icon">▼</span>
+            </button>
+            <div class="leaderboard-content" id="leaderboardContent">
+                <div class="leaderboard-list" id="leaderboardList">
+                    <!-- Leaderboard items will be populated by JavaScript -->
                 </div>
             </div>
         </div>
