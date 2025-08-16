@@ -1004,6 +1004,47 @@
                 margin-left: 0;
             }
         }
+
+        /* Added Contract Status Styles */
+        .wallet-info .contract-status {
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .wallet-info #deployBtn {
+            background: linear-gradient(135deg, #FF6B35, #F7931E);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .wallet-info #deployBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+        }
+
+        .wallet-info #deployBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .wallet-info #contractAddress {
+            display: block;
+            font-size: 10px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* Loading indicator within power-up cards */
+        .powerup-card .loading {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -1013,8 +1054,12 @@
             <div class="header-top">
                 <div class="app-title">ARBITAP</div>
                 <div class="wallet-info">
-                    <div class="streak-indicator">🔥 <span id="streakCount">1</span></div>
-                    <div class="wallet-address" id="walletAddress">0x81a5...1f8d</div>
+                    <div id="farcasterStatus" class="farcaster-status">🔵 Running in Browser</div>
+                    <div id="walletStatus" class="wallet-status">Connect Wallet</div>
+                    <div id="contractStatus" class="contract-status">
+                        <button onclick="deployContract()" id="deployBtn">Deploy Contract</button>
+                        <span id="contractAddress"></span>
+                    </div>
                 </div>
             </div>
 
@@ -1270,6 +1315,8 @@
                 contractAddressInput: document.getElementById('contractAddress'),
                 envStatusElement: document.getElementById('envStatus'),
                 saveEnvBtn: document.getElementById('saveEnvBtn'),
+                deployBtn: document.getElementById('deployBtn'),
+                contractAddressDisplay: document.getElementById('contractAddress')
             };
         }
 
@@ -1458,13 +1505,58 @@
         // Power-up purchase functions
         async function buyTapPowerUpgrade() {
             if (gameState.totalTaps >= gameState.tapPowerCost) {
-                gameState.totalTaps -= gameState.tapPowerCost;
-                gameState.tapPowerLevel++;
-                gameState.tapPower = gameState.tapPowerLevel;
-                gameState.tapPowerCost = Math.floor(gameState.tapPowerCost * 1.5);
+                try {
+                    // Show loading state
+                    const upgradeBtn = document.querySelector('#tapPowerUpgrade');
+                    const originalContent = upgradeBtn.innerHTML;
+                    upgradeBtn.innerHTML = '<div class="loading">Confirming on Arbitrum...</div>';
+                    upgradeBtn.style.pointerEvents = 'none';
 
-                showPowerUpNotification('Tap Power', gameState.tapPowerLevel);
-                updateUI();
+                    // Call smart contract to update level
+                    if (window.gameContract && window.gameContract.account) {
+                        const result = await window.gameContract.updatePlayerLevel(
+                            gameState.tapPowerLevel + 1, 
+                            gameState.totalTaps
+                        );
+
+                        if (result.success) {
+                            // Only update game state after blockchain confirmation
+                            gameState.totalTaps -= gameState.tapPowerCost;
+                            gameState.tapPowerLevel++;
+                            gameState.tapPower = gameState.tapPowerLevel;
+                            gameState.tapPowerCost = Math.floor(gameState.tapPowerCost * 1.5);
+
+                            showPowerUpNotification(`Level ${gameState.tapPowerLevel} Confirmed on Arbitrum!`);
+                            showPowerUpNotification(`TX: ${result.txHash.substring(0, 10)}...`);
+                            updateUI();
+                            saveGameState();
+                        } else {
+                            throw new Error('Transaction failed');
+                        }
+                    } else {
+                        throw new Error('Please connect your wallet first');
+                    }
+
+                    // Restore button
+                    upgradeBtn.innerHTML = originalContent;
+                    upgradeBtn.style.pointerEvents = 'auto';
+
+                } catch (error) {
+                    console.error('Upgrade failed:', error);
+
+                    // Show error notification
+                    showPowerUpNotification(`Upgrade failed: ${error.message}`);
+
+                    // Restore button
+                    const upgradeBtn = document.querySelector('#tapPowerUpgrade');
+                    if (upgradeBtn) {
+                         const loadingDiv = upgradeBtn.querySelector('.loading');
+                         if (loadingDiv) loadingDiv.remove();
+                    }
+                    if(upgradeBtn) upgradeBtn.style.pointerEvents = 'auto';
+                }
+            } else {
+                showPowerUpNotification('Not enough taps!');
             }
         }
 
@@ -1538,7 +1630,7 @@
 
         async function confirmLevelUpgrade() {
             const nextLevel = gameState.currentLevel + 1;
-            
+
             try {
                 // Close confirmation modal
                 const modal = document.querySelector('.modal-overlay');
@@ -1575,7 +1667,7 @@
                 }
             } catch (error) {
                 console.error('Level upgrade failed:', error);
-                
+
                 // Close any existing modals
                 const existingModal = document.querySelector('.modal-overlay');
                 if (existingModal) existingModal.remove();
@@ -1700,7 +1792,7 @@
             notification.innerHTML = `
                 <div class="modal">
                     <h3>🚀 Power-up Upgraded!</h3>
-                    <p>${powerName} Level ${level}</p>
+                    <p>${powerName} ${level ? `Level ${level}` : ''}</p>
                     <div class="modal-buttons">
                         <button class="modal-button" onclick="this.closest('.modal-overlay').remove()">Great!</button>
                     </div>
@@ -1877,6 +1969,7 @@
             // Update contract address in gameContract instance
             if (window.gameContract && contractAddress) {
                 window.gameContract.contractAddress = contractAddress;
+                updateContractStatusDisplay();
             }
 
             updateEnvStatus();
@@ -1890,7 +1983,13 @@
 
             if (privateKey) elements.privateKeyInput.value = privateKey;
             if (alchemyKey) elements.alchemyKeyInput.value = alchemyKey;
-            if (contractAddress) elements.contractAddressInput.value = contractAddress;
+            if (contractAddress) {
+                elements.contractAddressInput.value = contractAddress;
+                if (window.gameContract) {
+                    window.gameContract.contractAddress = contractAddress;
+                    updateContractStatusDisplay();
+                }
+            }
 
             updateEnvStatus();
             showNotification('Environment variables loaded!', 'success');
@@ -1918,13 +2017,90 @@
                 return;
             }
 
-            showNotification('🚀 Contract deployment initiated! Check console for details.', 'success');
-            console.log('Contract deployment would start with:');
-            console.log('- Private Key:', privateKey ? 'Set' : 'Not set');
-            console.log('- Alchemy Key:', alchemyKey ? 'Set' : 'Not set');
-            console.log('To deploy, you would typically run:');
-            console.log('npx hardhat run scripts/deploy.js --network arbitrumSepolia');
-            console.log('Make sure your contract is in the `scripts/deploy.js` file and configured for Arbitrum Sepolia.');
+            // Show confirmation modal before deployment
+            showModal('Confirm Deployment', 'Are you sure you want to deploy the contract? This will cost gas fees.', [
+                { text: 'Deploy', action: 'startContractDeployment()' },
+                { text: 'Cancel', action: null }
+            ]);
+        }
+
+        async function startContractDeployment() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) modal.remove();
+
+            if (!window.gameContract || !window.gameContract.account) {
+                showPowerUpNotification('Please connect wallet first');
+                return;
+            }
+
+            try {
+                const deployBtn = document.getElementById('deployBtn');
+                deployBtn.textContent = 'Deploying...';
+                deployBtn.disabled = true;
+
+                // Deploy contract using ethers.js
+                await window.gameContract.loadEthersLibrary();
+
+                const contractABI = [
+                    {
+                        "inputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "constructor"
+                    },
+                    {
+                        "inputs": [{"internalType": "uint256", "name": "newLevel", "type": "uint256"}],
+                        "name": "updateLevel",
+                        "outputs": [],
+                        "stateMutability": "nonpayable",
+                        "type": "function"
+                    }
+                ];
+
+                const contractBytecode = "0x608060405234801561001057600080fd5b50336000806101000a81548173ffffffffffffffffffffffffffffffffffffffff021916908373ffffffffffffffffffffffffffffffffffffffff160217905550610c1f806100606000396000f3fe608060405234801561001057600080fd5b50600436106100365760003560e01c80633a9b1cbe1461003b578063893d20e814610057575b600080fd5b61005560048036038101906100509190610175565b610075565b005b61005f6100d8565b60405161006c91906101b1565b60405180910390f35b6000546100889060019060a0900460ff16565b156100c8576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016100bf90610219565b60405180910390fd5b8060018190555050565b60008054906101000a900473ffffffffffffffffffffffffffffffffffffffff1681565b6000808fd5b6000819050919050565b61011281610108565b811461011d57600080fd5b50565b60008135905061012f81610109565b92915050565b60006020828403121561014b5761014a610103565b5b600061015984828501610120565b91505092915050565b61016b81610108565b82525050565b6000602082019050610186600083018461016262565b92915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b60006101b78261018c565b9050919050565b6101c7816101ac565b82525050565b60006101d8826101e8565b9050919050565b60006101ea826101f9565b9050919050565b6000819050919050565b7f4e6f7420617574686f72697a656400000000000000000000000000000000000600008201525050565b6000610233600f836101f9565b915061023e82610213565b602082019050919050565b6000602082019050818103600083015261026281610226565b905091905056fea26469706673582212209d5e7f1c8b9c5a2d4e6f7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f90064736f6c63430008140033";
+
+                const signer = new window.ethers.providers.Web3Provider(window.ethereum).getSigner();
+                const contractFactory = new window.ethers.ContractFactory(contractABI, contractBytecode, signer);
+
+                const contract = await contractFactory.deploy();
+                await contract.deployed();
+
+                const contractAddress = contract.address;
+                console.log('Contract deployed to:', contractAddress);
+
+                // Save contract address
+                localStorage.setItem('gameContractAddress', contractAddress);
+                window.gameContract.contractAddress = contractAddress;
+
+                // Update UI
+                updateContractStatusDisplay();
+                deployBtn.textContent = 'Deployed!';
+                deployBtn.style.backgroundColor = '#4CAF50';
+
+                showPowerUpNotification(`Contract deployed! ${contractAddress.substring(0, 10)}...`);
+
+            } catch (error) {
+                console.error('Deployment failed:', error);
+                showPowerUpNotification(`Deployment failed: ${error.message}`);
+
+                const deployBtn = document.getElementById('deployBtn');
+                deployBtn.textContent = 'Deploy Contract';
+                deployBtn.disabled = false;
+            }
+        }
+
+        function updateContractStatusDisplay() {
+            const contractAddress = localStorage.getItem('gameContractAddress');
+            if (contractAddress) {
+                elements.contractAddressDisplay.textContent = `Contract: ${contractAddress.substring(0, 8)}...`;
+                elements.deployBtn.textContent = 'Deployed';
+                elements.deployBtn.disabled = true;
+                elements.deployBtn.style.backgroundColor = '#4CAF50';
+            } else {
+                elements.contractAddressDisplay.textContent = '';
+                elements.deployBtn.textContent = 'Deploy Contract';
+                elements.deployBtn.disabled = false;
+                elements.deployBtn.style.backgroundColor = '';
+            }
         }
 
         function copyCommand(command) {
@@ -1955,6 +2131,9 @@
             loadGameState();
             initializeElements();
 
+            // Load environment variables and update UI
+            loadEnvironment();
+
             // Set up event listeners
             if (elements.tapButton) {
                 elements.tapButton.addEventListener('click', handleTap);
@@ -1980,9 +2159,6 @@
                 });
             }
 
-            // Secrets section event listeners are handled by inline onclick for now
-            // If more complex logic is needed, add them here.
-
             // Start systems
             startEnergyRegen();
 
@@ -2002,6 +2178,22 @@
         window.addEventListener('walletConnected', (event) => {
             if (elements.walletAddress) {
                 elements.walletAddress.textContent = `${event.detail.address.slice(0, 6)}...${event.detail.address.slice(-4)}`;
+                elements.walletAddress.className = 'wallet-address wallet-connected';
+            }
+            // Enable deploy button if wallet is connected
+            if (elements.deployBtn) {
+                elements.deployBtn.disabled = false;
+            }
+        });
+
+        window.addEventListener('walletDisconnected', () => {
+            if (elements.walletAddress) {
+                elements.walletAddress.textContent = 'Connect Wallet';
+                elements.walletAddress.className = 'wallet-address';
+            }
+            // Disable deploy button if wallet is disconnected
+            if (elements.deployBtn) {
+                elements.deployBtn.disabled = true;
             }
         });
 

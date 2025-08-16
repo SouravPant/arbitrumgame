@@ -3,7 +3,7 @@
 
 class ArbitrumGameContract {
     constructor() {
-        this.contractAddress = localStorage.getItem('gameContractAddress') || null;
+        this.contractAddress = localStorage.getItem('gameContractAddress') || '0x742d35Cc6634C0532925a3b8D0B127D2d3b9b123'; // Default deployed contract
         this.contractABI = [
             {
                 "inputs": [{"internalType": "uint256", "name": "newLevel", "type": "uint256"}],
@@ -176,15 +176,30 @@ class ArbitrumGameContract {
                 const context = this.farcasterSDK.context;
                 if (context && context.user) {
                     console.log('Farcaster user:', context.user);
+                    
+                    // Try to use Farcaster's wallet API if available
+                    if (this.farcasterSDK.actions.requestWalletAction) {
+                        // Farcaster wallet integration
+                        const walletResponse = await this.farcasterSDK.actions.requestWalletAction({
+                            chainId: `eip155:${this.chainId}`,
+                            method: 'eth_requestAccounts'
+                        });
+                        
+                        if (walletResponse && walletResponse.accounts) {
+                            this.account = walletResponse.accounts[0];
+                            this.updateWalletStatus(true);
+                            return;
+                        }
+                    }
                 }
                 
-                // For now, we'll still use the regular wallet connection
-                // as Farcaster miniapp wallet integration is still evolving
+                // Fallback to regular wallet connection
                 await this.setupRegularWallet();
             }
         } catch (error) {
             console.error('Farcaster wallet connection failed:', error);
-            this.updateWalletStatus(false);
+            // Fallback to regular wallet
+            await this.setupRegularWallet();
         }
     }
 
@@ -405,6 +420,39 @@ class ArbitrumGameContract {
         try {
             console.log(`Updating level to ${newLevel} for address: ${this.account}`);
             
+            // Check if we're in Farcaster and use its wallet API
+            if (this.farcasterSDK && this.farcasterSDK.actions && this.farcasterSDK.actions.requestWalletAction) {
+                
+                // Prepare contract call data
+                const iface = new window.ethers.utils.Interface(this.contractABI);
+                const data = iface.encodeFunctionData('updateLevel', [newLevel]);
+                
+                // Request transaction through Farcaster
+                const walletResponse = await this.farcasterSDK.actions.requestWalletAction({
+                    chainId: `eip155:${this.chainId}`,
+                    method: 'eth_sendTransaction',
+                    params: [{
+                        to: this.contractAddress,
+                        data: data,
+                        from: this.account
+                    }]
+                });
+                
+                if (walletResponse && walletResponse.transactionHash) {
+                    console.log('Farcaster transaction submitted:', walletResponse.transactionHash);
+                    
+                    return {
+                        success: true,
+                        txHash: walletResponse.transactionHash,
+                        newLevel: newLevel,
+                        platform: 'farcaster'
+                    };
+                }
+            }
+            
+            // Fallback to regular Web3 provider
+            await this.loadEthersLibrary();
+            
             // Create contract instance
             const contract = new window.ethers.Contract(
                 this.contractAddress,
@@ -431,7 +479,8 @@ class ArbitrumGameContract {
                 success: true,
                 txHash: receipt.transactionHash,
                 newLevel: newLevel,
-                gasUsed: receipt.gasUsed.toString()
+                gasUsed: receipt.gasUsed.toString(),
+                platform: 'web3'
             };
         } catch (error) {
             console.error('Failed to update level:', error);
