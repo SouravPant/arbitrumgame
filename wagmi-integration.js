@@ -3,8 +3,36 @@
 
 class ArbitrumGameContract {
     constructor() {
-        this.contractAddress = null;
-        this.contractABI = null;
+        this.contractAddress = localStorage.getItem('gameContractAddress') || null;
+        this.contractABI = [
+            {
+                "inputs": [{"internalType": "uint256", "name": "newLevel", "type": "uint256"}],
+                "name": "updateLevel",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "uint256", "name": "newTapCount", "type": "uint256"}],
+                "name": "updateTaps",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "player", "type": "address"}],
+                "name": "getPlayerStats",
+                "outputs": [
+                    {"internalType": "uint256", "name": "totalTaps", "type": "uint256"},
+                    {"internalType": "uint256", "name": "currentLevel", "type": "uint256"},
+                    {"internalType": "uint256", "name": "nftsMinted", "type": "uint256"},
+                    {"internalType": "uint256", "name": "lastMintTimestamp", "type": "uint256"},
+                    {"internalType": "uint256", "name": "lastLevelUpTimestamp", "type": "uint256"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
         this.wagmiClient = null;
         this.account = null;
         this.chainId = 42161; // Arbitrum One
@@ -160,9 +188,39 @@ class ArbitrumGameContract {
         }
     }
 
+    // Load ethers.js library
+    async loadEthersLibrary() {
+        if (!window.ethers) {
+            try {
+                // Load ethers.js from CDN
+                const script = document.createElement('script');
+                script.src = 'https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js';
+                script.onload = () => console.log('Ethers.js loaded successfully');
+                document.head.appendChild(script);
+                
+                // Wait for ethers to be available
+                await new Promise((resolve) => {
+                    const checkEthers = () => {
+                        if (window.ethers) {
+                            resolve();
+                        } else {
+                            setTimeout(checkEthers, 100);
+                        }
+                    };
+                    checkEthers();
+                });
+            } catch (error) {
+                console.error('Failed to load ethers.js:', error);
+            }
+        }
+    }
+
     // Setup regular wallet connection with Arbitrum support
     async setupRegularWallet() {
         try {
+            // Load ethers.js first
+            await this.loadEthersLibrary();
+            
             // Check if MetaMask is available
             if (typeof window.ethereum !== 'undefined') {
                 // Request accounts
@@ -334,26 +392,57 @@ class ArbitrumGameContract {
         }
     }
 
-    // Update player level on blockchain
+    // Update player level on blockchain with real contract interaction
     async updatePlayerLevel(newLevel, currentTaps) {
         if (!this.account) {
             throw new Error('Wallet not connected');
         }
 
+        if (!this.contractAddress) {
+            throw new Error('Contract address not configured');
+        }
+
         try {
             console.log(`Updating level to ${newLevel} for address: ${this.account}`);
             
-            // This would call the actual smart contract function
-            const txHash = await this.simulateTransaction('updateLevel', { level: newLevel, taps: currentTaps });
+            // Create contract instance
+            const contract = new window.ethers.Contract(
+                this.contractAddress,
+                this.contractABI,
+                new window.ethers.providers.Web3Provider(window.ethereum).getSigner()
+            );
+
+            // Estimate gas first
+            const gasEstimate = await contract.estimateGas.updateLevel(newLevel);
+            const gasLimit = gasEstimate.mul(120).div(100); // Add 20% buffer
+
+            // Send transaction
+            const tx = await contract.updateLevel(newLevel, {
+                gasLimit: gasLimit
+            });
+
+            console.log('Transaction submitted:', tx.hash);
+            
+            // Wait for confirmation
+            const receipt = await tx.wait();
+            console.log('Transaction confirmed:', receipt.transactionHash);
             
             return {
                 success: true,
-                txHash: txHash,
-                newLevel: newLevel
+                txHash: receipt.transactionHash,
+                newLevel: newLevel,
+                gasUsed: receipt.gasUsed.toString()
             };
         } catch (error) {
             console.error('Failed to update level:', error);
-            throw error;
+            
+            if (error.code === 4001) {
+                throw new Error('Transaction rejected by user');
+            } else if (error.code === -32603) {
+                throw new Error('Insufficient funds for gas fees');
+            } else {
+                throw new Error(`Transaction failed: ${error.message}`);
+            }
         }
     }
 

@@ -1494,33 +1494,120 @@
         }
 
         async function buyLevelUpgrade() {
-            if (gameState.totalTaps >= gameState.levelUpCost && window.gameContract && window.gameContract.account) {
-                try {
-                    // Show loading state
-                    showModal('⏳ Processing Level Up...', 'Interacting with smart contract...');
-
-                    // Call smart contract to update level
-                    const result = await window.gameContract.updatePlayerLevel(gameState.currentLevel + 1, gameState.totalTaps);
-
-                    if (result.success) {
-                        gameState.totalTaps -= gameState.levelUpCost;
-                        gameState.currentLevel++;
-                        gameState.levelUpCost = Math.floor(gameState.levelUpCost * 1.8);
-
-                        // Close loading modal
-                        const modal = document.querySelector('.modal-overlay');
-                        if (modal) modal.remove();
-
-                        showPowerUpNotification('Level Up', gameState.currentLevel);
-                        updateUI();
-                    }
-                } catch (error) {
-                    console.error('Level upgrade failed:', error);
-                    showModal('❌ Level Up Failed', 'Transaction failed. Please try again.');
-                }
-            } else if (!window.gameContract || !window.gameContract.account) {
-                showModal('🔗 Wallet Required', 'Please connect your wallet to upgrade levels on-chain.');
+            // Check if user has enough taps
+            if (gameState.totalTaps < gameState.levelUpCost) {
+                showModal('❌ Insufficient Taps', `You need ${formatNumber(gameState.levelUpCost)} taps to upgrade to level ${gameState.currentLevel + 1}.`);
+                return;
             }
+
+            // Check wallet connection
+            if (!window.gameContract || !window.gameContract.account) {
+                showModal('🔗 Wallet Required', 'Please connect your MetaMask wallet to upgrade levels on Arbitrum blockchain.', [
+                    { text: 'Connect Wallet', action: 'connectWallet()' },
+                    { text: 'Cancel', action: null }
+                ]);
+                return;
+            }
+
+            // Check contract address
+            if (!window.gameContract.contractAddress) {
+                showModal('⚙️ Contract Not Configured', 'Please configure the game contract address in the Environment Setup section.', [
+                    { text: 'Go to Setup', action: 'scrollToSetup()' },
+                    { text: 'Cancel', action: null }
+                ]);
+                return;
+            }
+
+            const nextLevel = gameState.currentLevel + 1;
+
+            try {
+                // Show confirmation modal first
+                showModal(
+                    '🚀 Confirm Level Upgrade', 
+                    `This will upgrade you to Level ${nextLevel} and cost ${formatNumber(gameState.levelUpCost)} taps. You will need to approve this transaction in your wallet.`, 
+                    [
+                        { text: 'Confirm & Upgrade', action: 'confirmLevelUpgrade()' },
+                        { text: 'Cancel', action: null }
+                    ]
+                );
+            } catch (error) {
+                console.error('Level upgrade initiation failed:', error);
+                showModal('❌ Level Up Failed', 'Failed to initiate level upgrade. Please try again.');
+            }
+        }
+
+        async function confirmLevelUpgrade() {
+            const nextLevel = gameState.currentLevel + 1;
+            
+            try {
+                // Close confirmation modal
+                const modal = document.querySelector('.modal-overlay');
+                if (modal) modal.remove();
+
+                // Show processing state
+                showModal('⏳ Processing Level Up...', 'Please approve the transaction in your wallet. This may take a few moments...', []);
+
+                // Call smart contract to update level
+                const result = await window.gameContract.updatePlayerLevel(nextLevel, gameState.totalTaps);
+
+                if (result.success) {
+                    // Deduct taps and update level
+                    gameState.totalTaps -= gameState.levelUpCost;
+                    gameState.currentLevel = nextLevel;
+                    gameState.levelUpCost = Math.floor(gameState.levelUpCost * 1.8);
+
+                    // Close processing modal
+                    const processingModal = document.querySelector('.modal-overlay');
+                    if (processingModal) processingModal.remove();
+
+                    // Show success modal with transaction details
+                    showModal(
+                        '🎉 Level Up Successful!', 
+                        `Congratulations! You are now Level ${nextLevel}.<br><br>Transaction Hash: <br><small>${result.txHash}</small><br><br>Gas Used: ${result.gasUsed || 'N/A'}`, 
+                        [
+                            { text: 'View on Arbiscan', action: `window.open('https://arbiscan.io/tx/${result.txHash}', '_blank')` },
+                            { text: 'Continue', action: null }
+                        ]
+                    );
+
+                    updateUI();
+                    saveGameState();
+                }
+            } catch (error) {
+                console.error('Level upgrade failed:', error);
+                
+                // Close any existing modals
+                const existingModal = document.querySelector('.modal-overlay');
+                if (existingModal) existingModal.remove();
+
+                // Show specific error message
+                let errorMessage = 'Transaction failed. Please try again.';
+                if (error.message.includes('rejected')) {
+                    errorMessage = 'Transaction was rejected. Level upgrade cancelled.';
+                } else if (error.message.includes('insufficient funds')) {
+                    errorMessage = 'Insufficient ETH for gas fees. Please add more ETH to your wallet.';
+                } else if (error.message.includes('Contract address not configured')) {
+                    errorMessage = 'Game contract not configured. Please set up the contract address.';
+                }
+
+                showModal('❌ Level Up Failed', errorMessage, [
+                    { text: 'Try Again', action: 'buyLevelUpgrade()' },
+                    { text: 'Cancel', action: null }
+                ]);
+            }
+        }
+
+        // Helper functions
+        function connectWallet() {
+            if (window.gameContract) {
+                window.gameContract.setupRegularWallet();
+            }
+        }
+
+        function scrollToSetup() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) modal.remove();
+            document.getElementById('secrets').scrollIntoView({ behavior: 'smooth' });
         }
 
         // Challenge system
@@ -1776,10 +1863,21 @@
                 return;
             }
 
+            // Validate contract address format
+            if (contractAddress && (!contractAddress.startsWith('0x') || contractAddress.length !== 42)) {
+                showNotification('Invalid contract address format! Should be 42 characters starting with 0x.', 'error');
+                return;
+            }
+
             // Save to localStorage (for demo purposes)
             localStorage.setItem('gamePrivateKey', privateKey);
             localStorage.setItem('gameAlchemyKey', alchemyKey);
             localStorage.setItem('gameContractAddress', contractAddress);
+
+            // Update contract address in gameContract instance
+            if (window.gameContract && contractAddress) {
+                window.gameContract.contractAddress = contractAddress;
+            }
 
             updateEnvStatus();
             showNotification('✅ Environment variables saved successfully!', 'success');
