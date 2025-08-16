@@ -51,19 +51,18 @@
             background: linear-gradient(135deg, var(--background) 0%, #001122 100%);
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            position: fixed;
-            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
             user-select: none;
+            overflow-x: hidden;
         }
 
         .container {
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             position: relative;
-            overflow: hidden;
         }
 
         /* Header */
@@ -168,6 +167,7 @@
             justify-content: center;
             padding: 20px;
             position: relative;
+            min-height: 300px;
         }
 
         .tap-button {
@@ -383,8 +383,25 @@
 
         /* Responsive Design */
         @media (max-width: 480px) {
+            .header {
+                padding: 15px 15px 8px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .balance-section {
+                padding: 20px 15px 15px;
+            }
+
             .balance-value {
                 font-size: 40px;
+            }
+
+            .tap-section {
+                padding: 15px;
+                min-height: 250px;
             }
 
             .tap-button {
@@ -394,6 +411,10 @@
 
             .tap-icon {
                 font-size: 70px;
+            }
+
+            .bottom-stats {
+                padding: 15px;
             }
 
             .stats-grid {
@@ -408,11 +429,36 @@
             .stat-value {
                 font-size: 18px;
             }
+
+            .balance-container {
+                padding: 20px 15px;
+            }
+
+            .level-info {
+                padding: 12px 15px;
+            }
         }
 
         @media (max-width: 360px) {
+            .header {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .balance-section {
+                padding: 15px 12px;
+            }
+
             .balance-value {
                 font-size: 36px;
+            }
+
+            .tap-section {
+                padding: 12px;
+                min-height: 220px;
             }
 
             .tap-button {
@@ -424,8 +470,38 @@
                 font-size: 60px;
             }
 
-            .header h1 {
-                font-size: 20px;
+            .bottom-stats {
+                padding: 12px;
+            }
+
+            .balance-container {
+                padding: 18px 12px;
+            }
+
+            .level-info {
+                padding: 10px 12px;
+            }
+
+            .energy-container {
+                margin-top: 12px;
+            }
+
+            .energy-bar {
+                width: 100px;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .tap-section {
+                min-height: 200px;
+            }
+
+            .balance-section {
+                padding: 15px 20px 10px;
+            }
+
+            .bottom-stats {
+                padding: 15px 20px;
             }
         }
     </style>
