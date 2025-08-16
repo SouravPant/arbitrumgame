@@ -685,7 +685,8 @@
             regenCost: 300,
             levelUpCost: 1000,
             walletConnected: false,
-            walletAddress: null
+            walletAddress: null,
+            contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De'
         };
 
         // Sample leaderboard data
@@ -1095,70 +1096,69 @@
         }
 
         // Initialize contract instance
-        function initializeContract() {
-            if (typeof window.ethereum !== 'undefined') {
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
-                window.gameContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-                console.log('Game contract initialized.');
-            } else {
-                console.error('Web3 provider not available. Cannot initialize contract.');
+        async function initializeContract() {
+            try {
+                await loadEthersJS();
+                
+                if (typeof window.ethereum !== 'undefined' && window.ethers) {
+                    const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
+                    
+                    // Use the deployed contract address
+                    const contractAddress = gameState.contractAddress || '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De';
+                    
+                    window.gameContract = new window.ethers.Contract(contractAddress, CONTRACT_ABI, signer);
+                    console.log('Game contract initialized with address:', contractAddress);
+                } else {
+                    console.error('Web3 provider or ethers.js not available. Cannot initialize contract.');
+                }
+            } catch (error) {
+                console.error('Failed to initialize contract:', error);
             }
         }
 
-        // Power-up functions with contract interaction
+        // Power-up functions with contract integration
         async function upgradeTapPower() {
             const cost = gameState.tapPowerCost;
             if (gameState.totalTaps >= cost) {
-                // Check if wallet is connected and contract is initialized
-                if (isWalletConnected && window.gameContract) {
+                // Try blockchain upgrade if wallet connected
+                if (isWalletConnected && window.gameContract && window.gameContract.upgradePowerUp) {
                     try {
                         showNotification('Upgrading Tap Power on blockchain...', '#ffd700');
 
-                        // Call contract to upgrade tap power
-                        const tx = await window.gameContract.updatePlayerLevel(
-                            gameState.tapPowerLevel + 1, // Pass the next level to be set
-                            gameState.totalTaps - cost // Pass the taps after deducting cost
-                        );
-                        const receipt = await tx.wait(); // Wait for transaction confirmation
+                        // Use the wagmi integration for power-up upgrade
+                        if (window.gameContract && window.gameContract.upgradePowerUp) {
+                            const result = await window.gameContract.upgradePowerUp('tapPower', gameState.tapPowerLevel + 1, gameState.totalTaps);
+                            
+                            if (result.success) {
+                                showNotification(`Tap Power upgrade successful! TX: ${result.txHash.slice(0, 8)}...`, '#00ff00');
+                                
+                                // Apply upgrade locally after successful contract interaction
+                                gameState.totalTaps -= cost;
+                                gameState.tapPowerLevel++;
+                                gameState.tapPowerCost = Math.floor(cost * 1.5);
+                                gameState.tapPower = gameState.tapPowerLevel;
 
-                        if (receipt && receipt.status === 1) {
-                            showNotification(`Tap Power upgrade successful! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
-
-                            // Apply upgrade locally after successful contract interaction
-                            gameState.totalTaps -= cost;
-                            gameState.tapPowerLevel++;
-                            gameState.tapPowerCost = Math.floor(cost * 1.5);
-                            gameState.tapPower = gameState.tapPowerLevel; // Update tap power based on level
-
-                            updateUI();
-                            saveGameState();
-                        } else {
-                            throw new Error("Transaction failed or status not confirmed.");
+                                updateUI();
+                                saveGameState();
+                                return;
+                            }
                         }
                     } catch (error) {
                         console.error('Blockchain upgrade failed:', error);
-                        showNotification('Blockchain upgrade failed. Attempting local upgrade.', '#ff9900');
-                        // Attempt local upgrade if contract interaction fails
-                        gameState.totalTaps -= cost;
-                        gameState.tapPowerLevel++;
-                        gameState.tapPowerCost = Math.floor(cost * 1.5);
-                        gameState.tapPower = gameState.tapPowerLevel;
-
-                        updateUI();
-                        saveGameState();
+                        showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
                     }
-                } else {
-                    // Local upgrade if wallet not connected or contract not loaded
-                    gameState.totalTaps -= cost;
-                    gameState.tapPowerLevel++;
-                    gameState.tapPowerCost = Math.floor(cost * 1.5);
-                    gameState.tapPower = gameState.tapPowerLevel;
-
-                    updateUI();
-                    saveGameState();
-                    showNotification(`+${gameState.tapPowerLevel} Tap Power! (Local)`, '#ffd700');
                 }
+                
+                // Local upgrade (fallback or when wallet not connected)
+                gameState.totalTaps -= cost;
+                gameState.tapPowerLevel++;
+                gameState.tapPowerCost = Math.floor(cost * 1.5);
+                gameState.tapPower = gameState.tapPowerLevel;
+
+                updateUI();
+                saveGameState();
+                showNotification(`+${gameState.tapPowerLevel} Tap Power!`, '#ffd700');
             } else {
                 showNotification('Not enough taps to upgrade!', '#ff3b30');
             }
@@ -1291,50 +1291,70 @@
         }
 
         // Initialize game when page loads
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             loadGameState();
-            initializeElements(); // Ensure elements are ready before proceeding
+            initializeElements();
 
-            // Add wallet connection button event listener
-            const connectBtn = document.getElementById('connectWalletBtn');
-            if (connectBtn) {
-                connectBtn.addEventListener('click', connectWallet);
+            // Load ethers.js first
+            try {
+                await loadEthersJS();
+                console.log('ethers.js loaded successfully');
+            } catch (error) {
+                console.error('Failed to load ethers.js:', error);
             }
 
-            // Check if wallet is already connected on page load
-            if (typeof window.ethereum !== 'undefined') {
-                window.ethereum.request({ method: 'eth_accounts' })
-                    .then(accounts => {
-                        if (accounts.length > 0) {
-                            updateWalletStatus(true, accounts[0]);
-                            initializeContract(); // Initialize contract if wallet is connected
-                        } else {
-                            updateWalletStatus(false);
-                        }
-                    })
-                    .catch(console.error);
+            // Wait for wagmi integration to be ready
+            if (window.gameContract) {
+                console.log('Wagmi integration already available');
+            } else {
+                // Wait a bit for wagmi integration to load
+                setTimeout(() => {
+                    if (window.gameContract) {
+                        console.log('Wagmi integration loaded');
+                    }
+                }, 1000);
+            }
 
-                // Listen for account changes
-                window.ethereum.on('accountsChanged', function(accounts) {
+            // Wallet connection setup
+            const walletStatus = document.getElementById('walletStatus');
+            if (walletStatus) {
+                walletStatus.addEventListener('click', connectWallet);
+            }
+
+            // Check if wallet is already connected
+            if (typeof window.ethereum !== 'undefined') {
+                try {
+                    const accounts = await window.ethereum.request({ method: 'eth_accounts' });
                     if (accounts.length > 0) {
                         updateWalletStatus(true, accounts[0]);
-                        initializeContract(); // Re-initialize contract on account change
+                        await initializeContract();
                     } else {
                         updateWalletStatus(false);
-                        gameContract = null; // Clear contract instance
+                    }
+                } catch (error) {
+                    console.error('Error checking wallet connection:', error);
+                    updateWalletStatus(false);
+                }
+
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', async function(accounts) {
+                    if (accounts.length > 0) {
+                        updateWalletStatus(true, accounts[0]);
+                        await initializeContract();
+                    } else {
+                        updateWalletStatus(false);
+                        window.gameContract = null;
                     }
                 });
 
                 // Listen for chain changes
                 window.ethereum.on('chainChanged', function(chainId) {
                     console.log('Chain changed to:', chainId);
-                    // Reload page on chain change to ensure proper state and contract interaction
                     window.location.reload();
                 });
             } else {
                 console.warn('MetaMask or other Web3 provider not detected.');
-                // Optionally show a message to the user to install a wallet
-                updateWalletStatus(false); // Ensure status reflects no connection
+                updateWalletStatus(false);
             }
 
             // Set up event listeners for power-ups
@@ -1346,7 +1366,7 @@
             // Start energy regeneration
             startEnergyRegen();
 
-            console.log('Game initialized with wallet support');
+            console.log('Game initialized');
         });
 
         // Auto-save every 30 seconds
@@ -1377,31 +1397,26 @@
             document.head.appendChild(style);
         }
 
-        // Include ethers.js library if not already loaded
-        // This is a simplified approach; in a real app, manage dependencies properly.
-        if (typeof ethers === 'undefined') {
-            const script = document.createElement('script');
-            script.src = 'https://cdn.ethers.io/lib/ethers-5.2.umd.min.js';
-            script.onload = () => {
-                console.log('ethers.js loaded.');
-                // If DOMContentLoaded hasn't fired yet, initialize contract here
-                if (document.readyState === 'loading') {
-                    document.addEventListener('DOMContentLoaded', initializeContract);
-                } else {
-                    initializeContract();
+        // Load ethers.js library properly
+        function loadEthersJS() {
+            return new Promise((resolve, reject) => {
+                if (typeof window.ethers !== 'undefined') {
+                    resolve();
+                    return;
                 }
-            };
-            script.onerror = () => {
-                console.error('Failed to load ethers.js');
-            };
-            document.head.appendChild(script);
-        } else {
-            // If ethers is already available, initialize contract immediately
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', initializeContract);
-            } else {
-                initializeContract();
-            }
+
+                const script = document.createElement('script');
+                script.src = 'https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js';
+                script.onload = () => {
+                    console.log('ethers.js loaded successfully');
+                    resolve();
+                };
+                script.onerror = () => {
+                    console.error('Failed to load ethers.js from CDN');
+                    reject(new Error('Failed to load ethers.js'));
+                };
+                document.head.appendChild(script);
+            });
         }
     </script>
 </body>
