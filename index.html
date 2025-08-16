@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -482,6 +481,41 @@
             }
         }
 
+        /* Wallet Connection Specific Styles */
+        .connect-wallet-btn {
+            padding: 12px 24px;
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .connect-wallet-btn:hover {
+            background: var(--secondary-blue);
+        }
+
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .wallet-address {
+            font-weight: 600;
+        }
+
+        .farcaster-status {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
         /* Responsive Design */
         @media (max-width: 360px) {
             .container {
@@ -604,6 +638,37 @@
             5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000
         ];
 
+        // Placeholder for contract ABI and address
+        // Replace with your actual contract details
+        const CONTRACT_ADDRESS = "0x..."; // <-- Replace with your contract address
+        const CONTRACT_ABI = [
+            // Abi definition for your game contract
+            // e.g., updatePlayerLevel, updatePlayerTaps functions
+            {
+                "inputs": [
+                    {"internalType": "uint256", "name": "newLevel", "type": "uint256"},
+                    {"internalType": "uint256", "name": "newTaps", "type": "uint256"}
+                ],
+                "name": "updatePlayerLevel",
+                "outputs": [
+                    {"internalType": "bool", "name": "success", "type": "bool"},
+                    {"internalType": "string", "name": "txHash", "type": "string"}
+                ],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {"internalType": "uint256", "name": "newTaps", "type": "uint256"}
+                ],
+                "name": "updatePlayerTaps",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+            // ... other functions
+        ];
+
         // Game State
         let gameState = {
             totalTaps: 0,
@@ -618,7 +683,9 @@
             tapPowerCost: 100,
             energyCost: 200,
             regenCost: 300,
-            levelUpCost: 1000
+            levelUpCost: 1000,
+            walletConnected: false,
+            walletAddress: null
         };
 
         // Sample leaderboard data
@@ -633,6 +700,13 @@
 
         // DOM Elements
         let elements = {};
+
+        // Global wallet connection state
+        let isWalletConnected = false;
+        let connectedAddress = null;
+
+        // Load contract instance
+        let gameContract = null;
 
         // Initialize elements
         function initializeElements() {
@@ -653,13 +727,16 @@
                 tapPowerCost: document.getElementById('tapPowerCost'),
                 energyCost: document.getElementById('energyCost'),
                 regenCost: document.getElementById('regenCost'),
-                levelUpCost: document.getElementById('levelUpCost')
+                levelUpCost: document.getElementById('levelUpCost'),
+                walletStatus: document.getElementById('walletStatus'),
+                connectWalletBtn: document.getElementById('connectWalletBtn')
             };
 
             console.log('Elements initialized:', {
                 tapButton: !!elements.tapButton,
                 totalTaps: !!elements.totalTaps,
-                leaderboardToggle: !!elements.leaderboardToggle
+                leaderboardToggle: !!elements.leaderboardToggle,
+                connectWalletBtn: !!elements.connectWalletBtn
             });
         }
 
@@ -729,6 +806,16 @@
                 elements.energyText.textContent = `${Math.floor(gameState.energy)}/${gameState.maxEnergy}`;
             }
 
+            // Update power-up costs and levels
+            if (elements.tapPowerLevel) elements.tapPowerLevel.textContent = gameState.tapPowerLevel;
+            if (elements.energyLevel) elements.energyLevel.textContent = gameState.energyLevel;
+            if (elements.regenLevel) elements.regenLevel.textContent = gameState.regenLevel;
+            if (elements.tapPowerCost) elements.tapPowerCost.textContent = formatNumber(gameState.tapPowerCost);
+            if (elements.energyCost) elements.energyCost.textContent = formatNumber(gameState.energyCost);
+            if (elements.regenCost) elements.regenCost.textContent = formatNumber(gameState.regenCost);
+            if (elements.levelUpCost) elements.levelUpCost.textContent = formatNumber(gameState.levelUpCost);
+
+
             updateLeaderboard();
             saveGameState();
         }
@@ -754,7 +841,7 @@
 
             // Visual feedback
             createTapPopup();
-            
+
             // Haptic feedback
             if (navigator.vibrate) {
                 navigator.vibrate(50);
@@ -834,79 +921,432 @@
             const saved = localStorage.getItem('arbitapGameState');
             if (saved) {
                 const parsedState = JSON.parse(saved);
+                // Merge loaded state, ensuring existing properties are preserved
                 gameState = { ...gameState, ...parsedState };
+                // Ensure costs are numbers after parsing
+                gameState.tapPowerCost = Number(gameState.tapPowerCost);
+                gameState.energyCost = Number(gameState.energyCost);
+                gameState.regenCost = Number(gameState.regenCost);
+                gameState.levelUpCost = Number(gameState.levelUpCost);
             }
         }
 
         // Show notification
-        function showNotification(message) {
+        function showNotification(message, color = '#007AFF') {
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: fixed;
                 top: 20px;
                 left: 50%;
                 transform: translateX(-50%);
-                background: var(--primary-blue);
+                background: ${color};
                 color: white;
                 padding: 12px 20px;
                 border-radius: 12px;
                 z-index: 1000;
                 font-weight: 600;
                 animation: slideDown 0.3s ease;
+                opacity: 0;
             `;
             notification.textContent = message;
             document.body.appendChild(notification);
 
+            // Trigger reflow to enable animation
+            requestAnimationFrame(() => {
+                notification.style.opacity = '1';
+            });
+
             setTimeout(() => {
                 notification.style.animation = 'slideUp 0.3s ease';
-                setTimeout(() => notification.remove(), 300);
+                notification.style.opacity = '0';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
             }, 2000);
         }
 
-        // Initialize game
-        function initializeGame() {
-            loadGameState();
-            initializeElements();
+        // Function to update wallet status display
+        function updateWalletStatus(connected, address = null) {
+            const walletStatusDisplay = document.getElementById('walletStatus'); // Use the correct ID
 
-            // Set up event listeners
-            if (elements.tapButton) {
-                elements.tapButton.addEventListener('click', handleTap);
-                elements.tapButton.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    handleTap(e);
-                }, { passive: false });
+            if (connected && address) {
+                if (elements.connectWalletBtn) elements.connectWalletBtn.style.display = 'none';
+                if (walletStatusDisplay) walletStatusDisplay.textContent = `${address.slice(0, 6)}...${address.slice(-4)}`;
+                if (walletStatusDisplay) walletStatusDisplay.style.color = 'var(--green)'; // Indicate connected
+
+                // Update global state
+                isWalletConnected = true;
+                connectedAddress = address;
+
+                // Update game state
+                gameState.walletConnected = true;
+                gameState.walletAddress = address;
+
+                // Save updated game data
+                saveGameState();
+
+                console.log('Wallet connected:', address);
+            } else {
+                if (elements.connectWalletBtn) elements.connectWalletBtn.style.display = 'block';
+                if (walletStatusDisplay) walletStatusDisplay.textContent = 'Connect Wallet';
+                if (walletStatusDisplay) walletStatusDisplay.style.color = 'var(--text-secondary)'; // Indicate disconnected
+
+                // Update global state
+                isWalletConnected = false;
+                connectedAddress = null;
+
+                // Update game state
+                gameState.walletConnected = false;
+                gameState.walletAddress = null;
+
+                console.log('Wallet disconnected');
             }
-
-            // Leaderboard toggle
-            if (elements.leaderboardToggle) {
-                elements.leaderboardToggle.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    console.log('Leaderboard toggle clicked');
-                    
-                    elements.leaderboardToggle.classList.toggle('expanded');
-                    elements.leaderboardContent.classList.toggle('expanded');
-                    
-                    const toggleIcon = elements.leaderboardToggle.querySelector('.toggle-icon');
-                    if (toggleIcon) {
-                        const isExpanded = elements.leaderboardContent.classList.contains('expanded');
-                        toggleIcon.textContent = isExpanded ? '▲' : '▼';
-                    }
-                });
-            }
-
-            // Start systems
-            startEnergyRegen();
-
-            // Initial UI update
-            updateUI();
-
-            console.log('ArbiTap game initialized successfully');
         }
 
-        // Initialize on DOM load
-        document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM loaded - initializing game...');
-            initializeGame();
+        // Manual wallet connection function
+        async function connectWallet() {
+            try {
+                if (typeof window.ethereum === 'undefined') {
+                    alert('Please install MetaMask or another Web3 wallet to connect.');
+                    return false;
+                }
+
+                console.log('MetaMask detected, requesting accounts...');
+                const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+                if (accounts.length > 0) {
+                    const address = accounts[0];
+                    console.log('Wallet connected successfully:', address);
+
+                    // Check and switch to Arbitrum if needed
+                    await switchToArbitrum();
+
+                    updateWalletStatus(true, address);
+                    return true;
+                } else {
+                    console.warn('No accounts found after requesting.');
+                    alert('Could not connect to wallet. Please ensure MetaMask is unlocked and try again.');
+                    return false;
+                }
+            } catch (error) {
+                console.error('Wallet connection failed:', error);
+                if (error.code === 4001) {
+                    alert('Connection rejected. Please approve the connection in your wallet.');
+                } else {
+                    alert(`Failed to connect wallet: ${error.message}. Please try again.`);
+                }
+                return false;
+            }
+        }
+
+        // Switch to Arbitrum network
+        async function switchToArbitrum() {
+            const arbitrumChainId = '0xa4b1'; // Arbitrum One mainnet
+
+            if (typeof window.ethereum === 'undefined') {
+                console.error('Ethereum provider not found.');
+                return;
+            }
+
+            try {
+                const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
+                if (currentChainId === arbitrumChainId) {
+                    console.log('Already on Arbitrum One.');
+                    return;
+                }
+
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: arbitrumChainId }],
+                });
+                console.log('Switched to Arbitrum One.');
+            } catch (error) {
+                if (error.code === 4902) { // Common error code for unknown chain
+                    console.log('Arbitrum One network not added, attempting to add...');
+                    try {
+                        await window.ethereum.request({
+                            method: 'wallet_addEthereumChain',
+                            params: [{
+                                chainId: arbitrumChainId,
+                                chainName: 'Arbitrum One',
+                                nativeCurrency: {
+                                    name: 'Arbitrum Ether',
+                                    symbol: 'ETH',
+                                    decimals: 18
+                                },
+                                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+                                blockExplorerUrls: ['https://arbiscan.io']
+                            }],
+                        });
+                        console.log('Added Arbitrum One network successfully.');
+                        // Retry switching after adding
+                        await switchToArbitrum();
+                    } catch (addError) {
+                        console.error('Failed to add Arbitrum One network:', addError);
+                        alert('Failed to add Arbitrum network. Please add it manually in your wallet.');
+                    }
+                } else {
+                    console.error('Failed to switch to Arbitrum One:', error);
+                    alert(`Failed to switch to Arbitrum: ${error.message}. Please switch manually.`);
+                }
+            }
+        }
+
+        // Initialize contract instance
+        function initializeContract() {
+            if (typeof window.ethereum !== 'undefined') {
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                window.gameContract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+                console.log('Game contract initialized.');
+            } else {
+                console.error('Web3 provider not available. Cannot initialize contract.');
+            }
+        }
+
+        // Power-up functions with contract interaction
+        async function upgradeTapPower() {
+            const cost = gameState.tapPowerCost;
+            if (gameState.totalTaps >= cost) {
+                // Check if wallet is connected and contract is initialized
+                if (isWalletConnected && window.gameContract) {
+                    try {
+                        showNotification('Upgrading Tap Power on blockchain...', '#ffd700');
+
+                        // Call contract to upgrade tap power
+                        const tx = await window.gameContract.updatePlayerLevel(
+                            gameState.tapPowerLevel + 1, // Pass the next level to be set
+                            gameState.totalTaps - cost // Pass the taps after deducting cost
+                        );
+                        const receipt = await tx.wait(); // Wait for transaction confirmation
+
+                        if (receipt && receipt.status === 1) {
+                            showNotification(`Tap Power upgrade successful! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+
+                            // Apply upgrade locally after successful contract interaction
+                            gameState.totalTaps -= cost;
+                            gameState.tapPowerLevel++;
+                            gameState.tapPowerCost = Math.floor(cost * 1.5);
+                            gameState.tapPower = gameState.tapPowerLevel; // Update tap power based on level
+
+                            updateUI();
+                            saveGameState();
+                        } else {
+                            throw new Error("Transaction failed or status not confirmed.");
+                        }
+                    } catch (error) {
+                        console.error('Blockchain upgrade failed:', error);
+                        showNotification('Blockchain upgrade failed. Attempting local upgrade.', '#ff9900');
+                        // Attempt local upgrade if contract interaction fails
+                        gameState.totalTaps -= cost;
+                        gameState.tapPowerLevel++;
+                        gameState.tapPowerCost = Math.floor(cost * 1.5);
+                        gameState.tapPower = gameState.tapPowerLevel;
+
+                        updateUI();
+                        saveGameState();
+                    }
+                } else {
+                    // Local upgrade if wallet not connected or contract not loaded
+                    gameState.totalTaps -= cost;
+                    gameState.tapPowerLevel++;
+                    gameState.tapPowerCost = Math.floor(cost * 1.5);
+                    gameState.tapPower = gameState.tapPowerLevel;
+
+                    updateUI();
+                    saveGameState();
+                    showNotification(`+${gameState.tapPowerLevel} Tap Power! (Local)`, '#ffd700');
+                }
+            } else {
+                showNotification('Not enough taps to upgrade!', '#ff3b30');
+            }
+        }
+
+        async function upgradeMaxEnergy() {
+            const cost = gameState.energyCost;
+            if (gameState.totalTaps >= cost) {
+                if (isWalletConnected && window.gameContract) {
+                    try {
+                        showNotification('Upgrading Max Energy on blockchain...', '#00bfff');
+
+                        // Update taps on contract to reflect energy upgrade cost
+                        const tx = await window.gameContract.updatePlayerTaps(gameState.totalTaps - cost);
+                        const receipt = await tx.wait();
+
+                        if (receipt && receipt.status === 1) {
+                            showNotification(`Max Energy upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+
+                            // Apply upgrade locally
+                            gameState.totalTaps -= cost;
+                            gameState.energyLevel++;
+                            gameState.energyCost = Math.floor(cost * 1.5);
+                            gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
+                            gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
+
+                            updateUI();
+                            saveGameState();
+                        } else {
+                            throw new Error("Transaction failed or status not confirmed.");
+                        }
+                    } catch (error) {
+                        console.error('Blockchain update failed:', error);
+                        showNotification('Blockchain update failed. Attempting local upgrade.', '#ff9900');
+                        // Apply upgrade locally
+                        gameState.totalTaps -= cost;
+                        gameState.energyLevel++;
+                        gameState.energyCost = Math.floor(cost * 1.5);
+                        gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
+                        gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
+
+                        updateUI();
+                        saveGameState();
+                    }
+                } else {
+                    // Local upgrade
+                    gameState.totalTaps -= cost;
+                    gameState.energyLevel++;
+                    gameState.energyCost = Math.floor(cost * 1.5);
+                    gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
+                    gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
+
+                    updateUI();
+                    saveGameState();
+                    showNotification(`Max Energy: ${gameState.maxEnergy}! (Local)`, '#00bfff');
+                }
+            } else {
+                showNotification('Not enough taps to upgrade!', '#ff3b30');
+            }
+        }
+
+        async function upgradeEnergyRegen() {
+            const cost = gameState.regenCost;
+            if (gameState.totalTaps >= cost) {
+                if (isWalletConnected && window.gameContract) {
+                    try {
+                        showNotification('Upgrading Energy Regen on blockchain...', '#00ff00');
+
+                        // Update taps on contract to reflect regen upgrade cost
+                        const tx = await window.gameContract.updatePlayerTaps(gameState.totalTaps - cost);
+                        const receipt = await tx.wait();
+
+                        if (receipt && receipt.status === 1) {
+                            showNotification(`Energy Regen upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+
+                            // Apply upgrade locally
+                            gameState.totalTaps -= cost;
+                            gameState.regenLevel++;
+                            gameState.regenCost = Math.floor(cost * 1.5);
+                            gameState.energyRegenRate = gameState.regenLevel; // Assuming regen rate scales with level
+
+                            updateUI();
+                            saveGameState();
+                        } else {
+                            throw new Error("Transaction failed or status not confirmed.");
+                        }
+                    } catch (error) {
+                        console.error('Blockchain update failed:', error);
+                        showNotification('Blockchain update failed. Attempting local upgrade.', '#ff9900');
+                        // Apply upgrade locally
+                        gameState.totalTaps -= cost;
+                        gameState.regenLevel++;
+                        gameState.regenCost = Math.floor(cost * 1.5);
+                        gameState.energyRegenRate = gameState.regenLevel;
+
+                        updateUI();
+                        saveGameState();
+                    }
+                } else {
+                    // Local upgrade
+                    gameState.totalTaps -= cost;
+                    gameState.regenLevel++;
+                    gameState.regenCost = Math.floor(cost * 1.5);
+                    gameState.energyRegenRate = gameState.regenLevel;
+
+                    updateUI();
+                    saveGameState();
+                    showNotification(`+${gameState.regenLevel} Regen Speed! (Local)`, '#00ff00');
+                }
+            } else {
+                showNotification('Not enough taps to upgrade!', '#ff3b30');
+            }
+        }
+
+        // Attach event listeners to power-up cards
+        function setupPowerupListeners() {
+            document.getElementById('tapPowerUpgrade').addEventListener('click', upgradeTapPower);
+            document.getElementById('energyUpgrade').addEventListener('click', upgradeMaxEnergy);
+            document.getElementById('regenUpgrade').addEventListener('click', upgradeEnergyRegen);
+            // Add listener for level upgrade if it has a specific function
+            document.getElementById('levelUpgrade').addEventListener('click', () => {
+                const cost = gameState.levelUpCost;
+                if (gameState.totalTaps >= cost) {
+                    // Logic for level up - potentially based on a different contract interaction
+                    showNotification('Level Up feature not fully implemented yet.', '#ff9900');
+                } else {
+                    showNotification('Not enough taps to level up!', '#ff3b30');
+                }
+            });
+        }
+
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadGameState();
+            initializeElements(); // Ensure elements are ready before proceeding
+
+            // Add wallet connection button event listener
+            const connectBtn = document.getElementById('connectWalletBtn');
+            if (connectBtn) {
+                connectBtn.addEventListener('click', connectWallet);
+            }
+
+            // Check if wallet is already connected on page load
+            if (typeof window.ethereum !== 'undefined') {
+                window.ethereum.request({ method: 'eth_accounts' })
+                    .then(accounts => {
+                        if (accounts.length > 0) {
+                            updateWalletStatus(true, accounts[0]);
+                            initializeContract(); // Initialize contract if wallet is connected
+                        } else {
+                            updateWalletStatus(false);
+                        }
+                    })
+                    .catch(console.error);
+
+                // Listen for account changes
+                window.ethereum.on('accountsChanged', function(accounts) {
+                    if (accounts.length > 0) {
+                        updateWalletStatus(true, accounts[0]);
+                        initializeContract(); // Re-initialize contract on account change
+                    } else {
+                        updateWalletStatus(false);
+                        gameContract = null; // Clear contract instance
+                    }
+                });
+
+                // Listen for chain changes
+                window.ethereum.on('chainChanged', function(chainId) {
+                    console.log('Chain changed to:', chainId);
+                    // Reload page on chain change to ensure proper state and contract interaction
+                    window.location.reload();
+                });
+            } else {
+                console.warn('MetaMask or other Web3 provider not detected.');
+                // Optionally show a message to the user to install a wallet
+                updateWalletStatus(false); // Ensure status reflects no connection
+            }
+
+            // Set up event listeners for power-ups
+            setupPowerupListeners();
+
+            // Initial UI updates
+            updateUI();
+
+            // Start energy regeneration
+            startEnergyRegen();
+
+            console.log('Game initialized with wallet support');
         });
 
         // Auto-save every 30 seconds
@@ -919,19 +1359,50 @@
             saveGameState();
         });
 
-        // Add keyframes for animations
+        // Add keyframes for animations if not already present
         const style = document.createElement('style');
         style.textContent = `
             @keyframes slideDown {
-                from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                from { transform: translateX(-50%) translateY(-30px); opacity: 0; }
                 to { transform: translateX(-50%) translateY(0); opacity: 1; }
             }
             @keyframes slideUp {
                 from { transform: translateX(-50%) translateY(0); opacity: 1; }
-                to { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                to { transform: translateX(-50%) translateY(-30px); opacity: 0; }
             }
         `;
-        document.head.appendChild(style);
+        // Only append if not already in the document (e.g., from initial load)
+        if (!document.querySelector('style[data-keyframes]')) {
+            style.setAttribute('data-keyframes', 'true');
+            document.head.appendChild(style);
+        }
+
+        // Include ethers.js library if not already loaded
+        // This is a simplified approach; in a real app, manage dependencies properly.
+        if (typeof ethers === 'undefined') {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.ethers.io/lib/ethers-5.2.umd.min.js';
+            script.onload = () => {
+                console.log('ethers.js loaded.');
+                // If DOMContentLoaded hasn't fired yet, initialize contract here
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', initializeContract);
+                } else {
+                    initializeContract();
+                }
+            };
+            script.onerror = () => {
+                console.error('Failed to load ethers.js');
+            };
+            document.head.appendChild(script);
+        } else {
+            // If ethers is already available, initialize contract immediately
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initializeContract);
+            } else {
+                initializeContract();
+            }
+        }
     </script>
 </body>
 </html>

@@ -20,6 +20,13 @@ class ArbitrumGameContract {
                 "type": "function"
             },
             {
+                "inputs": [{"internalType": "uint256", "name": "milestone", "type": "uint256"}],
+                "name": "mintNFT",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
                 "inputs": [{"internalType": "address", "name": "player", "type": "address"}],
                 "name": "getPlayerStats",
                 "outputs": [
@@ -28,6 +35,26 @@ class ArbitrumGameContract {
                     {"internalType": "uint256", "name": "nftsMinted", "type": "uint256"},
                     {"internalType": "uint256", "name": "lastMintTimestamp", "type": "uint256"},
                     {"internalType": "uint256", "name": "lastLevelUpTimestamp", "type": "uint256"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "player", "type": "address"}],
+                "name": "getNextMilestone",
+                "outputs": [
+                    {"internalType": "uint256", "name": "nextMilestone", "type": "uint256"},
+                    {"internalType": "uint256", "name": "remainingTaps", "type": "uint256"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getMilestonesAndRewards",
+                "outputs": [
+                    {"internalType": "uint256[]", "name": "_milestones", "type": "uint256[]"},
+                    {"internalType": "uint256[]", "name": "_rewards", "type": "uint256[]"}
                 ],
                 "stateMutability": "view",
                 "type": "function"
@@ -510,6 +537,88 @@ class ArbitrumGameContract {
         } catch (error) {
             console.error('Failed to check milestone:', error);
             return false;
+        }
+    }
+
+    // Upgrade power-up on blockchain (updates player level as proxy for power-ups)
+    async upgradePowerUp(powerUpType, newLevel, currentTaps) {
+        if (!this.account) {
+            throw new Error('Wallet not connected');
+        }
+
+        try {
+            console.log(`Upgrading ${powerUpType} to level ${newLevel} for address: ${this.account}`);
+            
+            // For power-ups, we'll use the updateLevel function with a modifier based on power-up type
+            const adjustedLevel = newLevel + (powerUpType === 'tapPower' ? 0 : powerUpType === 'maxEnergy' ? 100 : 200);
+            
+            // Check if we're in Farcaster and use its wallet API
+            if (this.farcasterSDK && this.farcasterSDK.actions && this.farcasterSDK.actions.requestWalletAction) {
+                
+                // Prepare contract call data
+                const iface = new window.ethers.utils.Interface(this.contractABI);
+                const data = iface.encodeFunctionData('updateLevel', [adjustedLevel]);
+                
+                // Request transaction through Farcaster
+                const walletResponse = await this.farcasterSDK.actions.requestWalletAction({
+                    chainId: `eip155:${this.chainId}`,
+                    method: 'eth_sendTransaction',
+                    params: [{
+                        to: this.contractAddress,
+                        data: data,
+                        from: this.account
+                    }]
+                });
+                
+                if (walletResponse && walletResponse.transactionHash) {
+                    console.log('Farcaster power-up upgrade submitted:', walletResponse.transactionHash);
+                    
+                    return {
+                        success: true,
+                        txHash: walletResponse.transactionHash,
+                        powerUpType: powerUpType,
+                        newLevel: newLevel,
+                        platform: 'farcaster'
+                    };
+                }
+            }
+            
+            // Fallback to regular Web3 provider
+            await this.loadEthersLibrary();
+            
+            // Create contract instance
+            const contract = new window.ethers.Contract(
+                this.contractAddress,
+                this.contractABI,
+                new window.ethers.providers.Web3Provider(window.ethereum).getSigner()
+            );
+
+            // Send transaction to update level (representing power-up upgrade)
+            const tx = await contract.updateLevel(adjustedLevel);
+            console.log('Power-up upgrade transaction submitted:', tx.hash);
+            
+            // Wait for confirmation
+            const receipt = await tx.wait();
+            console.log('Power-up upgrade confirmed:', receipt.transactionHash);
+            
+            return {
+                success: true,
+                txHash: receipt.transactionHash,
+                powerUpType: powerUpType,
+                newLevel: newLevel,
+                gasUsed: receipt.gasUsed.toString(),
+                platform: 'web3'
+            };
+        } catch (error) {
+            console.error('Failed to upgrade power-up:', error);
+            
+            if (error.code === 4001) {
+                throw new Error('Transaction rejected by user');
+            } else if (error.code === -32603) {
+                throw new Error('Insufficient funds for gas fees');
+            } else {
+                throw new Error(`Power-up upgrade failed: ${error.message}`);
+            }
         }
     }
 
