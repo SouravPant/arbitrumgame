@@ -1152,6 +1152,13 @@
                     await updateCurrentNetworkInfo();
 
                     updateWalletStatus(true, address);
+                    
+                    // Initialize contract after successful wallet connection
+                    showNotification('Initializing contract...', '#00bfff');
+                    setTimeout(async () => {
+                        await initializeContract();
+                    }, 1000);
+                    
                     return true;
                 } else {
                     console.warn('No accounts found after requesting.');
@@ -1241,20 +1248,33 @@
                 }
 
                 const provider = new window.ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
                 const network = await provider.getNetwork();
 
                 console.log(`Connected to network: ${network.name} Chain ID: ${network.chainId}`);
 
-                // Verify we're on the correct network
+                // Update current network based on what we're actually connected to
                 const currentChainId = '0x' + network.chainId.toString(16);
-                if (currentChainId !== CURRENT_NETWORK.chainId) {
-                    console.warn(`Connected to wrong network. Expected: ${CURRENT_NETWORK.name}, Got: ${network.name}`);
-                    showNotification(`Please switch to ${CURRENT_NETWORK.name} network`, '#ff9900');
+                
+                // Auto-detect and set the correct network
+                if (currentChainId === NETWORKS.ARBITRUM_ONE.chainId) {
+                    CURRENT_NETWORK = NETWORKS.ARBITRUM_ONE;
+                    console.log('Detected Arbitrum One (Mainnet)');
+                } else if (currentChainId === NETWORKS.ARBITRUM_SEPOLIA.chainId) {
+                    CURRENT_NETWORK = NETWORKS.ARBITRUM_SEPOLIA;
+                    console.log('Detected Arbitrum Sepolia (Testnet)');
+                } else {
+                    console.warn(`Unsupported network: ${network.name} (Chain ID: ${network.chainId})`);
+                    showNotification(`Please switch to Arbitrum Sepolia testnet`, '#ff9900');
                     return;
                 }
 
-                // Verify contract deployment
+                // Update network status display
+                updateNetworkStatus({
+                    ...CURRENT_NETWORK,
+                    isTestnet: CURRENT_NETWORK === NETWORKS.ARBITRUM_SEPOLIA
+                });
+
+                // Verify contract deployment on detected network
                 const isContractDeployed = await verifyContractDeployment();
                 if (!isContractDeployed) {
                     console.error('Contract verification failed');
@@ -1263,9 +1283,11 @@
 
                 // Initialize game contract with network-specific address
                 const contractAddress = CURRENT_NETWORK.contractAddress;
+                const signer = provider.getSigner();
                 gameContract = new window.ethers.Contract(contractAddress, CONTRACT_ABI, signer);
+                
                 console.log('Game contract initialized successfully with address:', contractAddress);
-
+                showNotification(`✅ Contract initialized on ${CURRENT_NETWORK.name}`, '#30d158');
 
             } catch (error) {
                 console.error('Failed to initialize contract:', error);
@@ -1497,8 +1519,14 @@
             }
 
             if (!gameContract || typeof window.ethers === 'undefined') {
-                showNotification('Contract not initialized!', '#ff3b30');
-                return;
+                showNotification('Contract not initialized. Initializing now...', '#ff9900');
+                await initializeContract();
+                
+                // Check again after initialization attempt
+                if (!gameContract) {
+                    showNotification('Failed to initialize contract. Please check network and try again.', '#ff3b30');
+                    return;
+                }
             }
 
             try {
@@ -1632,7 +1660,10 @@
                     const accounts = await window.ethereum.request({ method: 'eth_accounts' });
                     if (accounts.length > 0) {
                         updateWalletStatus(true, accounts[0]);
-                        await initializeContract(); // Initialize contract after wallet is connected
+                        // Force contract initialization after wallet connection
+                        setTimeout(async () => {
+                            await initializeContract();
+                        }, 1000);
                     } else {
                         updateWalletStatus(false);
                     }
@@ -1645,10 +1676,14 @@
                 window.ethereum.on('accountsChanged', async function(accounts) {
                     if (accounts.length > 0) {
                         updateWalletStatus(true, accounts[0]);
-                        await initializeContract();
+                        // Re-initialize contract when account changes
+                        setTimeout(async () => {
+                            await initializeContract();
+                        }, 500);
                     } else {
                         updateWalletStatus(false);
                         gameContract = null; // Clear contract instance if wallet disconnected
+                        showNotification('Wallet disconnected', '#ff9900');
                     }
                 });
 
@@ -1656,11 +1691,15 @@
                 window.ethereum.on('chainChanged', async function(chainId) {
                     console.log('Chain changed to:', chainId);
                     await updateCurrentNetworkInfo(); // Update network display
-                    await initializeContract(); // Re-initialize contract for the new chain
+                    // Re-initialize contract for the new chain
+                    setTimeout(async () => {
+                        await initializeContract();
+                    }, 1000);
                 });
             } else {
                 console.warn('MetaMask or other Web3 provider not detected.');
                 updateWalletStatus(false);
+                showNotification('Please install MetaMask to use blockchain features', '#ff9900');
             }
 
             // Set up event listeners for power-ups
