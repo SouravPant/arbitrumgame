@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, device-width, initial-scale=1.0">
     <title>ARBITAP - Tap to Earn</title>
 
     <!-- Farcaster Mini App Metadata -->
@@ -632,6 +632,13 @@
                     <div class="powerup-level">Next: <span id="nextLevelCost">1000</span></div>
                     <div class="powerup-cost"><span id="levelUpCost">1000</span> taps</div>
                 </div>
+                <!-- New Power-up Card -->
+                <div class="powerup-card" id="manualContractSync">
+                    <div class="powerup-icon">🔗</div>
+                    <div class="powerup-name">Sync Wallet</div>
+                    <div class="powerup-level">Cost: 1 tap</div>
+                    <div class="powerup-cost">1 tap</div>
+                </div>
             </div>
         </div>
 
@@ -810,7 +817,8 @@
                 connectWalletBtn: document.getElementById('connectWalletBtn'),
                 networkStatus: document.getElementById('networkStatus'),
                 networkText: document.getElementById('networkText'),
-                networkIcon: document.getElementById('networkIcon')
+                networkIcon: document.getElementById('networkIcon'),
+                manualContractSync: document.getElementById('manualContractSync') // Added for the new power-up
             };
 
             console.log('Elements initialized:', {
@@ -818,7 +826,8 @@
                 totalTaps: !!elements.totalTaps,
                 leaderboardToggle: !!elements.leaderboardToggle,
                 connectWalletBtn: !!elements.connectWalletBtn,
-                networkStatus: !!elements.networkStatus
+                networkStatus: !!elements.networkStatus,
+                manualContractSync: !!elements.manualContractSync // Check for the new element
             });
         }
 
@@ -1473,6 +1482,68 @@
             showNotification(`+${gameState.regenLevel} Regen Speed!`, '#00ff00');
         }
 
+        // Manual contract interaction function
+        async function manualContractInteraction() {
+            const cost = 1; // 1 tap cost
+
+            if (gameState.totalTaps < cost) {
+                showNotification('Need at least 1 tap!', '#ff3b30');
+                return;
+            }
+
+            if (!isWalletConnected) {
+                showNotification('Please connect your wallet first!', '#ff9900');
+                return;
+            }
+
+            if (!gameContract || typeof window.ethers === 'undefined') {
+                showNotification('Contract not initialized!', '#ff3b30');
+                return;
+            }
+
+            try {
+                showNotification('Syncing with blockchain...', '#00bfff');
+
+                // Deduct 1 tap locally first
+                const newTapCount = gameState.totalTaps - cost;
+
+                // Send transaction to update taps on blockchain
+                const tx = await gameContract.updateTaps(newTapCount);
+
+                showNotification(`Transaction submitted! Hash: ${tx.hash.slice(0, 8)}...`, '#ffd700');
+
+                // Wait for confirmation
+                const receipt = await tx.wait();
+
+                if (receipt && receipt.status === 1) {
+                    // Apply the cost deduction locally after successful transaction
+                    gameState.totalTaps = newTapCount;
+                    updateUI();
+                    saveGameState();
+
+                    showNotification(`✅ Blockchain sync complete! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+                    console.log('Manual contract interaction successful:', {
+                        txHash: tx.hash,
+                        gasUsed: receipt.gasUsed.toString(),
+                        newTapCount: newTapCount
+                    });
+                } else {
+                    throw new Error("Transaction failed");
+                }
+
+            } catch (error) {
+                console.error('Manual contract interaction failed:', error);
+
+                if (error.code === 4001) {
+                    showNotification('Transaction rejected by user.', '#ff3b30');
+                } else if (error.message && error.message.includes('insufficient funds')) {
+                    showNotification('Insufficient funds for gas fees.', '#ff3b30');
+                } else {
+                    showNotification(`Contract sync failed: ${error.message}`, '#ff3b30');
+                }
+            }
+        }
+
         // Attach event listeners to power-up cards
         function setupPowerupListeners() {
             document.getElementById('tapPowerUpgrade').addEventListener('click', upgradeTapPower);
@@ -1488,6 +1559,8 @@
                     showNotification('Not enough taps to level up!', '#ff3b30');
                 }
             });
+            // Add listener for the new manual contract interaction power-up
+            document.getElementById('manualContractSync').addEventListener('click', manualContractInteraction);
         }
 
         // Update current network information and display
