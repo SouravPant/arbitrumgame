@@ -1228,15 +1228,18 @@
                 leaderboardToggle: document.getElementById('leaderboardToggle'),
                 leaderboardContent: document.getElementById('leaderboardContent'),
                 leaderboardList: document.getElementById('leaderboardList'),
-                // Secrets section elements
-                privateKeyInput: document.getElementById('privateKey'),
-                alchemyKeyInput: document.getElementById('alchemyKey'),
-                contractAddressInput: document.getElementById('contractAddress'),
-                envStatusElement: document.getElementById('envStatus'),
-                saveEnvBtn: document.getElementById('saveEnvBtn'),
+                // Contract elements
                 deployBtn: document.getElementById('deployBtn'),
                 contractAddressDisplay: document.getElementById('contractAddress')
             };
+
+            // Debug: Check which elements are found
+            console.log('Elements initialized:', {
+                tapButton: !!elements.tapButton,
+                totalTaps: !!elements.totalTaps,
+                leaderboardToggle: !!elements.leaderboardToggle,
+                leaderboardContent: !!elements.leaderboardContent
+            });
         }
 
         // LocalStorage functions
@@ -1316,9 +1319,12 @@
                 }
             }
 
-            // Update display elements
+            // Update display elements with null checks
             if (elements.totalTaps) {
                 elements.totalTaps.textContent = formatNumber(gameState.totalTaps);
+                console.log('Updated total taps display:', gameState.totalTaps);
+            } else {
+                console.warn('totalTaps element not found');
             }
 
             if (elements.currentLevel) {
@@ -1391,12 +1397,25 @@
         }
 
         // Handle tap
-        function handleTap() {
-            if (gameState.energy < gameState.tapPower) return;
+        function handleTap(event) {
+            // Prevent default behavior
+            if (event) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
+            // Check if enough energy
+            if (gameState.energy < gameState.tapPower) {
+                console.log('Not enough energy to tap');
+                return;
+            }
+
+            // Update game state
             gameState.energy -= gameState.tapPower;
             gameState.totalTaps += gameState.tapPower;
             gameState.totalEarned += gameState.tapPower;
+
+            console.log('Tap! Total taps:', gameState.totalTaps, 'Energy:', gameState.energy);
 
             // Challenge progress
             if (gameState.currentChallenge) {
@@ -1413,6 +1432,7 @@
                 navigator.vibrate(50);
             }
 
+            // Update UI immediately
             updateUI();
 
             // Random challenge trigger (5% chance)
@@ -2059,8 +2079,11 @@
                 elements.tapButton.addEventListener('click', handleTap);
                 elements.tapButton.addEventListener('touchstart', (e) => {
                     e.preventDefault();
-                    handleTap();
-                });
+                    handleTap(e);
+                }, { passive: false });
+                elements.tapButton.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                }, { passive: false });
             }
 
             // Power-up event listeners
@@ -2069,13 +2092,26 @@
             if (elements.regenUpgrade) elements.regenUpgrade.addEventListener('click', buyRegenUpgrade);
             if (elements.levelUpgrade) elements.levelUpgrade.addEventListener('click', buyLevelUpgrade);
 
-            // Leaderboard toggle
+            // Leaderboard toggle - Fixed
             if (elements.leaderboardToggle) {
-                elements.leaderboardToggle.addEventListener('click', () => {
+                elements.leaderboardToggle.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    console.log('Leaderboard toggle clicked');
+                    
                     const leaderboardSection = document.querySelector('.leaderboard-section');
+                    const toggleIcon = elements.leaderboardToggle.querySelector('.toggle-icon');
+                    
+                    // Toggle classes
                     elements.leaderboardToggle.classList.toggle('expanded');
                     elements.leaderboardContent.classList.toggle('expanded');
                     leaderboardSection.classList.toggle('expanded');
+                    
+                    // Update icon
+                    if (toggleIcon) {
+                        toggleIcon.textContent = leaderboardSection.classList.contains('expanded') ? '▲' : '▼';
+                    }
+                    
+                    console.log('Leaderboard expanded:', leaderboardSection.classList.contains('expanded'));
                 });
             }
 
