@@ -1128,13 +1128,13 @@
             try {
                 console.log('Loading ethers.js...');
                 await loadEthersJS();
-                
+
                 if (typeof window.ethereum === 'undefined') {
                     console.warn('Web3 provider not available. Contract features disabled.');
                     showNotification('Install MetaMask for blockchain features', '#ff9900');
                     return;
                 }
-                
+
                 if (typeof window.ethers === 'undefined') {
                     console.error('ethers.js failed to load. Contract features disabled.');
                     showNotification('Failed to load blockchain library', '#ff3b30');
@@ -1143,25 +1143,25 @@
 
                 const provider = new window.ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
-                
+
                 // Use the deployed contract address
                 const contractAddress = gameState.contractAddress || CONTRACT_ADDRESS;
-                
+
                 window.gameContract = new window.ethers.Contract(contractAddress, CONTRACT_ABI, signer);
                 console.log('Game contract initialized successfully with address:', contractAddress);
-                
+
                 // Test contract connection
                 try {
                     const network = await provider.getNetwork();
                     console.log('Connected to network:', network.name, 'Chain ID:', network.chainId);
-                    
+
                     if (network.chainId !== 42161 && network.chainId !== 421614) {
                         showNotification('Please switch to Arbitrum network', '#ff9900');
                     }
                 } catch (networkError) {
                     console.warn('Could not verify network connection:', networkError);
                 }
-                
+
             } catch (error) {
                 console.error('Failed to initialize contract:', error);
                 showNotification('Blockchain connection failed. Using local mode.', '#ff9900');
@@ -1184,13 +1184,13 @@
                     // Update taps on contract (deduct cost)
                     const newTapCount = gameState.totalTaps - cost;
                     const tx = await window.gameContract.updateTaps(newTapCount);
-                    
+
                     showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                     const receipt = await tx.wait();
-                    
+
                     if (receipt && receipt.status === 1) {
                         showNotification(`Tap Power upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
-                        
+
                         // Apply upgrade locally after successful contract interaction
                         applyTapPowerUpgrade(cost);
                         return;
@@ -1210,7 +1210,7 @@
                     }
                 }
             }
-            
+
             // Local upgrade (fallback or when wallet not connected)
             applyTapPowerUpgrade(cost);
         }
@@ -1241,7 +1241,7 @@
                         // Update taps on contract (deduct cost)
                         const newTapCount = gameState.totalTaps - cost;
                         const tx = await contract.updateTaps(newTapCount);
-                        
+
                         showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                         const receipt = await tx.wait();
 
@@ -1309,7 +1309,7 @@
                         // Update taps on contract (deduct cost)
                         const newTapCount = gameState.totalTaps - cost;
                         const tx = await contract.updateTaps(newTapCount);
-                        
+
                         showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                         const receipt = await tx.wait();
 
@@ -1379,7 +1379,7 @@
         // Initialize game when page loads
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Initializing ARBITAP game...');
-            
+
             loadGameState();
             initializeElements();
 
@@ -1500,7 +1500,7 @@
                 const cdnUrls = [
                     'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
                     'https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js',
-                    'https://cdn.ethers.io/lib/ethers-5.7.2.umd.min.js'
+                    'https://cdn.ethers.io/lib/ethers-5-7-2.umd.min.js'
                 ];
 
                 let currentIndex = 0;
@@ -1514,7 +1514,7 @@
 
                     const script = document.createElement('script');
                     script.src = cdnUrls[currentIndex];
-                    
+
                     script.onload = () => {
                         console.log(`ethers.js loaded successfully from: ${cdnUrls[currentIndex]}`);
                         // Verify ethers is actually available
@@ -1527,14 +1527,14 @@
                             setTimeout(tryLoadScript, 100);
                         }
                     };
-                    
+
                     script.onerror = (error) => {
                         console.warn(`Failed to load ethers.js from: ${cdnUrls[currentIndex]}`, error);
                         document.head.removeChild(script);
                         currentIndex++;
                         setTimeout(tryLoadScript, 100);
                     };
-                    
+
                     // Set timeout for loading
                     setTimeout(() => {
                         if (!script.onload.called && !script.onerror.called) {
