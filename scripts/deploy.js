@@ -44,14 +44,14 @@ async function main() {
     console.log("💰 Sending initial ETH to contract for rewards...");
     const [deployer] = await ethers.getSigners();
     
-    // Send 10 ETH to contract for initial rewards
+    // Send 0.1 ETH to contract for initial rewards
     const tx = await deployer.sendTransaction({
       to: contractAddress,
-      value: ethers.parseEther("10"),
+      value: ethers.parseEther("0.1"),
     });
     
     await tx.wait();
-    console.log("✅ Sent 10 ETH to contract for rewards");
+    console.log("✅ Sent 0.1 ETH to contract for rewards");
   }
   
   // Display contract information
