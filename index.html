@@ -835,11 +835,11 @@
                     <div class="powerup-level">Level <span id="regenLevel">1</span></div>
                     <div class="powerup-cost"><span id="regenCost">300</span> taps</div>
                 </div>
-                <div class="powerup-card" id="autoTapUpgrade">
-                    <div class="powerup-icon">🤖</div>
-                    <div class="powerup-name">Auto Tap</div>
-                    <div class="powerup-level">Level <span id="autoTapLevel">0</span></div>
-                    <div class="powerup-cost"><span id="autoTapCost">500</span> taps</div>
+                <div class="powerup-card" id="levelUpgrade">
+                    <div class="powerup-icon">⬆️</div>
+                    <div class="powerup-name">Level Up</div>
+                    <div class="powerup-level">Next: <span id="nextLevelCost">1000</span></div>
+                    <div class="powerup-cost"><span id="levelUpCost">1000</span> taps</div>
                 </div>
             </div>
         </div>
@@ -891,12 +891,11 @@
             tapPowerLevel: 1,
             energyLevel: 1,
             regenLevel: 1,
-            autoTapLevel: 0,
             // Power-up costs
             tapPowerCost: 100,
             energyCost: 200,
             regenCost: 300,
-            autoTapCost: 500,
+            levelUpCost: 1000,
             // Daily streak
             dailyStreak: 1,
             lastLoginDate: new Date().toDateString(),
@@ -937,15 +936,15 @@
                 tapPowerUpgrade: document.getElementById('tapPowerUpgrade'),
                 energyUpgrade: document.getElementById('energyUpgrade'),
                 regenUpgrade: document.getElementById('regenUpgrade'),
-                autoTapUpgrade: document.getElementById('autoTapUpgrade'),
+                levelUpgrade: document.getElementById('levelUpgrade'),
                 tapPowerLevel: document.getElementById('tapPowerLevel'),
                 energyLevel: document.getElementById('energyLevel'),
                 regenLevel: document.getElementById('regenLevel'),
-                autoTapLevel: document.getElementById('autoTapLevel'),
+                nextLevelCost: document.getElementById('nextLevelCost'),
                 tapPowerCost: document.getElementById('tapPowerCost'),
                 energyCost: document.getElementById('energyCost'),
                 regenCost: document.getElementById('regenCost'),
-                autoTapCost: document.getElementById('autoTapCost'),
+                levelUpCost: document.getElementById('levelUpCost'),
                 // Leaderboard
                 leaderboardToggle: document.getElementById('leaderboardToggle'),
                 leaderboardContent: document.getElementById('leaderboardContent'),
@@ -1076,11 +1075,11 @@
             if (elements.tapPowerLevel) elements.tapPowerLevel.textContent = gameState.tapPowerLevel;
             if (elements.energyLevel) elements.energyLevel.textContent = gameState.energyLevel;
             if (elements.regenLevel) elements.regenLevel.textContent = gameState.regenLevel;
-            if (elements.autoTapLevel) elements.autoTapLevel.textContent = gameState.autoTapLevel;
+            if (elements.nextLevelCost) elements.nextLevelCost.textContent = gameState.currentLevel + 1;
             if (elements.tapPowerCost) elements.tapPowerCost.textContent = formatNumber(gameState.tapPowerCost);
             if (elements.energyCost) elements.energyCost.textContent = formatNumber(gameState.energyCost);
             if (elements.regenCost) elements.regenCost.textContent = formatNumber(gameState.regenCost);
-            if (elements.autoTapCost) elements.autoTapCost.textContent = formatNumber(gameState.autoTapCost);
+            if (elements.levelUpCost) elements.levelUpCost.textContent = formatNumber(gameState.levelUpCost);
         }
 
         // Update power-up affordability visual feedback
@@ -1089,7 +1088,7 @@
                 { element: elements.tapPowerUpgrade, cost: gameState.tapPowerCost },
                 { element: elements.energyUpgrade, cost: gameState.energyCost },
                 { element: elements.regenUpgrade, cost: gameState.regenCost },
-                { element: elements.autoTapUpgrade, cost: gameState.autoTapCost }
+                { element: elements.levelUpgrade, cost: gameState.levelUpCost }
             ];
 
             powerups.forEach(({ element, cost }) => {
@@ -1172,14 +1171,33 @@
             }
         }
 
-        async function buyAutoTapUpgrade() {
-            if (gameState.totalTaps >= gameState.autoTapCost) {
-                gameState.totalTaps -= gameState.autoTapCost;
-                gameState.autoTapLevel++;
-                gameState.autoTapCost = Math.floor(gameState.autoTapCost * 2);
-                
-                showPowerUpNotification('Auto Tap', gameState.autoTapLevel);
-                updateUI();
+        async function buyLevelUpgrade() {
+            if (gameState.totalTaps >= gameState.levelUpCost && window.gameContract && window.gameContract.account) {
+                try {
+                    // Show loading state
+                    showModal('⏳ Processing Level Up...', 'Interacting with smart contract...');
+                    
+                    // Call smart contract to update level
+                    const result = await window.gameContract.updatePlayerLevel(gameState.currentLevel + 1, gameState.totalTaps);
+                    
+                    if (result.success) {
+                        gameState.totalTaps -= gameState.levelUpCost;
+                        gameState.currentLevel++;
+                        gameState.levelUpCost = Math.floor(gameState.levelUpCost * 1.8);
+                        
+                        // Close loading modal
+                        const modal = document.querySelector('.modal-overlay');
+                        if (modal) modal.remove();
+                        
+                        showPowerUpNotification('Level Up', gameState.currentLevel);
+                        updateUI();
+                    }
+                } catch (error) {
+                    console.error('Level upgrade failed:', error);
+                    showModal('❌ Level Up Failed', 'Transaction failed. Please try again.');
+                }
+            } else if (!window.gameContract || !window.gameContract.account) {
+                showModal('🔗 Wallet Required', 'Please connect your wallet to upgrade levels on-chain.');
             }
         }
 
@@ -1419,17 +1437,7 @@
             }, 1000);
         }
 
-        // Auto tap system
-        function startAutoTap() {
-            setInterval(() => {
-                if (gameState.autoTapLevel > 0 && gameState.energy >= gameState.autoTapLevel) {
-                    gameState.energy -= gameState.autoTapLevel;
-                    gameState.totalTaps += gameState.autoTapLevel;
-                    gameState.totalEarned += gameState.autoTapLevel;
-                    updateUI();
-                }
-            }, 2000);
-        }
+        
 
         
 
@@ -1451,7 +1459,7 @@
             if (elements.tapPowerUpgrade) elements.tapPowerUpgrade.addEventListener('click', buyTapPowerUpgrade);
             if (elements.energyUpgrade) elements.energyUpgrade.addEventListener('click', buyEnergyUpgrade);
             if (elements.regenUpgrade) elements.regenUpgrade.addEventListener('click', buyRegenUpgrade);
-            if (elements.autoTapUpgrade) elements.autoTapUpgrade.addEventListener('click', buyAutoTapUpgrade);
+            if (elements.levelUpgrade) elements.levelUpgrade.addEventListener('click', buyLevelUpgrade);
 
             // Leaderboard toggle
             if (elements.leaderboardToggle) {
@@ -1467,7 +1475,6 @@
 
             // Start systems
             startEnergyRegen();
-            startAutoTap();
 
             // Initial UI update
             updateUI();

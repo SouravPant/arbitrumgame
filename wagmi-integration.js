@@ -334,6 +334,29 @@ class ArbitrumGameContract {
         }
     }
 
+    // Update player level on blockchain
+    async updatePlayerLevel(newLevel, currentTaps) {
+        if (!this.account) {
+            throw new Error('Wallet not connected');
+        }
+
+        try {
+            console.log(`Updating level to ${newLevel} for address: ${this.account}`);
+            
+            // This would call the actual smart contract function
+            const txHash = await this.simulateTransaction('updateLevel', { level: newLevel, taps: currentTaps });
+            
+            return {
+                success: true,
+                txHash: txHash,
+                newLevel: newLevel
+            };
+        } catch (error) {
+            console.error('Failed to update level:', error);
+            throw error;
+        }
+    }
+
     // Check if milestone is achieved on blockchain
     async isMilestoneAchieved(milestone, address) {
         if (!address) {

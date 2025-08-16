@@ -21,9 +21,11 @@ contract ArbitrumTapGame is ERC721, Ownable, ReentrancyGuard {
     // Player data structure
     struct Player {
         uint256 totalTaps;
+        uint256 currentLevel;
         uint256 nftsMinted;
         mapping(uint256 => bool) milestonesAchieved;
         uint256 lastMintTimestamp;
+        uint256 lastLevelUpTimestamp;
     }
     
     // Game state
@@ -36,6 +38,7 @@ contract ArbitrumTapGame is ERC721, Ownable, ReentrancyGuard {
     event NFTMinted(address indexed player, uint256 tokenId, uint256 milestone, uint256 reward);
     event MilestoneAchieved(address indexed player, uint256 milestone, uint256 reward);
     event PlayerScoreUpdated(address indexed player, uint256 newScore);
+    event PlayerLevelUpdated(address indexed player, uint256 newLevel, uint256 requiredTaps);
     
     // Modifiers
     modifier validMilestone(uint256 milestone) {
@@ -79,6 +82,28 @@ contract ArbitrumTapGame is ERC721, Ownable, ReentrancyGuard {
         checkMilestones(msg.sender);
     }
     
+    /**
+     * @dev Update player's level (requires sufficient taps)
+     * @param newLevel New level for the player
+     */
+    function updateLevel(uint256 newLevel) external {
+        require(newLevel > players[msg.sender].currentLevel, "New level must be higher");
+        require(newLevel <= 50, "Maximum level is 50"); // Set reasonable max level
+        
+        // Calculate required taps for this level (exponential growth)
+        uint256 requiredTaps = newLevel * newLevel * 100;
+        require(players[msg.sender].totalTaps >= requiredTaps, "Insufficient taps for this level");
+        
+        // Update player level
+        players[msg.sender].currentLevel = newLevel;
+        players[msg.sender].lastLevelUpTimestamp = block.timestamp;
+        
+        emit PlayerLevelUpdated(msg.sender, newLevel, requiredTaps);
+        
+        // Check for new milestones after level up
+        checkMilestones(msg.sender);
+    }
+
     /**
      * @dev Check if player has achieved new milestones
      * @param player Address of the player to check
@@ -166,16 +191,20 @@ contract ArbitrumTapGame is ERC721, Ownable, ReentrancyGuard {
      * @dev Get player statistics
      * @param player Address of the player
      * @return totalTaps Total number of taps
+     * @return currentLevel Current player level
      * @return nftsMinted Number of NFTs minted
      * @return lastMintTimestamp Timestamp of last NFT mint
+     * @return lastLevelUpTimestamp Timestamp of last level up
      */
     function getPlayerStats(address player) external view returns (
         uint256 totalTaps,
+        uint256 currentLevel,
         uint256 nftsMinted,
-        uint256 lastMintTimestamp
+        uint256 lastMintTimestamp,
+        uint256 lastLevelUpTimestamp
     ) {
         Player storage p = players[player];
-        return (p.totalTaps, p.nftsMinted, p.lastMintTimestamp);
+        return (p.totalTaps, p.currentLevel, p.nftsMinted, p.lastMintTimestamp, p.lastLevelUpTimestamp);
     }
     
     /**

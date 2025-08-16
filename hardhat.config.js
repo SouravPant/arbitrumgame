@@ -8,34 +8,26 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
-      },
-    },
+        runs: 200
+      }
+    }
   },
   networks: {
-    // Arbitrum One Mainnet
-    arbitrumOne: {
-      url: process.env.ARBITRUM_RPC_URL || "https://arb1.arbitrum.io/rpc",
+    arbitrum: {
+      url: process.env.ARBITRUM_RPC_URL || `https://arb-mainnet.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 42161,
-      gasPrice: 100000000, // 0.1 gwei
+      chainId: 42161
     },
-    // Arbitrum Sepolia Testnet
     arbitrumSepolia: {
-      url: process.env.ARBITRUM_SEPOLIA_RPC_URL || "https://sepolia-rollup.arbitrum.io/rpc",
+      url: process.env.ARBITRUM_TESTNET_RPC_URL || `https://arb-sepolia.g.alchemy.com/v2/${process.env.ALCHEMY_API_KEY}`,
       accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
-      chainId: 421614,
-      gasPrice: 100000000, // 0.1 gwei
-    },
-    // Local development
-    hardhat: {
-      chainId: 31337,
-    },
+      chainId: 421614
+    }
   },
   etherscan: {
     apiKey: {
-      arbitrumOne: process.env.ARBISCAN_API_KEY || "",
-      arbitrumSepolia: process.env.ARBISCAN_API_KEY || "",
+      arbitrumOne: process.env.ARBISCAN_API_KEY,
+      arbitrumSepolia: process.env.ARBISCAN_API_KEY
     },
     customChains: [
       {
@@ -43,10 +35,10 @@ module.exports = {
         chainId: 421614,
         urls: {
           apiURL: "https://api-sepolia.arbiscan.io/api",
-          browserURL: "https://sepolia.arbiscan.io/",
-        },
-      },
-    ],
+          browserURL: "https://sepolia.arbiscan.io/"
+        }
+      }
+    ]
   },
   gasReporter: {
     enabled: process.env.REPORT_GAS !== undefined,
