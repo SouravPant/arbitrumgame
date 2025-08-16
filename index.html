@@ -383,8 +383,8 @@
         }
 
         .leaderboard-content {
-            max-height: 400px;
-            overflow: hidden;
+            max-height: 600px;
+            overflow-y: auto;
             transition: max-height 0.3s ease;
         }
 
@@ -394,6 +394,8 @@
 
         .leaderboard-list {
             padding: 0 20px 20px;
+            max-height: 550px;
+            overflow-y: auto;
         }
 
         .leaderboard-item {
@@ -921,6 +923,8 @@
 
             const allPlayers = [...leaderboardData, playerData].sort((a, b) => b.score - a.score);
 
+            console.log(`Updating leaderboard with ${allPlayers.length} players`);
+
             elements.leaderboardList.innerHTML = allPlayers.map((player, index) => {
                 const rank = index + 1;
                 const currentPlayerClass = player.isCurrentPlayer ? 'current-player' : '';
@@ -937,6 +941,8 @@
                     </div>
                 `;
             }).join('');
+
+            console.log(`Leaderboard HTML length: ${elements.leaderboardList.innerHTML.length} characters`);
         }
 
         // Energy regeneration
