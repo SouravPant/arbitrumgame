@@ -638,35 +638,63 @@
             5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000
         ];
 
-        // Placeholder for contract ABI and address
-        // Replace with your actual contract details
-        const CONTRACT_ADDRESS = "0x..."; // <-- Replace with your contract address
+        // Contract ABI and address from deployed contract
+        const CONTRACT_ADDRESS = "0xF3FF71531F523f09c42490760e9Ba43eD30bb0De";
         const CONTRACT_ABI = [
-            // Abi definition for your game contract
-            // e.g., updatePlayerLevel, updatePlayerTaps functions
             {
-                "inputs": [
-                    {"internalType": "uint256", "name": "newLevel", "type": "uint256"},
-                    {"internalType": "uint256", "name": "newTaps", "type": "uint256"}
-                ],
-                "name": "updatePlayerLevel",
-                "outputs": [
-                    {"internalType": "bool", "name": "success", "type": "bool"},
-                    {"internalType": "string", "name": "txHash", "type": "string"}
-                ],
+                "inputs": [{"internalType": "uint256", "name": "newLevel", "type": "uint256"}],
+                "name": "updateLevel",
+                "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
-                "inputs": [
-                    {"internalType": "uint256", "name": "newTaps", "type": "uint256"}
-                ],
-                "name": "updatePlayerTaps",
+                "inputs": [{"internalType": "uint256", "name": "newTapCount", "type": "uint256"}],
+                "name": "updateTaps",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "uint256", "name": "milestone", "type": "uint256"}],
+                "name": "mintNFT",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "player", "type": "address"}],
+                "name": "getPlayerStats",
+                "outputs": [
+                    {"internalType": "uint256", "name": "totalTaps", "type": "uint256"},
+                    {"internalType": "uint256", "name": "currentLevel", "type": "uint256"},
+                    {"internalType": "uint256", "name": "nftsMinted", "type": "uint256"},
+                    {"internalType": "uint256", "name": "lastMintTimestamp", "type": "uint256"},
+                    {"internalType": "uint256", "name": "lastLevelUpTimestamp", "type": "uint256"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "player", "type": "address"}],
+                "name": "getNextMilestone",
+                "outputs": [
+                    {"internalType": "uint256", "name": "nextMilestone", "type": "uint256"},
+                    {"internalType": "uint256", "name": "remainingTaps", "type": "uint256"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "getMilestonesAndRewards",
+                "outputs": [
+                    {"internalType": "uint256[]", "name": "_milestones", "type": "uint256[]"},
+                    {"internalType": "uint256[]", "name": "_rewards", "type": "uint256[]"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
             }
-            // ... other functions
         ];
 
         // Game State
@@ -1122,31 +1150,52 @@
             const cost = gameState.tapPowerCost;
             if (gameState.totalTaps >= cost) {
                 // Try blockchain upgrade if wallet connected
-                if (isWalletConnected && window.gameContract && window.gameContract.upgradePowerUp) {
+                if (isWalletConnected && window.gameContract) {
                     try {
                         showNotification('Upgrading Tap Power on blockchain...', '#ffd700');
 
-                        // Use the wagmi integration for power-up upgrade
-                        if (window.gameContract && window.gameContract.upgradePowerUp) {
-                            const result = await window.gameContract.upgradePowerUp('tapPower', gameState.tapPowerLevel + 1, gameState.totalTaps);
-                            
-                            if (result.success) {
-                                showNotification(`Tap Power upgrade successful! TX: ${result.txHash.slice(0, 8)}...`, '#00ff00');
-                                
-                                // Apply upgrade locally after successful contract interaction
-                                gameState.totalTaps -= cost;
-                                gameState.tapPowerLevel++;
-                                gameState.tapPowerCost = Math.floor(cost * 1.5);
-                                gameState.tapPower = gameState.tapPowerLevel;
+                        // Create contract instance with ethers
+                        const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+                        const signer = provider.getSigner();
+                        const contract = new window.ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
 
-                                updateUI();
-                                saveGameState();
-                                return;
-                            }
+                        // Update taps on contract (deduct cost)
+                        const newTapCount = gameState.totalTaps - cost;
+                        const tx = await contract.updateTaps(newTapCount);
+                        
+                        showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
+                        const receipt = await tx.wait();
+                        
+                        if (receipt && receipt.status === 1) {
+                            showNotification(`Tap Power upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+                            
+                            // Apply upgrade locally after successful contract interaction
+                            gameState.totalTaps -= cost;
+                            gameState.tapPowerLevel++;
+                            gameState.tapPowerCost = Math.floor(cost * 1.5);
+                            gameState.tapPower = gameState.tapPowerLevel;
+
+                            updateUI();
+                            saveGameState();
+                            return;
+                        } else {
+                            throw new Error("Transaction failed");
                         }
                     } catch (error) {
                         console.error('Blockchain upgrade failed:', error);
-                        showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
+                        if (error.code === 4001) {
+                            showNotification('Transaction rejected by user.', '#ff3b30');
+                        } else {
+                            showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
+                            // Apply local upgrade as fallback
+                            gameState.totalTaps -= cost;
+                            gameState.tapPowerLevel++;
+                            gameState.tapPowerCost = Math.floor(cost * 1.5);
+                            gameState.tapPower = gameState.tapPowerLevel;
+                            updateUI();
+                            saveGameState();
+                        }
+                        return;
                     }
                 }
                 
@@ -1171,8 +1220,16 @@
                     try {
                         showNotification('Upgrading Max Energy on blockchain...', '#00bfff');
 
-                        // Update taps on contract to reflect energy upgrade cost
-                        const tx = await window.gameContract.updatePlayerTaps(gameState.totalTaps - cost);
+                        // Create contract instance with ethers
+                        const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+                        const signer = provider.getSigner();
+                        const contract = new window.ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                        // Update taps on contract (deduct cost)
+                        const newTapCount = gameState.totalTaps - cost;
+                        const tx = await contract.updateTaps(newTapCount);
+                        
+                        showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                         const receipt = await tx.wait();
 
                         if (receipt && receipt.status === 1) {
@@ -1188,20 +1245,24 @@
                             updateUI();
                             saveGameState();
                         } else {
-                            throw new Error("Transaction failed or status not confirmed.");
+                            throw new Error("Transaction failed");
                         }
                     } catch (error) {
                         console.error('Blockchain update failed:', error);
-                        showNotification('Blockchain update failed. Attempting local upgrade.', '#ff9900');
-                        // Apply upgrade locally
-                        gameState.totalTaps -= cost;
-                        gameState.energyLevel++;
-                        gameState.energyCost = Math.floor(cost * 1.5);
-                        gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
-                        gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
-
-                        updateUI();
-                        saveGameState();
+                        if (error.code === 4001) {
+                            showNotification('Transaction rejected by user.', '#ff3b30');
+                        } else {
+                            showNotification('Blockchain update failed. Attempting local upgrade.', '#ff9900');
+                            // Apply upgrade locally
+                            gameState.totalTaps -= cost;
+                            gameState.energyLevel++;
+                            gameState.energyCost = Math.floor(cost * 1.5);
+                            gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
+                            gameState.energy = Math.min(gameState.energy, gameState.maxEnergy);
+                            updateUI();
+                            saveGameState();
+                        }
+                        return;
                     }
                 } else {
                     // Local upgrade
@@ -1227,8 +1288,16 @@
                     try {
                         showNotification('Upgrading Energy Regen on blockchain...', '#00ff00');
 
-                        // Update taps on contract to reflect regen upgrade cost
-                        const tx = await window.gameContract.updatePlayerTaps(gameState.totalTaps - cost);
+                        // Create contract instance with ethers
+                        const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+                        const signer = provider.getSigner();
+                        const contract = new window.ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+
+                        // Update taps on contract (deduct cost)
+                        const newTapCount = gameState.totalTaps - cost;
+                        const tx = await contract.updateTaps(newTapCount);
+                        
+                        showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                         const receipt = await tx.wait();
 
                         if (receipt && receipt.status === 1) {
@@ -1238,24 +1307,28 @@
                             gameState.totalTaps -= cost;
                             gameState.regenLevel++;
                             gameState.regenCost = Math.floor(cost * 1.5);
-                            gameState.energyRegenRate = gameState.regenLevel; // Assuming regen rate scales with level
+                            gameState.energyRegenRate = gameState.regenLevel;
 
                             updateUI();
                             saveGameState();
                         } else {
-                            throw new Error("Transaction failed or status not confirmed.");
+                            throw new Error("Transaction failed");
                         }
                     } catch (error) {
                         console.error('Blockchain update failed:', error);
-                        showNotification('Blockchain update failed. Attempting local upgrade.', '#ff9900');
-                        // Apply upgrade locally
-                        gameState.totalTaps -= cost;
-                        gameState.regenLevel++;
-                        gameState.regenCost = Math.floor(cost * 1.5);
-                        gameState.energyRegenRate = gameState.regenLevel;
-
-                        updateUI();
-                        saveGameState();
+                        if (error.code === 4001) {
+                            showNotification('Transaction rejected by user.', '#ff3b30');
+                        } else {
+                            showNotification('Blockchain update failed. Attempting local upgrade.', '#ff9900');
+                            // Apply upgrade locally
+                            gameState.totalTaps -= cost;
+                            gameState.regenLevel++;
+                            gameState.regenCost = Math.floor(cost * 1.5);
+                            gameState.energyRegenRate = gameState.regenLevel;
+                            updateUI();
+                            saveGameState();
+                        }
+                        return;
                     }
                 } else {
                     // Local upgrade
