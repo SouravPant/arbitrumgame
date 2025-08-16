@@ -383,13 +383,13 @@
         }
 
         .leaderboard-content {
-            max-height: 0;
+            max-height: 400px;
             overflow: hidden;
             transition: max-height 0.3s ease;
         }
 
-        .leaderboard-content.expanded {
-            max-height: 400px;
+        .leaderboard-content.collapsed {
+            max-height: 0;
         }
 
         .leaderboard-list {
@@ -717,14 +717,23 @@
             contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De'
         };
 
-        // Sample leaderboard data
+        // Sample leaderboard data - Top 15 players
         let leaderboardData = [
             { name: 'TapMaster_Pro', score: 1234567, level: 25, avatar: 'T' },
             { name: 'CryptoTapper', score: 987654, level: 22, avatar: 'C' },
             { name: 'ArbiKing', score: 765432, level: 19, avatar: 'A' },
             { name: 'Web3_Wizard', score: 542109, level: 16, avatar: 'W' },
             { name: 'DiamondHands', score: 298765, level: 13, avatar: 'D' },
-            { name: 'MoonTapper', score: 187432, level: 11, avatar: 'M' }
+            { name: 'MoonTapper', score: 187432, level: 11, avatar: 'M' },
+            { name: 'FastFingers', score: 156789, level: 10, avatar: 'F' },
+            { name: 'TapLegend', score: 134521, level: 9, avatar: 'L' },
+            { name: 'ClickMaster', score: 98765, level: 8, avatar: 'K' },
+            { name: 'PowerTapper', score: 87654, level: 8, avatar: 'P' },
+            { name: 'SpeedDemon', score: 76543, level: 7, avatar: 'S' },
+            { name: 'TapWizard', score: 65432, level: 7, avatar: 'Z' },
+            { name: 'FingerFlash', score: 54321, level: 6, avatar: 'G' },
+            { name: 'TapNinja', score: 43210, level: 6, avatar: 'N' },
+            { name: 'ClickChamp', score: 32109, level: 5, avatar: 'H' }
         ];
 
         // DOM Elements
@@ -876,7 +885,7 @@
                 navigator.vibrate(50);
             }
 
-            // Update UI
+            // Update UI immediately
             updateUI();
         }
 
@@ -1449,6 +1458,30 @@
 
             // Set up event listeners for power-ups
             setupPowerupListeners();
+
+            // Set up tap button listener
+            if (elements.tapButton) {
+                elements.tapButton.addEventListener('click', handleTap);
+                elements.tapButton.addEventListener('touchstart', handleTap);
+                console.log('Tap button listeners attached');
+            }
+
+            // Set up leaderboard toggle
+            if (elements.leaderboardToggle) {
+                elements.leaderboardToggle.addEventListener('click', function() {
+                    const content = elements.leaderboardContent;
+                    const toggle = elements.leaderboardToggle;
+                    
+                    if (content.classList.contains('expanded')) {
+                        content.classList.remove('expanded');
+                        toggle.classList.remove('expanded');
+                    } else {
+                        content.classList.add('expanded');
+                        toggle.classList.add('expanded');
+                    }
+                });
+                console.log('Leaderboard toggle listener attached');
+            }
 
             // Initial UI updates
             updateUI();
