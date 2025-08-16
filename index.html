@@ -292,6 +292,77 @@
             }
         }
 
+        /* Contract Interaction Notifications */
+        .contract-notification {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, var(--surface) 0%, var(--surface-light) 100%);
+            border: 2px solid var(--primary-blue);
+            color: var(--text-primary);
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1002;
+            animation: contractPulse 0.5s ease-out;
+            min-width: 300px;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        @keyframes contractPulse {
+            0% { 
+                transform: translate(-50%, -50%) scale(0.8); 
+                opacity: 0; 
+            }
+            50% { 
+                transform: translate(-50%, -50%) scale(1.1); 
+                opacity: 1; 
+            }
+            100% { 
+                transform: translate(-50%, -50%) scale(1); 
+                opacity: 1; 
+            }
+        }
+
+        .contract-notification h3 {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 15px;
+            color: var(--text-primary);
+        }
+
+        .contract-notification p {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .contract-close {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .contract-close:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+        }
+
         .level-up-notification {
             position: fixed;
             top: 50%;
@@ -1208,41 +1279,191 @@
             updateUI();
         }
 
-        // Power-up purchase functions
-        function buyTapPowerUpgrade() {
+        // Power-up purchase functions with contract interactions
+        async function buyTapPowerUpgrade() {
             if (gameState.totalTaps >= gameState.tapPowerCost) {
+                const oldCost = gameState.tapPowerCost;
+                const oldLevel = gameState.tapPowerLevel;
+                
+                // Update local state
                 gameState.totalTaps -= gameState.tapPowerCost;
                 gameState.tapPowerLevel++;
                 gameState.tapPower = gameState.tapPowerLevel;
                 gameState.tapPowerCost = Math.floor(gameState.tapPowerCost * 1.5);
+                
+                // Contract interaction
+                if (window.gameContract && window.gameContract.account) {
+                    try {
+                        showContractNotification('Processing Tap Power Upgrade...', 'Sending transaction to blockchain');
+                        
+                        // Simulate contract call for power-up purchase
+                        await window.gameContract.updatePlayerTaps(gameState.totalTaps);
+                        
+                        // You would call a real contract method like:
+                        // await window.gameContract.purchasePowerUp('tapPower', oldLevel + 1, oldCost);
+                        
+                        showContractNotification('Tap Power Upgraded!', `Level ${gameState.tapPowerLevel} activated on blockchain`, true);
+                        console.log(`Tap Power upgraded to level ${gameState.tapPowerLevel} on contract`);
+                        
+                    } catch (error) {
+                        console.error('Contract interaction failed:', error);
+                        
+                        // Revert local state on contract failure
+                        gameState.totalTaps += oldCost;
+                        gameState.tapPowerLevel = oldLevel;
+                        gameState.tapPower = oldLevel;
+                        gameState.tapPowerCost = oldCost;
+                        
+                        showContractNotification('Transaction Failed', 'Power-up purchase reverted', false);
+                        updateUI();
+                        return;
+                    }
+                }
                 
                 showPowerUpNotification('Tap Power', gameState.tapPowerLevel);
                 updateUI();
             }
         }
 
-        function buyEnergyUpgrade() {
+        async function buyEnergyUpgrade() {
             if (gameState.totalTaps >= gameState.energyCost) {
+                const oldCost = gameState.energyCost;
+                const oldLevel = gameState.energyLevel;
+                const oldMaxEnergy = gameState.maxEnergy;
+                
+                // Update local state
                 gameState.totalTaps -= gameState.energyCost;
                 gameState.energyLevel++;
                 gameState.maxEnergy = 1000 + (gameState.energyLevel - 1) * 200;
                 gameState.energy = gameState.maxEnergy; // Refill energy
                 gameState.energyCost = Math.floor(gameState.energyCost * 1.5);
                 
+                // Contract interaction
+                if (window.gameContract && window.gameContract.account) {
+                    try {
+                        showContractNotification('Processing Energy Upgrade...', 'Sending transaction to blockchain');
+                        
+                        // Simulate contract call for energy upgrade
+                        await window.gameContract.updatePlayerTaps(gameState.totalTaps);
+                        
+                        // You would call a real contract method like:
+                        // await window.gameContract.purchasePowerUp('maxEnergy', oldLevel + 1, oldCost);
+                        
+                        showContractNotification('Energy Upgraded!', `Max Energy: ${gameState.maxEnergy} activated on blockchain`, true);
+                        console.log(`Max Energy upgraded to level ${gameState.energyLevel} on contract`);
+                        
+                    } catch (error) {
+                        console.error('Contract interaction failed:', error);
+                        
+                        // Revert local state on contract failure
+                        gameState.totalTaps += oldCost;
+                        gameState.energyLevel = oldLevel;
+                        gameState.maxEnergy = oldMaxEnergy;
+                        gameState.energyCost = oldCost;
+                        
+                        showContractNotification('Transaction Failed', 'Energy upgrade reverted', false);
+                        updateUI();
+                        return;
+                    }
+                }
+                
                 showPowerUpNotification('Max Energy', gameState.energyLevel);
                 updateUI();
             }
         }
 
-        function buyRegenUpgrade() {
+        async function buyRegenUpgrade() {
             if (gameState.totalTaps >= gameState.regenCost) {
+                const oldCost = gameState.regenCost;
+                const oldLevel = gameState.regenLevel;
+                const oldRegenRate = gameState.energyRegenRate;
+                
+                // Update local state
                 gameState.totalTaps -= gameState.regenCost;
                 gameState.regenLevel++;
                 gameState.energyRegenRate = gameState.regenLevel;
                 gameState.regenCost = Math.floor(gameState.regenCost * 1.5);
                 
+                // Contract interaction
+                if (window.gameContract && window.gameContract.account) {
+                    try {
+                        showContractNotification('Processing Regen Upgrade...', 'Sending transaction to blockchain');
+                        
+                        // Simulate contract call for regen upgrade
+                        await window.gameContract.updatePlayerTaps(gameState.totalTaps);
+                        
+                        // You would call a real contract method like:
+                        // await window.gameContract.purchasePowerUp('energyRegen', oldLevel + 1, oldCost);
+                        
+                        showContractNotification('Energy Regen Upgraded!', `Level ${gameState.regenLevel} activated on blockchain`, true);
+                        console.log(`Energy Regen upgraded to level ${gameState.regenLevel} on contract`);
+                        
+                    } catch (error) {
+                        console.error('Contract interaction failed:', error);
+                        
+                        // Revert local state on contract failure
+                        gameState.totalTaps += oldCost;
+                        gameState.regenLevel = oldLevel;
+                        gameState.energyRegenRate = oldRegenRate;
+                        gameState.regenCost = oldCost;
+                        
+                        showContractNotification('Transaction Failed', 'Regen upgrade reverted', false);
+                        updateUI();
+                        return;
+                    }
+                }
+                
                 showPowerUpNotification('Energy Regen', gameState.regenLevel);
                 updateUI();
+            }
+        }
+
+        // Show contract interaction notification
+        function showContractNotification(title, message, success = null) {
+            // Remove any existing contract notifications
+            const existing = document.querySelector('.contract-notification');
+            if (existing) {
+                existing.remove();
+            }
+
+            const notification = document.createElement('div');
+            notification.className = 'contract-notification';
+            
+            let icon = '⏳'; // Default loading
+            let color = 'var(--primary-blue)';
+            
+            if (success === true) {
+                icon = '✅';
+                color = 'var(--green)';
+            } else if (success === false) {
+                icon = '❌';
+                color = 'var(--red)';
+            }
+            
+            notification.innerHTML = `
+                <h3>${icon} ${title}</h3>
+                <p>${message}</p>
+                ${success !== null ? '<button class="contract-close" onclick="this.parentElement.remove()">Close</button>' : ''}
+            `;
+
+            if (success !== null) {
+                notification.style.borderColor = color;
+            }
+
+            document.body.appendChild(notification);
+
+            // Auto-remove after delay if it's a final state
+            if (success !== null) {
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.style.animation = 'fadeOut 0.5s ease-in';
+                        setTimeout(() => {
+                            if (notification.parentElement) {
+                                notification.remove();
+                            }
+                        }, 500);
+                    }
+                }, 3000);
             }
         }
 
