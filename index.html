@@ -1600,14 +1600,37 @@
             } catch (error) {
                 console.error('Manual contract interaction failed:', error);
 
-                if (error.code === 4001) {
+                // Safely extract error information
+                let errorMessage = 'Unknown error';
+                let errorCode = null;
+
+                if (error && typeof error === 'object') {
+                    errorCode = error.code;
+                    
+                    if (error.message) {
+                        errorMessage = error.message;
+                    } else if (error.reason) {
+                        errorMessage = error.reason;
+                    } else if (error.error && error.error.message) {
+                        errorMessage = error.error.message;
+                    }
+                }
+
+                if (errorCode === 4001) {
                     showNotification('Transaction rejected by user.', '#ff3b30');
-                } else if (error.message && error.message.includes('insufficient funds')) {
+                } else if (errorMessage.includes('insufficient funds')) {
                     showNotification('Insufficient funds for gas fees.', '#ff3b30');
-                } else if (error.message && error.message.includes('New count must be higher')) {
+                } else if (errorMessage.includes('New count must be higher')) {
                     showNotification('Your local taps are already synced to blockchain!', '#ff9900');
+                } else if (errorMessage.includes('execution reverted')) {
+                    // Extract the revert reason from the error
+                    if (errorMessage.includes('New count must be higher')) {
+                        showNotification('Blockchain has higher tap count than local!', '#ff9900');
+                    } else {
+                        showNotification('Contract execution failed. Please try again.', '#ff3b30');
+                    }
                 } else {
-                    showNotification(`Contract sync failed: ${error.message}`, '#ff3b30');
+                    showNotification(`Contract sync failed: ${errorMessage}`, '#ff3b30');
                 }
             }
         }
