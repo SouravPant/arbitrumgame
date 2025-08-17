@@ -1357,8 +1357,12 @@
                 try {
                     showNotification('Upgrading Tap Power on blockchain...', '#ffd700');
 
-                    // Update taps on contract (deduct cost)
-                    const newTapCount = gameState.totalTaps - cost;
+                    // Get current on-chain taps
+                    const playerStats = await gameContract.getPlayerStats(connectedAddress);
+                    const onChainTaps = playerStats.totalTaps.toNumber();
+                    
+                    // Calculate new tap count after upgrade
+                    const newTapCount = Math.max(gameState.totalTaps, onChainTaps + 1);
                     const tx = await gameContract.updateTaps(newTapCount);
 
                     showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
@@ -1409,8 +1413,10 @@
                     try {
                         showNotification('Upgrading Max Energy on blockchain...', '#00bfff');
 
-                        // Update taps on contract (deduct cost)
-                        const newTapCount = gameState.totalTaps - cost;
+                        // Get current on-chain taps and ensure new count is higher
+                        const playerStats = await gameContract.getPlayerStats(connectedAddress);
+                        const onChainTaps = playerStats.totalTaps.toNumber();
+                        const newTapCount = Math.max(gameState.totalTaps, onChainTaps + 1);
                         const tx = await gameContract.updateTaps(newTapCount);
 
                         showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
@@ -1464,8 +1470,10 @@
                     try {
                         showNotification('Upgrading Energy Regen on blockchain...', '#00ff00');
 
-                        // Update taps on contract (deduct cost)
-                        const newTapCount = gameState.totalTaps - cost;
+                        // Get current on-chain taps and ensure new count is higher
+                        const playerStats = await gameContract.getPlayerStats(connectedAddress);
+                        const onChainTaps = playerStats.totalTaps.toNumber();
+                        const newTapCount = Math.max(gameState.totalTaps, onChainTaps + 1);
                         const tx = await gameContract.updateTaps(newTapCount);
 
                         showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
@@ -1536,13 +1544,35 @@
             }
 
             try {
+                showNotification('Checking on-chain state...', '#00bfff');
+
+                // Get current on-chain taps for this player
+                const playerStats = await gameContract.getPlayerStats(connectedAddress);
+                const onChainTaps = playerStats.totalTaps.toNumber();
+                
+                console.log('Current local taps:', gameState.totalTaps);
+                console.log('Current on-chain taps:', onChainTaps);
+
+                // Only sync if we have more taps locally than on-chain
+                if (gameState.totalTaps <= onChainTaps) {
+                    showNotification('Your taps are already synced or on-chain value is higher!', '#ff9900');
+                    // Update local state to match on-chain state if it's higher
+                    if (onChainTaps > gameState.totalTaps) {
+                        gameState.totalTaps = onChainTaps;
+                        updateUI();
+                        saveGameState();
+                        showNotification('Local taps updated to match blockchain!', '#30d158');
+                    }
+                    return;
+                }
+
                 showNotification('Syncing with blockchain...', '#00bfff');
 
-                // Send current tap count to blockchain (ensuring it's not decreasing)
-                const currentTapCount = Math.max(gameState.totalTaps, 1);
+                // Send current tap count to blockchain (it's higher than on-chain)
+                const newTapCount = gameState.totalTaps;
 
                 // Send transaction to update taps on blockchain
-                const tx = await gameContract.updateTaps(currentTapCount);
+                const tx = await gameContract.updateTaps(newTapCount);
 
                 showNotification(`Transaction submitted! Hash: ${tx.hash.slice(0, 8)}...`, '#ffd700');
 
@@ -1559,8 +1589,9 @@
                     console.log('Manual contract interaction successful:', {
                         txHash: tx.hash,
                         gasUsed: receipt.gasUsed.toString(),
-                        sentTapCount: currentTapCount,
-                        remainingTaps: gameState.totalTaps
+                        sentTapCount: newTapCount,
+                        remainingTaps: gameState.totalTaps,
+                        costDeducted: cost
                     });
                 } else {
                     throw new Error("Transaction failed");
