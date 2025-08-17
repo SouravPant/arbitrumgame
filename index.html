@@ -664,14 +664,18 @@
             5500, 6600, 7800, 9100, 10500, 12000, 13600, 15300, 17100, 19000
         ];
 
-        // Network Configurations
+        // Network Configurations with Alchemy API support
         const NETWORKS = {
             ARBITRUM_ONE: {
-                chainId: '0xa4b1',
+                chainId: '0xa4b1', // 42161 in hex
                 name: 'Arbitrum One',
-                rpcUrls: ['https://arb1.arbitrum.io/rpc'],
+                rpcUrls: [
+                    'https://arb-mainnet.g.alchemy.com/v2/demo',
+                    'https://arb1.arbitrum.io/rpc',
+                    'https://arbitrum-one.publicnode.com'
+                ],
                 blockExplorerUrls: ['https://arbiscan.io'],
-                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De', // Mainnet Contract Address
+                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De',
                 nativeCurrency: {
                     name: 'Ether',
                     symbol: 'ETH',
@@ -679,11 +683,15 @@
                 }
             },
             ARBITRUM_SEPOLIA: {
-                chainId: '0x66eee', // Chain ID 421614 in correct hex format
+                chainId: '0x66eee', // 421614 in hex
                 name: 'Arbitrum Sepolia',
-                rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
+                rpcUrls: [
+                    'https://arb-sepolia.g.alchemy.com/v2/demo',
+                    'https://sepolia-rollup.arbitrum.io/rpc',
+                    'https://arbitrum-sepolia.publicnode.com'
+                ],
                 blockExplorerUrls: ['https://sepolia.arbiscan.io'],
-                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De', // Testnet Contract Address
+                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De',
                 nativeCurrency: {
                     name: 'Ether',
                     symbol: 'ETH',
@@ -1192,6 +1200,7 @@
 
             if (typeof window.ethereum === 'undefined') {
                 console.error('Ethereum provider not found.');
+                showNotification('Please install MetaMask or another Web3 wallet.', '#ff3b30');
                 return;
             }
 
@@ -1199,17 +1208,32 @@
                 const currentChainId = await window.ethereum.request({ method: 'eth_chainId' });
                 if (currentChainId === targetChainId) {
                     console.log(`Already on ${CURRENT_NETWORK.name}.`);
+                    showNotification(`Already connected to ${CURRENT_NETWORK.name}`, '#30d158');
                     return;
                 }
+
+                showNotification(`Switching to ${CURRENT_NETWORK.name}...`, '#00bfff');
 
                 await window.ethereum.request({
                     method: 'wallet_switchEthereumChain',
                     params: [{ chainId: targetChainId }],
                 });
+                
                 console.log(`Switched to ${CURRENT_NETWORK.name}.`);
+                showNotification(`✅ Switched to ${CURRENT_NETWORK.name}`, '#30d158');
+                
+                // Re-initialize contract after network switch
+                setTimeout(async () => {
+                    await initializeContract();
+                }, 1000);
+                
             } catch (error) {
-                if (error.code === 4902) { // Common error code for unknown chain
-                    console.log(`Network with chainId ${targetChainId} not added, attempting to add...`);
+                console.error('Network switch error:', error);
+                
+                if (error.code === 4902) {
+                    console.log(`Network ${CURRENT_NETWORK.name} not added, attempting to add...`);
+                    showNotification(`Adding ${CURRENT_NETWORK.name} network...`, '#ffd700');
+                    
                     try {
                         await window.ethereum.request({
                             method: 'wallet_addEthereumChain',
@@ -1218,19 +1242,28 @@
                                 chainName: CURRENT_NETWORK.name,
                                 nativeCurrency: CURRENT_NETWORK.nativeCurrency,
                                 rpcUrls: CURRENT_NETWORK.rpcUrls,
-                                blockExplorerUrls: CURRENT_NETWORK.blockExplorerUrls
+                                blockExplorerUrls: CURRENT_NETWORK.blockExplorerUrls,
+                                iconUrls: ['https://arbiscan.io/images/svg/brands/arbitrum.svg'] // Arbitrum icon
                             }],
                         });
+                        
                         console.log(`Added ${CURRENT_NETWORK.name} network successfully.`);
+                        showNotification(`✅ Added ${CURRENT_NETWORK.name} network`, '#30d158');
+                        
                         // Retry switching after adding
-                        await switchToTargetNetwork();
+                        setTimeout(async () => {
+                            await switchToTargetNetwork();
+                        }, 1000);
+                        
                     } catch (addError) {
                         console.error(`Failed to add ${CURRENT_NETWORK.name} network:`, addError);
-                        alert(`Failed to add ${CURRENT_NETWORK.name} network. Please add it manually in your wallet.`);
+                        showNotification(`Failed to add ${CURRENT_NETWORK.name}. Please add manually in MetaMask.`, '#ff3b30');
                     }
+                } else if (error.code === 4001) {
+                    showNotification('Network switch rejected by user.', '#ff9900');
                 } else {
                     console.error(`Failed to switch to ${CURRENT_NETWORK.name}:`, error);
-                    alert(`Failed to switch to ${CURRENT_NETWORK.name}: ${error.message}. Please switch manually.`);
+                    showNotification(`Failed to switch networks. Please switch to ${CURRENT_NETWORK.name} manually.`, '#ff3b30');
                 }
             }
         }
@@ -1546,6 +1579,17 @@
             try {
                 showNotification('Checking on-chain state...', '#00bfff');
 
+                // Verify we're on the correct network first
+                const provider = new window.ethers.providers.Web3Provider(window.ethereum);
+                const network = await provider.getNetwork();
+                const currentChainId = '0x' + network.chainId.toString(16);
+                
+                if (currentChainId !== CURRENT_NETWORK.chainId) {
+                    showNotification(`Please switch to ${CURRENT_NETWORK.name}`, '#ff9900');
+                    await switchToTargetNetwork();
+                    return;
+                }
+
                 // Get current on-chain taps for this player
                 const playerStats = await gameContract.getPlayerStats(connectedAddress);
                 const onChainTaps = playerStats.totalTaps.toNumber();
@@ -1571,8 +1615,14 @@
                 // Send current tap count to blockchain (it's higher than on-chain)
                 const newTapCount = gameState.totalTaps;
 
+                // Estimate gas first
+                const gasEstimate = await gameContract.estimateGas.updateTaps(newTapCount);
+                const gasLimit = gasEstimate.mul(120).div(100); // Add 20% buffer
+
                 // Send transaction to update taps on blockchain
-                const tx = await gameContract.updateTaps(newTapCount);
+                const tx = await gameContract.updateTaps(newTapCount, {
+                    gasLimit: gasLimit
+                });
 
                 showNotification(`Transaction submitted! Hash: ${tx.hash.slice(0, 8)}...`, '#ffd700');
 
@@ -1600,37 +1650,58 @@
             } catch (error) {
                 console.error('Manual contract interaction failed:', error);
 
-                // Safely extract error information
+                // Improved error handling to prevent the "in" operator error
                 let errorMessage = 'Unknown error';
                 let errorCode = null;
 
-                if (error && typeof error === 'object') {
-                    errorCode = error.code;
-                    
-                    if (error.message) {
-                        errorMessage = error.message;
-                    } else if (error.reason) {
-                        errorMessage = error.reason;
-                    } else if (error.error && error.error.message) {
-                        errorMessage = error.error.message;
+                try {
+                    // Safely extract error information
+                    if (error) {
+                        if (typeof error === 'string') {
+                            errorMessage = error;
+                        } else if (typeof error === 'object') {
+                            errorCode = error.code || null;
+                            
+                            // Try multiple ways to get the error message
+                            if (error.message) {
+                                errorMessage = error.message;
+                            } else if (error.reason) {
+                                errorMessage = error.reason;
+                            } else if (error.data && error.data.message) {
+                                errorMessage = error.data.message;
+                            } else if (error.error) {
+                                if (typeof error.error === 'string') {
+                                    errorMessage = error.error;
+                                } else if (error.error.message) {
+                                    errorMessage = error.error.message;
+                                }
+                            } else {
+                                errorMessage = String(error);
+                            }
+                        } else {
+                            errorMessage = String(error);
+                        }
                     }
+                } catch (parseError) {
+                    console.error('Error parsing error:', parseError);
+                    errorMessage = 'Failed to parse error details';
                 }
 
+                // Handle specific error cases
                 if (errorCode === 4001) {
                     showNotification('Transaction rejected by user.', '#ff3b30');
-                } else if (errorMessage.includes('insufficient funds')) {
+                } else if (errorCode === -32603 || errorMessage.toLowerCase().includes('insufficient funds')) {
                     showNotification('Insufficient funds for gas fees.', '#ff3b30');
-                } else if (errorMessage.includes('New count must be higher')) {
+                } else if (errorMessage.toLowerCase().includes('user rejected') || errorMessage.toLowerCase().includes('denied')) {
+                    showNotification('Transaction rejected by user.', '#ff3b30');
+                } else if (errorMessage.toLowerCase().includes('new count must be higher') || errorMessage.toLowerCase().includes('already synced')) {
                     showNotification('Your local taps are already synced to blockchain!', '#ff9900');
-                } else if (errorMessage.includes('execution reverted')) {
-                    // Extract the revert reason from the error
-                    if (errorMessage.includes('New count must be higher')) {
-                        showNotification('Blockchain has higher tap count than local!', '#ff9900');
-                    } else {
-                        showNotification('Contract execution failed. Please try again.', '#ff3b30');
-                    }
+                } else if (errorMessage.toLowerCase().includes('execution reverted')) {
+                    showNotification('Contract execution failed. Please try again.', '#ff3b30');
+                } else if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('chain')) {
+                    showNotification('Network error. Please check your connection and try again.', '#ff3b30');
                 } else {
-                    showNotification(`Contract sync failed: ${errorMessage}`, '#ff3b30');
+                    showNotification(`Contract sync failed: ${errorMessage.slice(0, 100)}`, '#ff3b30');
                 }
             }
         }
@@ -1660,34 +1731,52 @@
                 console.warn('Ethereum provider not detected. Cannot update network info.');
                 return;
             }
+            
             try {
+                // Ensure ethers is loaded
+                if (typeof window.ethers === 'undefined') {
+                    await loadEthersLibrary();
+                }
+                
+                if (typeof window.ethers === 'undefined') {
+                    console.warn('ethers.js not available for network info');
+                    return;
+                }
+
                 const provider = new window.ethers.providers.Web3Provider(window.ethereum);
                 const network = await provider.getNetwork();
                 const chainId = '0x' + network.chainId.toString(16);
 
-                let networkInfo = { ...CURRENT_NETWORK, isTestnet: CURRENT_NETWORK === NETWORKS.ARBITRUM_SEPOLIA }; // Default to current network
+                let networkInfo = { ...CURRENT_NETWORK, isTestnet: CURRENT_NETWORK === NETWORKS.ARBITRUM_SEPOLIA };
 
                 if (chainId === NETWORKS.ARBITRUM_ONE.chainId) {
                     networkInfo = { ...NETWORKS.ARBITRUM_ONE, isTestnet: false };
                 } else if (chainId === NETWORKS.ARBITRUM_SEPOLIA.chainId) {
                     networkInfo = { ...NETWORKS.ARBITRUM_SEPOLIA, isTestnet: true };
                 } else {
-                    // If the connected chain is neither, use a generic representation or show an error
+                    // Handle unknown networks more gracefully
                     networkInfo = {
                         chainId: chainId,
-                        name: `Unknown Network (${network.name})`,
+                        name: network.name || `Unknown Network`,
                         rpcUrls: [],
                         blockExplorerUrls: [],
                         contractAddress: null,
-                        isTestnet: false // Assume not a testnet if unknown
+                        isTestnet: false
                     };
-                    showNotification(`Connected to an unsupported network (${network.name}). Please switch to Arbitrum.`, '#ff9900');
+                    showNotification(`Connected to unsupported network. Please switch to Arbitrum Sepolia.`, '#ff9900');
                 }
-                CURRENT_NETWORK = networkInfo; // Update the global CURRENT_NETWORK
+                
+                CURRENT_NETWORK = networkInfo;
                 updateNetworkStatus(networkInfo);
+                
             } catch (error) {
                 console.error('Error updating current network info:', error);
-                showNotification('Failed to get network information.', '#ff3b30');
+                
+                // Graceful fallback - use current network as default
+                updateNetworkStatus({
+                    ...CURRENT_NETWORK,
+                    isTestnet: CURRENT_NETWORK === NETWORKS.ARBITRUM_SEPOLIA
+                });
             }
         }
 
