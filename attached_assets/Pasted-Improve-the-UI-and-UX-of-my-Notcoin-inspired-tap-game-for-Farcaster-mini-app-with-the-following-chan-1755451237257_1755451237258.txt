@@ -1,0 +1,41 @@
+Improve the UI and UX of my Notcoin-inspired tap game for Farcaster mini-app with the following changes:
+
+🎨 General UI Polish
+- Use a modern, minimal, and playful theme inspired by Notcoin.
+- Add smooth animations when tapping (button pulse, glow, and particle bursts).
+- Center align the main tap button with a futuristic gradient background (blue → purple).
+- Replace plain progress bars with rounded, animated ones.
+- Use meaningful icons (⚡, ⭐, ⬆️) instead of only text.
+- Ensure responsive design for mobile and desktop.
+
+⚡ Tap Button Enhancement
+- Make the main tap button circular, glowing with neon edges.
+- Add ripple animation and particle bursts (sparks/coins) on tap.
+- Change button color dynamically by level (e.g., L1: Blue, L2: Green, L3: Purple).
+- Add subtle vibration feedback (if supported).
+
+📈 Level & Progression
+- Replace plain XP bar with a glowing segmented progress bar.
+- Animate level-up with popup text and confetti effect (“Level Up! 🎉”).
+- Show next target clearly (e.g., “Reach 1.6K taps for Level 4”).
+- Add crown/badge icon next to current level.
+
+🔋 Power-ups Section
+- Redesign power-ups as rounded glowing cards with hover/tap effects.
+- Locked power-ups should appear greyed out with a lock icon.
+- Add icons for each power-up (⚡ Energy, ⬆️ Level Up, 🔗 Sync Wallet).
+- Add progress indicators under each power-up to show affordability.
+
+🔗 Wallet & Blockchain Integration
+- Show wallet address in a stylish rounded card with copy-to-clipboard.
+- Add chain/network icon (Ethereum/Arbitrum logo) next to name.
+- Show green check ✅ when wallet sync succeeds, red ❌ when disconnected.
+- Add subtle animation when wallet status changes.
+
+🎮 Extra Gamification
+- Add daily rewards popup with claim button.
+- Show tap streak multiplier for continuous tapping.
+- Add simple sound effects for tapping and leveling up (toggleable in settings).
+- Prepare a button for future leaderboard integration.
+
+Make sure the overall design feels polished, fun, and engaging while keeping a clean minimal aesthetic. Add smooth transitions and animations everywhere possible to create a rewarding experience.
