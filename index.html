@@ -879,12 +879,8 @@
 
         // Update UI
         function updateUI() {
-            const newLevel = calculateLevel(gameState.totalTaps);
-            if (newLevel > gameState.currentLevel) {
-                gameState.currentLevel = newLevel;
-                gameState.tapPower = Math.max(gameState.tapPowerLevel, Math.floor(newLevel / 5) + 1);
-                showNotification(`🎉 Level Up! Welcome to Level ${newLevel}`);
-            }
+            // Remove automatic level up - level ups now require explicit blockchain interaction
+            // Only update display, not the actual level
 
             // Update display elements
             if (elements.totalTaps) {
@@ -1385,26 +1381,33 @@
                 return;
             }
 
+            // Check if wallet is connected for blockchain interaction
+            if (!isWalletConnected) {
+                showNotification('Connect wallet for blockchain upgrades!', '#ff9900');
+                applyTapPowerUpgrade(cost);
+                return;
+            }
+
             // Try blockchain upgrade if wallet connected and contract available
-            if (isWalletConnected && gameContract && typeof window.ethers !== 'undefined') {
+            if (gameContract && typeof window.ethers !== 'undefined') {
                 try {
                     showNotification('Upgrading Tap Power on blockchain...', '#ffd700');
 
-                    // Get current on-chain taps
-                    const playerStats = await gameContract.getPlayerStats(connectedAddress);
-                    const onChainTaps = playerStats.totalTaps.toNumber();
-                    
-                    // Calculate new tap count after upgrade
-                    const newTapCount = Math.max(gameState.totalTaps, onChainTaps + 1);
-                    const tx = await gameContract.updateTaps(newTapCount);
+                    // Estimate gas first
+                    const adjustedLevel = gameState.tapPowerLevel + 1;
+                    const gasEstimate = await gameContract.estimateGas.updateLevel(adjustedLevel);
+                    const gasLimit = gasEstimate.mul(120).div(100); // Add 20% buffer
+
+                    // Send transaction to update level (representing power-up upgrade)
+                    const tx = await gameContract.updateLevel(adjustedLevel, {
+                        gasLimit: gasLimit
+                    });
 
                     showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
                     const receipt = await tx.wait();
 
                     if (receipt && receipt.status === 1) {
                         showNotification(`Tap Power upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
-
-                        // Apply upgrade locally after successful contract interaction
                         applyTapPowerUpgrade(cost);
                         return;
                     } else {
@@ -1416,16 +1419,17 @@
                         showNotification('Transaction rejected by user.', '#ff3b30');
                         return;
                     } else if (error.message && error.message.includes('insufficient funds')) {
-                        showNotification('Insufficient funds for transaction.', '#ff3b30');
+                        showNotification('Insufficient ETH for gas fees.', '#ff3b30');
                         return;
                     } else {
                         showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
+                        applyTapPowerUpgrade(cost);
                     }
                 }
+            } else {
+                showNotification('Contract not ready. Using local upgrade.', '#ff9900');
+                applyTapPowerUpgrade(cost);
             }
-
-            // Local upgrade (fallback or when wallet not connected)
-            applyTapPowerUpgrade(cost);
         }
 
         function applyTapPowerUpgrade(cost) {
@@ -1441,45 +1445,57 @@
 
         async function upgradeMaxEnergy() {
             const cost = gameState.energyCost;
-            if (gameState.totalTaps >= cost) {
-                if (isWalletConnected && gameContract && typeof window.ethers !== 'undefined') {
-                    try {
-                        showNotification('Upgrading Max Energy on blockchain...', '#00bfff');
+            if (gameState.totalTaps < cost) {
+                showNotification('Not enough taps to upgrade!', '#ff3b30');
+                return;
+            }
 
-                        // Get current on-chain taps and ensure new count is higher
-                        const playerStats = await gameContract.getPlayerStats(connectedAddress);
-                        const onChainTaps = playerStats.totalTaps.toNumber();
-                        const newTapCount = Math.max(gameState.totalTaps, onChainTaps + 1);
-                        const tx = await gameContract.updateTaps(newTapCount);
+            // Check if wallet is connected for blockchain interaction
+            if (!isWalletConnected) {
+                showNotification('Connect wallet for blockchain upgrades!', '#ff9900');
+                applyMaxEnergyUpgrade(cost);
+                return;
+            }
 
-                        showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
-                        const receipt = await tx.wait();
+            if (gameContract && typeof window.ethers !== 'undefined') {
+                try {
+                    showNotification('Upgrading Max Energy on blockchain...', '#00bfff');
 
-                        if (receipt && receipt.status === 1) {
-                            showNotification(`Max Energy upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+                    // Use updateLevel with a modifier for energy upgrades
+                    const adjustedLevel = gameState.energyLevel + 100; // Offset for energy upgrades
+                    const gasEstimate = await gameContract.estimateGas.updateLevel(adjustedLevel);
+                    const gasLimit = gasEstimate.mul(120).div(100);
 
-                            // Apply upgrade locally
-                            applyMaxEnergyUpgrade(cost);
-                            return;
-                        } else {
-                            throw new Error("Transaction failed");
-                        }
-                    } catch (error) {
-                        console.error('Blockchain upgrade failed:', error);
-                        if (error.code === 4001) {
-                            showNotification('Transaction rejected by user.', '#ff3b30');
-                        } else {
-                            showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
-                            applyMaxEnergyUpgrade(cost);
-                        }
+                    const tx = await gameContract.updateLevel(adjustedLevel, {
+                        gasLimit: gasLimit
+                    });
+
+                    showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
+                    const receipt = await tx.wait();
+
+                    if (receipt && receipt.status === 1) {
+                        showNotification(`Max Energy upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+                        applyMaxEnergyUpgrade(cost);
                         return;
+                    } else {
+                        throw new Error("Transaction failed");
                     }
-                } else {
-                    // Local upgrade
-                    applyMaxEnergyUpgrade(cost);
+                } catch (error) {
+                    console.error('Blockchain upgrade failed:', error);
+                    if (error.code === 4001) {
+                        showNotification('Transaction rejected by user.', '#ff3b30');
+                        return;
+                    } else if (error.message && error.message.includes('insufficient funds')) {
+                        showNotification('Insufficient ETH for gas fees.', '#ff3b30');
+                        return;
+                    } else {
+                        showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
+                        applyMaxEnergyUpgrade(cost);
+                    }
                 }
             } else {
-                showNotification('Not enough taps to upgrade!', '#ff3b30');
+                showNotification('Contract not ready. Using local upgrade.', '#ff9900');
+                applyMaxEnergyUpgrade(cost);
             }
         }
 
@@ -1498,45 +1514,57 @@
 
         async function upgradeEnergyRegen() {
             const cost = gameState.regenCost;
-            if (gameState.totalTaps >= cost) {
-                if (isWalletConnected && gameContract && typeof window.ethers !== 'undefined') {
-                    try {
-                        showNotification('Upgrading Energy Regen on blockchain...', '#00ff00');
+            if (gameState.totalTaps < cost) {
+                showNotification('Not enough taps to upgrade!', '#ff3b30');
+                return;
+            }
 
-                        // Get current on-chain taps and ensure new count is higher
-                        const playerStats = await gameContract.getPlayerStats(connectedAddress);
-                        const onChainTaps = playerStats.totalTaps.toNumber();
-                        const newTapCount = Math.max(gameState.totalTaps, onChainTaps + 1);
-                        const tx = await gameContract.updateTaps(newTapCount);
+            // Check if wallet is connected for blockchain interaction
+            if (!isWalletConnected) {
+                showNotification('Connect wallet for blockchain upgrades!', '#ff9900');
+                applyEnergyRegenUpgrade(cost);
+                return;
+            }
 
-                        showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
-                        const receipt = await tx.wait();
+            if (gameContract && typeof window.ethers !== 'undefined') {
+                try {
+                    showNotification('Upgrading Energy Regen on blockchain...', '#00ff00');
 
-                        if (receipt && receipt.status === 1) {
-                            showNotification(`Energy Regen upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+                    // Use updateLevel with a modifier for regen upgrades
+                    const adjustedLevel = gameState.regenLevel + 200; // Offset for regen upgrades
+                    const gasEstimate = await gameContract.estimateGas.updateLevel(adjustedLevel);
+                    const gasLimit = gasEstimate.mul(120).div(100);
 
-                            // Apply upgrade locally
-                            applyEnergyRegenUpgrade(cost);
-                            return;
-                        } else {
-                            throw new Error("Transaction failed");
-                        }
-                    } catch (error) {
-                        console.error('Blockchain upgrade failed:', error);
-                        if (error.code === 4001) {
-                            showNotification('Transaction rejected by user.', '#ff3b30');
-                        } else {
-                            showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
-                            applyEnergyRegenUpgrade(cost);
-                        }
+                    const tx = await gameContract.updateLevel(adjustedLevel, {
+                        gasLimit: gasLimit
+                    });
+
+                    showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
+                    const receipt = await tx.wait();
+
+                    if (receipt && receipt.status === 1) {
+                        showNotification(`Energy Regen upgrade recorded! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+                        applyEnergyRegenUpgrade(cost);
                         return;
+                    } else {
+                        throw new Error("Transaction failed");
                     }
-                } else {
-                    // Local upgrade
-                    applyEnergyRegenUpgrade(cost);
+                } catch (error) {
+                    console.error('Blockchain upgrade failed:', error);
+                    if (error.code === 4001) {
+                        showNotification('Transaction rejected by user.', '#ff3b30');
+                        return;
+                    } else if (error.message && error.message.includes('insufficient funds')) {
+                        showNotification('Insufficient ETH for gas fees.', '#ff3b30');
+                        return;
+                    } else {
+                        showNotification('Blockchain upgrade failed. Using local upgrade.', '#ff9900');
+                        applyEnergyRegenUpgrade(cost);
+                    }
                 }
             } else {
-                showNotification('Not enough taps to upgrade!', '#ff3b30');
+                showNotification('Contract not ready. Using local upgrade.', '#ff9900');
+                applyEnergyRegenUpgrade(cost);
             }
         }
 
@@ -1735,13 +1763,58 @@
             document.getElementById('energyUpgrade').addEventListener('click', upgradeMaxEnergy);
             document.getElementById('regenUpgrade').addEventListener('click', upgradeEnergyRegen);
             // Add listener for level upgrade if it has a specific function
-            document.getElementById('levelUpgrade').addEventListener('click', () => {
-                const cost = gameState.levelUpCost;
-                if (gameState.totalTaps >= gameState.levelUpCost) { // Use the calculated cost
-                    // Logic for level up - potentially based on a different contract interaction
-                    showNotification('Level Up feature not fully implemented yet.', '#ff9900');
-                } else {
+            document.getElementById('levelUpgrade').addEventListener('click', async () => {
+                const nextLevel = gameState.currentLevel + 1;
+                const requiredTapsForNextLevel = nextLevel * nextLevel * 100;
+                
+                if (gameState.totalTaps < requiredTapsForNextLevel) {
                     showNotification('Not enough taps to level up!', '#ff3b30');
+                    return;
+                }
+
+                // Check if wallet is connected for blockchain interaction
+                if (!isWalletConnected) {
+                    showNotification('Connect wallet to level up on blockchain!', '#ff9900');
+                    return;
+                }
+
+                if (gameContract && typeof window.ethers !== 'undefined') {
+                    try {
+                        showNotification('Leveling up on blockchain...', '#ffd700');
+
+                        const gasEstimate = await gameContract.estimateGas.updateLevel(nextLevel);
+                        const gasLimit = gasEstimate.mul(120).div(100);
+
+                        const tx = await gameContract.updateLevel(nextLevel, {
+                            gasLimit: gasLimit
+                        });
+
+                        showNotification('Transaction submitted, waiting for confirmation...', '#00bfff');
+                        const receipt = await tx.wait();
+
+                        if (receipt && receipt.status === 1) {
+                            showNotification(`Level ${nextLevel} achieved! TX: ${tx.hash.slice(0, 8)}...`, '#00ff00');
+                            
+                            // Update local state after successful blockchain transaction
+                            gameState.currentLevel = nextLevel;
+                            gameState.tapPower = Math.max(gameState.tapPowerLevel, Math.floor(nextLevel / 5) + 1);
+                            updateUI();
+                            saveGameState();
+                        } else {
+                            throw new Error("Transaction failed");
+                        }
+                    } catch (error) {
+                        console.error('Level up failed:', error);
+                        if (error.code === 4001) {
+                            showNotification('Transaction rejected by user.', '#ff3b30');
+                        } else if (error.message && error.message.includes('insufficient funds')) {
+                            showNotification('Insufficient ETH for gas fees.', '#ff3b30');
+                        } else {
+                            showNotification('Level up failed. Please try again.', '#ff3b30');
+                        }
+                    }
+                } else {
+                    showNotification('Contract not ready. Please wait and try again.', '#ff9900');
                 }
             });
             // Add listener for the new manual contract interaction power-up
