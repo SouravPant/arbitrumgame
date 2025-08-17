@@ -1584,9 +1584,21 @@
                 const network = await provider.getNetwork();
                 const currentChainId = '0x' + network.chainId.toString(16);
                 
+                console.log('Current chain ID:', currentChainId, 'Expected:', CURRENT_NETWORK.chainId);
+                
                 if (currentChainId !== CURRENT_NETWORK.chainId) {
                     showNotification(`Please switch to ${CURRENT_NETWORK.name}`, '#ff9900');
                     await switchToTargetNetwork();
+                    return;
+                }
+
+                // Verify account balance for gas
+                const balance = await provider.getBalance(connectedAddress);
+                const balanceEth = parseFloat(window.ethers.utils.formatEther(balance));
+                console.log('Account balance:', balanceEth, 'ETH');
+                
+                if (balanceEth < 0.001) {
+                    showNotification('You need at least 0.001 ETH for gas fees', '#ff3b30');
                     return;
                 }
 
@@ -1687,21 +1699,32 @@
                     errorMessage = 'Failed to parse error details';
                 }
 
-                // Handle specific error cases
+                // Handle specific error cases with more precise detection
                 if (errorCode === 4001) {
                     showNotification('Transaction rejected by user.', '#ff3b30');
-                } else if (errorCode === -32603 || errorMessage.toLowerCase().includes('insufficient funds')) {
-                    showNotification('Insufficient funds for gas fees.', '#ff3b30');
                 } else if (errorMessage.toLowerCase().includes('user rejected') || errorMessage.toLowerCase().includes('denied')) {
                     showNotification('Transaction rejected by user.', '#ff3b30');
                 } else if (errorMessage.toLowerCase().includes('new count must be higher') || errorMessage.toLowerCase().includes('already synced')) {
                     showNotification('Your local taps are already synced to blockchain!', '#ff9900');
                 } else if (errorMessage.toLowerCase().includes('execution reverted')) {
                     showNotification('Contract execution failed. Please try again.', '#ff3b30');
+                } else if (errorMessage.toLowerCase().includes('cannot use \'in\' operator') || errorMessage.toLowerCase().includes('search for \'error\'')) {
+                    showNotification('Network connection issue. Please check your wallet connection and try again.', '#ff9900');
+                } else if (errorCode === -32603 && errorMessage.toLowerCase().includes('insufficient funds for gas')) {
+                    showNotification('Insufficient ETH for gas fees. Please add ETH to your wallet.', '#ff3b30');
+                } else if (errorMessage.toLowerCase().includes('insufficient funds') && errorMessage.toLowerCase().includes('gas')) {
+                    showNotification('Insufficient ETH for gas fees. Please add ETH to your wallet.', '#ff3b30');
                 } else if (errorMessage.toLowerCase().includes('network') || errorMessage.toLowerCase().includes('chain')) {
                     showNotification('Network error. Please check your connection and try again.', '#ff3b30');
+                } else if (errorMessage.toLowerCase().includes('missing provider') || errorMessage.toLowerCase().includes('provider')) {
+                    showNotification('Wallet connection lost. Please reconnect your wallet.', '#ff9900');
                 } else {
-                    showNotification(`Contract sync failed: ${errorMessage.slice(0, 100)}`, '#ff3b30');
+                    // For the specific error you're seeing, provide a more helpful message
+                    if (errorMessage.includes('in') && errorMessage.includes('operator') && errorMessage.includes('search')) {
+                        showNotification('Connection error. Please refresh and try again.', '#ff9900');
+                    } else {
+                        showNotification(`Sync failed: ${errorMessage.slice(0, 60)}... Please try again.`, '#ff3b30');
+                    }
                 }
             }
         }
