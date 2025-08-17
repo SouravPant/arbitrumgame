@@ -671,14 +671,24 @@
                 name: 'Arbitrum One',
                 rpcUrls: ['https://arb1.arbitrum.io/rpc'],
                 blockExplorerUrls: ['https://arbiscan.io'],
-                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De' // Mainnet Contract Address
+                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De', // Mainnet Contract Address
+                nativeCurrency: {
+                    name: 'Ether',
+                    symbol: 'ETH',
+                    decimals: 18
+                }
             },
             ARBITRUM_SEPOLIA: {
-                chainId: '0x166eed', // Chain ID 421614
+                chainId: '0x66eee', // Chain ID 421614 in correct hex format
                 name: 'Arbitrum Sepolia',
                 rpcUrls: ['https://sepolia-rollup.arbitrum.io/rpc'],
                 blockExplorerUrls: ['https://sepolia.arbiscan.io'],
-                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De' // Testnet Contract Address
+                contractAddress: '0xF3FF71531F523f09c42490760e9Ba43eD30bb0De', // Testnet Contract Address
+                nativeCurrency: {
+                    name: 'Ether',
+                    symbol: 'ETH',
+                    decimals: 18
+                }
             }
         };
 
@@ -1206,11 +1216,7 @@
                             params: [{
                                 chainId: targetChainId,
                                 chainName: CURRENT_NETWORK.name,
-                                nativeCurrency: {
-                                    name: 'Arbitrum Ether',
-                                    symbol: 'ETH',
-                                    decimals: 18
-                                },
+                                nativeCurrency: CURRENT_NETWORK.nativeCurrency,
                                 rpcUrls: CURRENT_NETWORK.rpcUrls,
                                 blockExplorerUrls: CURRENT_NETWORK.blockExplorerUrls
                             }],
@@ -1259,7 +1265,7 @@
                 if (currentChainId === NETWORKS.ARBITRUM_ONE.chainId) {
                     CURRENT_NETWORK = NETWORKS.ARBITRUM_ONE;
                     console.log('Detected Arbitrum One (Mainnet)');
-                } else if (currentChainId === NETWORKS.ARBITRUM_SEPOLIA.chainId) {
+                } else if (currentChainId === NETWORKS.ARBITRUM_SEPOLIA.chainId || network.chainId === 421614) {
                     CURRENT_NETWORK = NETWORKS.ARBITRUM_SEPOLIA;
                     console.log('Detected Arbitrum Sepolia (Testnet)');
                 } else {
