@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ARBITAP - Tap to Earn</title>
 
     <!-- Farcaster Mini App Metadata -->
@@ -1162,13 +1162,13 @@
                     await updateCurrentNetworkInfo();
 
                     updateWalletStatus(true, address);
-                    
+
                     // Initialize contract after successful wallet connection
                     showNotification('Initializing contract...', '#00bfff');
                     setTimeout(async () => {
                         await initializeContract();
                     }, 1000);
-                    
+
                     return true;
                 } else {
                     console.warn('No accounts found after requesting.');
@@ -1239,7 +1239,7 @@
         async function initializeContract() {
             try {
                 console.log('Loading ethers.js...');
-                await loadEthersJS();
+                await loadEthersLibrary();
 
                 if (typeof window.ethereum === 'undefined') {
                     console.warn('Web3 provider not available. Contract features disabled.');
@@ -1260,7 +1260,7 @@
 
                 // Update current network based on what we're actually connected to
                 const currentChainId = '0x' + network.chainId.toString(16);
-                
+
                 // Auto-detect and set the correct network
                 if (currentChainId === NETWORKS.ARBITRUM_ONE.chainId) {
                     CURRENT_NETWORK = NETWORKS.ARBITRUM_ONE;
@@ -1291,7 +1291,7 @@
                 const contractAddress = CURRENT_NETWORK.contractAddress;
                 const signer = provider.getSigner();
                 gameContract = new window.ethers.Contract(contractAddress, CONTRACT_ABI, signer);
-                
+
                 console.log('Game contract initialized successfully with address:', contractAddress);
                 showNotification(`✅ Contract initialized on ${CURRENT_NETWORK.name}`, '#30d158');
 
@@ -1310,7 +1310,7 @@
             }
 
             try {
-                await loadEthersJS();
+                await loadEthersLibrary();
 
                 if (typeof window.ethereum === 'undefined' || typeof window.ethers === 'undefined') {
                     return false;
@@ -1527,7 +1527,7 @@
             if (!gameContract || typeof window.ethers === 'undefined') {
                 showNotification('Contract not initialized. Initializing now...', '#ff9900');
                 await initializeContract();
-                
+
                 // Check again after initialization attempt
                 if (!gameContract) {
                     showNotification('Failed to initialize contract. Please check network and try again.', '#ff3b30');
@@ -1642,7 +1642,7 @@
             initializeElements();
 
             // Load ethers.js first (non-blocking)
-            loadEthersJS()
+            loadEthersLibrary()
                 .then(() => {
                     console.log('ethers.js loaded successfully');
                 })
@@ -1772,68 +1772,75 @@
             document.head.appendChild(style);
         }
 
-        // Load ethers.js library with multiple fallback CDNs
-        function loadEthersJS() {
+        // Enhanced ethers.js loading with single reliable CDN and better error handling
+        async function loadEthersLibrary() {
+            if (window.ethers) {
+                console.log('ethers.js already loaded');
+                return true;
+            }
+
+            console.log('Loading ethers.js...');
+
+            try {
+                const success = await loadScriptFromCDN('https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js');
+                if (success && window.ethers) {
+                    console.log('ethers.js loaded successfully');
+                    return true;
+                }
+            } catch (error) {
+                console.log('Failed to load ethers.js:', error);
+            }
+
+            console.log('Failed to load ethers.js');
+            return false;
+        }
+
+        // Improved script loading with better cleanup
+        function loadScriptFromCDN(url, timeout = 15000) {
             return new Promise((resolve, reject) => {
-                if (typeof window.ethers !== 'undefined') {
-                    console.log('ethers.js already loaded');
-                    resolve();
+                // Remove any existing failed scripts
+                const existingScripts = document.querySelectorAll(`script[src*="ethers"]`);
+                existingScripts.forEach(script => {
+                    if (!window.ethers) {
+                        script.remove();
+                    }
+                });
+
+                if (window.ethers) {
+                    resolve(true);
                     return;
                 }
 
-                // List of CDN URLs to try
-                const cdnUrls = [
-                    'https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js',
-                    'https://unpkg.com/ethers@5.7.2/dist/ethers.umd.min.js',
-                    'https://cdn.ethers.io/lib/ethers-5-7-2.umd.min.js'
-                ];
+                const script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.src = url;
+                script.async = true;
 
-                let currentIndex = 0;
+                const timeoutId = setTimeout(() => {
+                    console.log(`Timeout loading ethers.js`);
+                    script.remove();
+                    reject(new Error(`Timeout loading ethers.js`));
+                }, timeout);
 
-                function tryLoadScript() {
-                    if (currentIndex >= cdnUrls.length) {
-                        console.error('Failed to load ethers.js from all CDN sources');
-                        reject(new Error('Failed to load ethers.js from all sources'));
-                        return;
+                script.onload = () => {
+                    clearTimeout(timeoutId);
+                    if (window.ethers) {
+                        console.log(`ethers.js loaded successfully`);
+                        resolve(true);
+                    } else {
+                        script.remove();
+                        reject(new Error('ethers.js not available after load'));
                     }
+                };
 
-                    const script = document.createElement('script');
-                    script.src = cdnUrls[currentIndex];
+                script.onerror = (error) => {
+                    clearTimeout(timeoutId);
+                    console.log(`Failed to load ethers.js:`, error);
+                    script.remove();
+                    reject(error);
+                };
 
-                    script.onload = () => {
-                        console.log(`ethers.js loaded successfully from: ${cdnUrls[currentIndex]}`);
-                        // Verify ethers is actually available
-                        if (typeof window.ethers !== 'undefined') {
-                            resolve();
-                        } else {
-                            console.warn(`Script loaded but ethers not available from: ${cdnUrls[currentIndex]}`);
-                            currentIndex++;
-                            document.head.removeChild(script);
-                            setTimeout(tryLoadScript, 100);
-                        }
-                    };
-
-                    script.onerror = (error) => {
-                        console.warn(`Failed to load ethers.js from: ${cdnUrls[currentIndex]}`, error);
-                        document.head.removeChild(script);
-                        currentIndex++;
-                        setTimeout(tryLoadScript, 100);
-                    };
-
-                    // Set timeout for loading
-                    setTimeout(() => {
-                        if (!script.onload.called && !script.onerror.called) {
-                            console.warn(`Timeout loading ethers.js from: ${cdnUrls[currentIndex]}`);
-                            document.head.removeChild(script);
-                            currentIndex++;
-                            tryLoadScript();
-                        }
-                    }, 10000);
-
-                    document.head.appendChild(script);
-                }
-
-                tryLoadScript();
+                document.head.appendChild(script);
             });
         }
     </script>
